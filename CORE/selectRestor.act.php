@@ -1,0 +1,48 @@
+<?php
+// Action file write by SDK tool
+// --- Last modification: Date 05 June 2008 22:02:24 By  ---
+
+require_once('CORE/xfer_exception.inc.php');
+require_once('CORE/rights.inc.php');
+
+//@TABLES@
+//@TABLES@
+//@XFER:custom
+require_once('CORE/xfer_custom.inc.php');
+//@XFER:custom@
+
+
+//@DESC@Restaurer les données
+//@PARAM@ 
+
+
+//@LOCK:0
+
+function selectRestor($Params)
+{
+try {
+$xfer_result=&new Xfer_Container_Custom("CORE","selectRestor",$Params);
+$xfer_result->Caption="Restaurer les données";
+//@CODE_ACTION@
+$img_title = new Xfer_Comp_Image('img_title');
+$img_title->setLocation(0,0,1,6);
+$img_title->setValue('backup_save.png');
+$xfer_result->addComponent($img_title);
+$title = new Xfer_Comp_LabelForm('title');
+$title->setLocation(1,0,4);
+$title->setValue("{[bold]}{[underline]}{[center]}Séléctionner le fichier d'archivage à restaurer.{[/center]}{[/underline]}{[/bold]}");
+$xfer_result->addComponent($title);
+//
+require_once("CORE/selectorFile.mth.php");
+$ret = selectorFile($xfer_result,$Params,'bkf', true);
+//
+$xfer_result->addAction( new Xfer_Action("_Restaurer","ok.png",'CORE','restor',0,1));
+$xfer_result->addAction( new Xfer_Action("A_nnuler","cancel.png"));
+//@CODE_ACTION@
+}catch(Exception $e) {
+	throw $e;
+}
+return $xfer_result;
+}
+
+?>

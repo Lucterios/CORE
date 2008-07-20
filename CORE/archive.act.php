@@ -1,0 +1,48 @@
+<?php
+// Action file write by SDK tool
+// --- Last modification: Date 16 June 2008 22:36:03 By  ---
+
+require_once('CORE/xfer_exception.inc.php');
+require_once('CORE/rights.inc.php');
+
+//@TABLES@
+//@TABLES@
+//@XFER:acknowledge
+require_once('CORE/xfer.inc.php');
+//@XFER:acknowledge@
+
+
+//@DESC@Sauvegarder les données
+//@PARAM@ path
+//@PARAM@ filename
+
+
+//@LOCK:0
+
+function archive($Params)
+{
+if (($ret=checkParams("CORE", "archive",$Params ,"path","filename"))!=null)
+	return $ret;
+$path=getParams($Params,"path",0);
+$filename=getParams($Params,"filename",0);
+try {
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","archive",$Params);
+$xfer_result->Caption="Sauvegarder les données";
+//@CODE_ACTION@
+if(! is_dir($path))$path = getcwd();
+$file_path = $path.$filename;
+$path_parts = pathinfo($file_path);
+if(isset($path_parts['extension']))$file_path = substr($file_path,0,-1* strlen($path_parts['extension'])).'bkf';
+else $file_path .= '.bkf';
+if($xfer_result->confirme("Voulez-vous réaliser une sauvegarde vers le fichier '$file_path'?")) {
+	$xfer_result->m_context['file_path'] = $file_path;
+	$xfer_result->redirectAction( new Xfer_Action('_Archiver','','CORE','archiveForm', FORMTYPE_MODAL, CLOSE_YES));
+}
+//@CODE_ACTION@
+}catch(Exception $e) {
+	throw $e;
+}
+return $xfer_result;
+}
+
+?>

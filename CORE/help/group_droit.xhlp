@@ -1,0 +1,50 @@
+<!--
+//  This file is part of Lucterios.
+//
+//  Lucterios is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  Lucterios is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Lucterios; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+//
+//	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+-->
+
+
+Voici les groupes et les droits possibles.
+
+
+GROUPE (Changement possible)
+Admin				100
+Membre		70
+Actif				25
+Secrétaire			45
+
+
+CORE
+0		Accéder au menu de l&#146;application			0
+1		Ajout/modification d&#146;un utilisateur			70
+2		Ajout/modification d&#146;un groupe			90
+3		Modification des paramètres généraux		90
+4		Activation/désactivation des extensions		70
+5		Changer de mot de passe				15
+6		Modifier les modèles d&#146;impression			50
+7		Gestion des autorisations d&#146;accès réseau		90
+8		Consultation de session de connexion		70
+
+
+
+CONTACT
+0		Liste/visualiser					15
+1		Ajouter/modifier/supprimer				40
+2		Gestion des paramètres				75
+
+

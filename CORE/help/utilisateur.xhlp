@@ -1,0 +1,53 @@
+<!--
+//  This file is part of Lucterios.
+//
+//  Lucterios is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  Lucterios is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with Lucterios; if not, write to the Free Software
+//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+//
+//	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+-->
+
+
+
+
+En cours de rédaction. Merci de votre compréhention.
+
+
+Une aide sur la gestion des logins sera rédigé dans cette partie.
+
+
+<b><i><u>Ajout</b></u></i>
+Un nouvel utilisateur peut être ajouté par un Administrateur. Pour cela, il doit aller dans <i>Administration/Gestion des Droits/Utilisateurs</i>
+Dans la fenêtre, il fait alors <i>Ajouter un utilisateur</i>
+
+Il faut alors renseigner les champs demandés.
+
+
+
+<b><i><u>Activation/Désactivation et la Modification d'un Utilisateur</b></u></i>
+Toujours dans la fenêtre Utilisateur, il y a un bouton permétant de désactiver un utilisateur. Pour le réactiver, il suffit de cliquer sur le bouton corespondant.
+Le bouton
+Modifier permet de modifier l'utilisateur choisi.
+
+
+
+
+<b><i><u>Changement de mot de passe</b></u></i>
+Tout utilisateur a le droit de changer son mot de passe, en allant dans <i>Administration/Changer de mot de passe
+</i>
+
+
+
+
+
