@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 23 August 2007 18:57:00 By Laurent GAY ---
+// --- Last modification: Date 05 August 2008 22:59:54 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -47,7 +47,7 @@ $action=getParams($Params,"action",0);
 $textCVS=getParams($Params,"textCVS",0);
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","importGrid",$Params);
-$xfer_result->Caption='Import grille';
+$xfer_result->Caption="Import grille";
 //@CODE_ACTION@
 require_once("CORE/import.inc.php");
 $CVS_array=ConvertTextToCVS($textCVS);
