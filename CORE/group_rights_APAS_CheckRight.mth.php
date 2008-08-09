@@ -17,55 +17,48 @@
 //     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // Action file write by SDK tool
-// --- Last modification: Date 08 August 2008 21:48:13 By  ---
+//  // Method file write by SDK tool
+// --- Last modification: Date 08 August 2008 22:53:58 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
-require_once('CORE/group_rights.tbl.php');
 require_once('CORE/groups.tbl.php');
+require_once('CORE/group_rights.tbl.php');
 //@TABLES@
-//@XFER:acknowledge
-require_once('CORE/xfer.inc.php');
-//@XFER:acknowledge@
 
+//@DESC@
+//@PARAM@ right
+//@PARAM@ weigth
 
-//@DESC@Ajouter un groupe de droit
-//@PARAM@ 
-//@INDEX:group
-
-//@TRANSACTION:
-
-//@LOCK:0
-
-function groups_APAS_ajouter($Params)
+function group_rights_APAS_CheckRight(&$self,$right,$weigth)
 {
-$self=new DBObj_CORE_groups();
-$group=getParams($Params,"group",-1);
-if ($group>=0) $self->get($group);
+//@CODE_ACTION@
+$return="";
+$self->rightref=$right;
+$self->find();
+$groups=array();
+while ($self->fetch())
+   $groups[]=$self->groupref;
 
-global $connect;
-$connect->begin();
-try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_ajouter",$Params);
-$xfer_result->Caption="Ajouter un groupe de droit";
-//@CODE_ACTION@
-$self->setFrom($Params);
-if ($group>0)
-  $self->update();
-else
-  $self->insert();
-$DBObjgroup_rights=new DBObj_CORE_group_rights;
-$DBObjgroup_rights->CheckGroup($self->id, $self->weigth);
-//@CODE_ACTION@
-	$connect->commit();
-}catch(Exception $e) {
-	$connect->rollback();
-	throw $e;
+$notgroups=array();
+$DBObjgroups=new DBObj_CORE_groups;
+$nb=$DBObjgroups->find();
+while ($DBObjgroups->fetch())
+  if (!in_array($DBObjgroups->id,$groups))
+    $notgroups[$DBObjgroups->id]=$DBObjgroups->weigth;
+$return.="Nb nouveau Groupe/Rights=".count($notgroups);
+foreach($notgroups as $grp=>$wgt)
+{
+   $gr=new DBObj_CORE_group_rights;
+   $gr->rightref=$right;
+   $gr->groupref=$grp;
+   $gr->value=$wgt>=$weigth?'o':'n';
+   $gr->insert();
 }
-return $xfer_result;
+return $return;
+//@CODE_ACTION@
 }
 
 ?>

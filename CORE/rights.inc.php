@@ -18,83 +18,40 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 December 2007 22:54:07 By Laurent GAY ---
+// --- Last modification: Date 08 August 2008 22:51:18 By  ---
 
 //@BEGIN@
-function checkRight($login, $extension, $action)
-{
+
+function checkRight($login,$extension,$action) {
 	global $connect;
-
-	list($usec, $sec) = split(" ", microtime());
-
-  	$q = "SELECT CORE_group_rights.value FROM CORE_group_rights, CORE_groups, CORE_users, CORE_extension_actions, CORE_extension_rights ";
-  	$q.= "WHERE (CORE_group_rights.groupId=CORE_users.groupId OR CORE_group_rights.groupId='0') AND ";
-  	$q.= "CORE_users.login='$login' AND CORE_group_rights.groupref=CORE_groups.id AND ";
-  	$q.= "CORE_group_rights.rightref=CORE_extension_rights.id AND CORE_extension_rights.id=CORE_extension_actions.rights AND ";
-  	$q.= "CORE_extension_actions.extensionId='$extension' AND CORE_extension_actions.action='$action'";
+	list($usec,$sec) = split(" ", microtime());
+	$q = "SELECT cgr.value
+FROM
+	CORE_extension ce
+		JOIN CORE_extension_actions cea
+			ON(ce.id=cea.extension)
+		JOIN CORE_extension_rights cer
+			ON(cea.rights=cer.id)
+		JOIN CORE_group_rights cgr
+			ON(cer.id=cgr.rightref)
+		JOIN CORE_groups cg
+			ON(cgr.groupref=cg.id)
+		JOIN CORE_users cu
+			ON(cg.id=cu.groupId)
+WHERE
+	cu.login='$login' AND
+	ce.extensionId='$extension' AND
+	cea.action='$action'";
 	$r = $connect->execute($q);
 	while(list($droit) = $connect->getRow($r)) {
 		if($droit == 'o') {
 			break;
 		}
 	}
-
-	list($usec2, $sec2) = split(" ", microtime());
-	$t = ($sec2-$sec)+(($usec2-$usec)/10);
-	logAutre("Demande de droit checkRight: $login, $extension, $action reponse: $droit temps: $t");
+	list($usec2,$sec2) = split(" ", microtime());
+	$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$actionreponse:$droittemps:$t");
 	return ($droit == 'o');
 }
-
-function checkGroupRight($group, $extension, $action)
-{
-	global $connect;
-
-	$q = "SELECT value FROM CORE_extension_actions, CORE_group_rights ";
-	$q.= "WHERE (CORE_group_rights.groupid='$group' OR CORE_group_rights.groupid='0') ";
-	$q.= "AND CORE_group_rights.extensionId=CORE_extension_actions.extensionId ";
-	$q.= "AND CORE_group_rights.rightId=CORE_extension_actions.rightId ";
-	$q.= "AND CORE_extension_actions.extensionId='$extension' ";
-	$q.= "AND CORE_extension_actions.action='$action' ORDER BY CORE_group_rights.groupid DESC";
-
-	$r = $connect->execute($q);
-	while(list($droit) = $connect->getRow($r)) {
-		if($droit == 'o') {
-			logAutre("Demande de droit checkGroupRight: $login, $extension, $action reponse: o");
-			return 'o';
-		}
-	}
-
-	logAutre("Demande de droit checkGroupRight: $login, $extension, $action reponse: $droit");
-
-	return ($droit == 'o') ? 'o' : 'n';
-}
-
-function checkExtensionRight($group, $extension, $right)
-{
-	global $connect;
-
-	$q = "SELECT value FROM CORE_group_rights a, CORE_extension_rights b WHERE ";
-	$q.= "(a.groupid = $group OR a.groupid='0') AND ";
-	$q.= "a.rightId = b.rightId ";
-	$q.= "AND b.extensionId = '$extension' ";
-	$q.= "AND b.extensionId = a.extensionId ";
-	$q.= "AND b.rightId =$right";
-
-	$r = $connect->execute($q);
-	while(list($droit) = $connect->getRow($r)) {
-		if($droit == 'o') {
-			logAutre("Demande de droit checkExtensionRight: $login, $extension, $action reponse: o");
-			return 'o';
-		}
-	}
-
-	logAutre("Demande de droit checkExtensionRight: $login, $extension, $action reponse: $droit");
-
-	return ($droit == 'o') ? 'o' : 'n';
-}
-
-
-
 
 //@END@
 ?>

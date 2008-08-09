@@ -18,23 +18,25 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 27 April 2007 23:41:46 By Laurent GAY ---
+// --- Last modification: Date 08 August 2008 22:00:50 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
 class DBObj_CORE_groups extends DBObj_Basic
 {
+	var $Title="";
 	var $tblname="groups";
 	var $extname="CORE";
 	var $__table="CORE_groups";
 
 	var $DefaultFields=array(array('id'=>'1', 'groupId'=>'1', 'groupName'=>'Admin', 'weigth'=>'100'));
 	var $NbFieldsCheck=1;
+	var $Heritage="";
+	var $PosChild=-1;
 
-	var $groupId;
 	var $groupName;
 	var $weigth;
-	var $__DBMetaDataField=array('groupId'=>array('description'=>'Groupe', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>999)), 'groupName'=>array('description'=>'Nom du groupe', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'weigth'=>array('description'=>'Poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)));
+	var $__DBMetaDataField=array('groupName'=>array('description'=>'Nom du groupe', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'weigth'=>array('description'=>'Poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)));
 
 	var $__toText='$groupName';
 }

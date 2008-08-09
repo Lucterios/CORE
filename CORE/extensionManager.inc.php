@@ -1,6 +1,24 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 17 July 2008 8:32:52 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 08 August 2008 23:42:17 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -224,7 +242,7 @@ class Extension {
 			if($first) {
 				global $connect;
 				$this->message .= "netoyage de la base pour mise a jour{[newline]}";
-				$q = "DELETE FROM CORE_extension_actions WHERE extensionId='$this->Name'";
+				$q = "DELETE FROM CORE_extension_actions WHERE extension='$DBextension->id'";
 				$connect->execute($q);
 				if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 				$q = "DELETE FROM CORE_menu WHERE extensionId='$this->Name'";
@@ -316,7 +334,6 @@ class Extension {
 				$act = 'modification';
 			}
 			$DBrights->description = $r->description;
-			$DBrights->extensionId = $this->Name;
 			$DBrights->weigth = $r->weigth;
 			if($nb != 0)$DBrights->update();
 			else $DBrights->insert();
@@ -327,7 +344,7 @@ class Extension {
 			else {
 				$this->message .= $act." du droit:".$r->description."{[newline]}";
 				$DBgrouprights = new DBObj_CORE_group_rights;
-				$ret = $DBgrouprights->CheckGroupRight($DBrights->id,$DBrights->weigth,$this->Name,$key);
+				$ret = $DBgrouprights->CheckRight($DBrights->id,$DBrights->weigth);
 				$this->message .= "Groupe-Right :$ret{[newline]}";
 			}
 		}
@@ -405,7 +422,15 @@ class Extension {
 		$success = true;
 		global $dbcnf;
 		require_once"CORE/extension_actions.tbl.php";
+		require_once"CORE/extension_rights.tbl.php";
 		foreach($this->actions as $act)if( file_exists($this->Dir.$act->action.".act.php")) {
+			// recheche du droit a assicier
+			$DBext_rights = new DBObj_CORE_extension_rights;
+			$DBext_rights->extension = $this->ID;
+			$DBext_rights->rightId = $act->rightNumber;
+			$DBext_rights->find();
+			$DBext_rights->fetch();
+			// creation de l'action
 			$DBaction = new DBObj_CORE_extension_actions;
 			$DBaction->extension = $this->ID;
 			$DBaction->action = $act->action;
@@ -417,9 +442,8 @@ class Extension {
 			}
 			$DBaction->extension = $this->ID;
 			$DBaction->action = $act->action;
-			$DBaction->extensionId = $this->Name;
 			$DBaction->description = str_replace("'","`",$act->description);
-			$DBaction->rightId = $act->rightNumber;
+			$DBaction->rights = $DBext_rights->id;
 			if($nb != 0)$DBaction->update();
 			else $DBaction->insert();
 			if( PEAR:: isError($DBaction->_lastError)) {
@@ -430,13 +454,6 @@ class Extension {
 		}
 		else {
 			$this->message .= "EXTENSION:$this->Name:{[newline]}fichier action".$act->action." non present, l'action ne sera pas referencee dans la DB{[newline]}";
-			$success = false;
-		}
-		global $connect;
-		$q = "UPDATE CORE_extension_actions a, CORE_extension_rights b SET a.rights=b.id WHERE a.extension =".$this->ID." AND a.extension = b.extension AND a.rightId = b.rightId";
-		$connect->execute($q);
-		if( trim($connect->errorMsg) != "") {
-			$this->message .= "Rafrichissement des liens actions/rights '$q':".$connect->errorMsg."{[newline]}";
 			$success = false;
 		}
 		return $success;
@@ -558,7 +575,10 @@ class Extension {
 		$nb = $DBextension->find();
 		if($nb != 0) {
 			$DBextension->fetch();
-			$q = "DELETE FROM CORE_extension_actions WHERE extensionId='$this->Name'";
+			$q = "DELETE FROM CORE_group_rights WHERE rightref IN(SELECT id FROM CORE_extension_rights WHERE extension='$DBextension->id')";
+			$connect->execute($q);
+			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			$q = "DELETE FROM CORE_extension_actions WHERE extension='$DBextension->id'";
 			$connect->execute($q);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_menu WHERE extensionId='$this->Name'";
@@ -567,10 +587,7 @@ class Extension {
 			$q = "DELETE FROM CORE_extension_params WHERE extensionId='$this->Name'";
 			$connect->execute($q);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
-			$q = "DELETE FROM CORE_extension_rights WHERE extensionId='$this->Name'";
-			$connect->execute($q);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
-			$q = "DELETE FROM CORE_group_rights WHERE extensionId='$this->Name'";
+			$q = "DELETE FROM CORE_extension_rights WHERE extension='$DBextension->id'";
 			$connect->execute($q);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_printmodel WHERE extensionId='$this->Name'";
