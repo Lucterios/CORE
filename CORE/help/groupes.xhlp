@@ -1,0 +1,7 @@
+Le menu <i>Administration/Gestion des Droits/Groupes</i> vous permet de créer, modifier ou supprimer un groupe de droits.<br>
+Un groupe de droits réuni un ensemble d'autorisation aux actions de l'application.<br><br>
+<center><img src='~CORE$Groupes.jpg' alt='Groupes.jpg' /></center><br>
+Chaque groupe est associé à un poids. Ce poids corresponds à un niveau d'accès par défaut.
+Le poids <i>100</i> vous permets d'accéder à toutes actions , le poids <i>0</i> ne permettra l'utilisation d'aucune action.<br>
+Un groupe, non modifiable existe par défaut : <i>Admin</i> avec un poids de <i>100</i> (accès total).<br><br>
+Il est possible de surcharger les droits par défaut dans un groupe. Voir <a href='~CORE$droits'>Modification des droits</a>.

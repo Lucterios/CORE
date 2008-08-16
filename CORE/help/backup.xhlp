@@ -1,0 +1,10 @@
+<h2>Sauvegarder</h2>
+Depuis le menu <i>Administration/Archivage/Sauvegarder</i>, un explorateur de fichier s'ouvre  pour sélectionner le nom de votre nouvelle sauvegarde.<br><br>
+<center><img src='~CORE$Save.jpg' alt='Save.jpg' /></center><br>
+Une fois valider, l'application vous créera un fichier <i>.bkf</i> contenant l'ensemble des données de la base ainsi que les modules d'extensions associés.
+
+<h2>Restauration</h2>
+De la même façon, le menu <i>Administration/Archivage/Restauration</i> ouvre un explorateur de fichier pour sélectionner le nom de votre sauvegarde à restaurer.<br><br>
+<center><img src='~CORE$Restor.jpg' alt='Restor.jpg' /></center><br>
+Une fois valider, l'application vous extraire du fichier de sauvegarde l'ensemble des données ainsi que les modules d'extensions au moments de la sauvegarde.<br>
+<u>Attention:</u> La restauration écrasera toutes les données actuellement contenu dans la base.

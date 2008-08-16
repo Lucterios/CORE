@@ -18,27 +18,49 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 23 November 2007 23:45:04 By Pierre-Olivier VERSCHOORE ---
+// --- Last modification: Date 14 August 2008 21:25:56 By  ---
 
 //@BEGIN@
-header('content-type: text/css');
-
-$Color_Error='rgb(200, 0, 0)';
-
+ header('content-type: text/css');
+$Color_Error = 'rgb(200, 0, 0)';
 //$Color_BackMenu='rgb(202, 202, 254)';
-$Color_BackMenu='rgb(230, 230, 230)';
-$Color_BackCorp='white';
-$Color_BackHeaderFooter='rgb(45, 45, 255)';
-$Color_Footer='rgb(255, 255, 255)';
-$Color_MenuContent='black';
-$Color_Menutitle=$Color_BackHeaderFooter;
-
-?>
-BODY {
-    background-color: white;
+$Color_BackMenu = 'rgb(230, 230, 230)';
+$Color_BackCorp = 'white';
+$Color_BackHeaderFooter = 'rgb(45, 45, 255)';
+$Color_Footer = 'rgb(255, 255, 255)';
+$Color_MenuContent = 'black';
+$Color_Menutitle = $Color_BackHeaderFooter;
+echo"@media screen {
+h1 {
+    font-family : Helvetica, serif;
+    font-size : 20px;
+    font-weight : bold;
+    text-align : center;
+    vertical-align : middle;
   }
 
 
+h2 {
+    font-size : 16px;
+    font-style : italic;
+    font-weight : bold;
+  }
+
+
+h3 {
+    font-size : 12px;
+    font-style : italic;
+    text-decoration : underline;
+  }
+
+TABLE.main {
+    height: 98%;
+    background-color:$Color_BackMenu;
+  }
+
+}
+
+@media print {
 h1 {
     font-family : Helvetica, serif;
     font-size : 10mm;
@@ -51,16 +73,26 @@ h1 {
 h2 {
     font-size : 8mm;
     font-style : italic;
-    font-weight : lighter;
-    text-align : center;
+    font-weight : bold;
   }
 
 
 h3 {
     font-size : 6mm;
     font-style : italic;
-    text-align : center;
     text-decoration : underline;
+  }
+
+TABLE.main {
+    height: 265mm;
+    background-color:$Color_BackMenu;
+  }
+
+}
+
+@media all {
+BODY {
+    background-color: white;
   }
 
 a {
@@ -72,49 +104,15 @@ a:hover {
 }
 
 a:link {
-  color: <?= $Color_MenuContent; ?>
+  color:$Color_MenuContent;
   }
 
 a:visited {
-  color: <?= $Color_MenuContent; ?>
+  color:$Color_MenuContent;
 }
 
 img {
     border-style: none;
-  }
-
-
-TABLE.main {
-    height: 98%;
-    background-color: <?= $Color_BackMenu; ?>
-  }
-
-/* banniere */
-
-TR.banniere {
-    /*width: 980px;
-    height: 60px;
-    background-color: <?= $Color_BackHeaderFooter ?>
-    */;
-  }
-
-TD.banniere {
-    width: 980px;
-    height: 60px;
-    border-style: solid;
-    border-color: <?= $Color_Footer ?>
-    border-width: 1px;
-    background-color: <?= $Color_BackHeaderFooter ?>
-  }
-
-
-h1.banniere {
-    color: orange;
-  }
-
-h1.banniere2 {
-    color: orange;
-    text-decoration : none;
   }
 
 
@@ -132,7 +130,7 @@ TD.menu {
 TD.corps {
     width: 860px;
     vertical-align: top;
-    background-color: <?= $Color_BackCorp ?>
+    background-color:$Color_BackCorp;
   }
 
 /* pied */
@@ -141,14 +139,14 @@ TR.pied {
     width: 980px;
     height: 15px;
     font-size : 10pt;
-    background-color: <?= $Color_BackHeaderFooter ?>
+    background-color:$Color_BackHeaderFooter;
   }
 
 
 TD.pied {
     width: 980px;
     height: 15px;
-    color: <?= $Color_Footer ?>
+    color:$Color_Footer;
     font-size: 10px;
     text-align: right;
     font-weight: bold;
@@ -158,7 +156,7 @@ TD.pied {
 
 table.menucontent {
     font-size : 11pt;
-    background-color: <?= $Color_BackMenu ?>
+    background-color:$Color_BackMenu;
     width: 90%;
   }
 
@@ -170,7 +168,7 @@ tr.menucontent {
 th.menucontent {
     font-size : 11pt;
     width: 100%;
-    background-color: <?= $Color_BackMenu ?>
+    background-color:$Color_BackMenu;
     text-align: left;
     color: grey;
   }
@@ -178,7 +176,7 @@ th.menucontent {
 a.menuhead {
     font-size : 11pt;
     width: 100%;
-    background-color: <?= $Color_BackMenu ?>
+    background-color:$Color_BackMenu;
     text-align: left;
     color: grey;
   }
@@ -186,9 +184,9 @@ a.menuhead {
 td.menucontent {
     font-size : 11pt;
     width: 100%;
-    background-color: <?= $Color_BackMenu ?>
+    background-color:$Color_BackMenu;
     text-align: left;
-    color: <?= $Color_MenuContent ?>
+    color:$Color_MenuContent;
   }
 
 a.menucontent {
@@ -198,7 +196,7 @@ a.menucontent {
 
 a.menuheader {
     text-decoration: none;
-    color: <?= $Color_MenuContent ?>
+    color:$Color_MenuContent;
   }
 
 /* grid */
@@ -229,7 +227,7 @@ td.grid {
   }
 
 .error {
-    color: <?= $Color_Error ?>
+    color:$Color_Error;
     font-family : Helvetica, serif;
     font-size : 7mm;
     font-weight : bold;
@@ -270,7 +268,7 @@ table.help{
     font-weight : bold;
     text-align : center;
     vertical-align : middle;
-    color: $Color_Menutitle;
+    color:$Color_Menutitle;
 }
 
 .content{
@@ -278,10 +276,9 @@ table.help{
     font-size : 10pt;
     text-align : left;
     vertical-align : top;
-    color: $Color_MenuContent;
+    color:$Color_MenuContent;
 }
+}";
 
-";
-<?
 //@END@
 ?>
