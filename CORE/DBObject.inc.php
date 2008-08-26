@@ -1,6 +1,24 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 06 June 2008 18:22:43 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 19 August 2008 23:55:28 By  ---
 
 //@BEGIN@
 /**
@@ -497,7 +515,11 @@ class DBObj_Basic extends DB_DataObject {
 			throw new LucteriosException( GRAVE,"Selection impossible (".$this->tblname."-$id){[newline]}Veuillez rafraichir votre application.");
 		}
 		$this->checkLockRecord();
-		if($this->Heritage != "")$this->Super->get($this->superId);
+		if($this->Heritage != "") {
+			$class_name = get_class($this->Super);
+			$this->__super = new $class_name( true);
+			$this->__super->get($this->superId);
+		}
 		return $result;
 	}
 	/**
@@ -733,12 +755,12 @@ class DBObj_Basic extends DB_DataObject {
 		if($key == 'Super') {
 			if(($this->Heritage != "") && ($this->__super == null)) {
 				list($file_class_name,$class_name) = $this->getTableAndClass($this->Heritage);
-				if (!class_exists($class_name)) {
-					if (!is_file($file_class_name))
-						throw new Exception("file $file_class_name not found!"); 
+				if(! class_exists($class_name)) {
+					if(! is_file($file_class_name))
+					throw new Exception("file$file_class_namenot found!");
 					require_once($file_class_name);
-					if (!class_exists($class_name))
-						throw new Exception("class $class_name not found!"); 
+					if(! class_exists($class_name))
+					throw new Exception("class$class_namenot found!");
 				}
 				$this->__super = new $class_name( true);
 			}
