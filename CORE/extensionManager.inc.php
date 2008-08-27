@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 08 August 2008 23:42:17 By  ---
+// --- Last modification: Date 27 August 2008 21:59:04 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -96,6 +96,8 @@ class Extension {
 	
 	public $famille = "";
 	
+	public $Appli = "";
+	
 	public function __construct($Name,$Dir) {
 		$this->Name = $Name;
 		$this->Dir = $Dir;
@@ -107,6 +109,7 @@ class Extension {
 			$extend_tables = array();
 			$extention_titre = "";
 			$extention_famille = "";
+			$extention_appli = "";
 			require($this->Dir."setup.inc.php");
 			$this->version_max = $version_max;
 			$this->version_min = $version_min;
@@ -121,6 +124,7 @@ class Extension {
 			$this->menus = $menus;
 			$this->params = $params;
 			$this->extend_tables = $extend_tables;
+			$this->Appli = $extention_appli;
 		}
 	}
 	
