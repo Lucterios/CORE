@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 19 August 2008 23:55:28 By  ---
+// --- Last modification: Date 10 September 2008 23:06:39 By  ---
 
 //@BEGIN@
 /**
@@ -554,16 +554,19 @@ class DBObj_Basic extends DB_DataObject {
 	 *
 	 * @param boolean $useWhere
 	 */
-	public function delete($useWhere = false) {
+	public function delete() {
 		if(!$this->is_super) {
 			$son = $this->getSon();
 			if($son != null) {
-				return $son->delete($useWhere);
+				return $son->delete();
 			}
 		}
-		if($this->Heritage != "")$this->Super->delete($useWhere);
-		$result = DB_DataObject:: delete($useWhere);
-		if(($result === false) || PEAR:: isError($this->_lastError)) {
+		if($this->Heritage != "")$this->Super->delete();
+		//$result = DB_DataObject:: delete($useWhere);
+		$q = "DELETE FROM ".$this->__table." WHERE id=".$this->id;
+		global $connect;
+		$result = $connect->execute($q);
+		if($result == false) {
 			require_once"Lucterios_Error.inc.php";
 			throw new LucteriosException( IMPORTANT,"Suppression impossible{[newline]}Veuillez rafraichir votre application.");
 		}
@@ -601,14 +604,22 @@ class DBObj_Basic extends DB_DataObject {
 				return $son->update();
 			}
 		}
-		$result = DB_DataObject:: update();
-		if( PEAR:: isError($this->_lastError)) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( GRAVE,"UPDATE:".$this->_lastError->getMessage());
+		//$result = DB_DataObject:: update();
+		$q = "UPDATE ".$this->__table." SET ";
+		$fields = $this->table();
+		$fields['superId'] = DB_DATAOBJECT_INT;
+		foreach($fields as $field_name => $field_item)if(! is_null($this->$field_name)) {
+			if(substr($q,-4) != "SET ")$q .= ",";
+			$value = $this->$field_name;
+			$value = str_replace("'","''",$value);
+			$q .= "$field_name='$value' ";
 		}
+		$q .= " WHERE id=".$this->id;
+		global $connect;
+		$result = $connect->execute($q);
 		if($result === false) {
 			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( IMPORTANT,"Modification impossible{[newline]}Veuillez rafraichir votre application.");
+			throw new LucteriosException( IMPORTANT,"Modification impossible{[newline]}Veuillez rafraichir votre application.[$q]");
 		}
 		if($this->Heritage != "")$this->Super->update();
 		return $result;
@@ -623,7 +634,7 @@ class DBObj_Basic extends DB_DataObject {
 		$result = DB_DataObject:: query($string);
 		if( PEAR:: isError($this->_lastError)) {
 			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( GRAVE,"QUERY:".$this->_lastError->getMessage());
+			throw new LucteriosException( GRAVE,"QUERY [$string]:".$this->_lastError->getMessage());
 		}
 		return $result;
 	}
@@ -757,10 +768,10 @@ class DBObj_Basic extends DB_DataObject {
 				list($file_class_name,$class_name) = $this->getTableAndClass($this->Heritage);
 				if(! class_exists($class_name)) {
 					if(! is_file($file_class_name))
-					throw new Exception("file$file_class_namenot found!");
+					throw new Exception("file$file_class_namenotfound!");
 					require_once($file_class_name);
 					if(! class_exists($class_name))
-					throw new Exception("class$class_namenot found!");
+					throw new Exception("class$class_namenotfound!");
 				}
 				$this->__super = new $class_name( true);
 			}

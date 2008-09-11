@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 08 August 2008 22:00:50 By  ---
+// --- Last modification: Date 10 September 2008 20:02:53 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -36,7 +36,8 @@ class DBObj_CORE_groups extends DBObj_Basic
 
 	var $groupName;
 	var $weigth;
-	var $__DBMetaDataField=array('groupName'=>array('description'=>'Nom du groupe', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'weigth'=>array('description'=>'Poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)));
+	var $groupId;
+	var $__DBMetaDataField=array('groupName'=>array('description'=>'Nom du groupe', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'weigth'=>array('description'=>'Poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)), 'groupId'=>array('description'=>'groupId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>999)));
 
 	var $__toText='$groupName';
 }
