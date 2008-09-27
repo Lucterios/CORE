@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 September 2008 23:32:08 By  ---
+// --- Last modification: Date 16 September 2008 7:54:49 By  ---
 
 //@BEGIN@
 /**
@@ -393,8 +393,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	/**
 	* Type de message
 	*
-	* @var int
-eger
+	* @var integer
 	*/var$Type = 1;
 	/**
 	 * Action de redirection
@@ -543,7 +542,7 @@ function convertDate($date,$long = false) {
 			$m = "Juillet";
 			break;
 		case 8:
-			$m = "Aoùt";
+			$m = "Août";
 			break;
 		case 9:
 			$m = "Septembre";
@@ -562,7 +561,7 @@ function convertDate($date,$long = false) {
 			break;
 		}
 		$Y = (int)$year;
-		return "$j$m$Y";
+		return $j." ".$m." ".$Y;
 	}
 	else
 	return "$day/$mouth/$year";
