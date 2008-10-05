@@ -39,18 +39,20 @@ global $connect;
 function checkAndShowPrerquired()
 {
 	echo "<table width='90%'>
-				<tr><td colspan='3'><h3>Contrôle Apache/PHP</h3></td></tr>\n";
+				<tr><td colspan='3'><h3>Contrôle MySQL/PHP</h3></td></tr>\n";
 	
 	$depend_OK=1;
-	$result="<font color='red'>Mauvaise version<br>(apache2)</font>";
-	$apache_vers=apache_get_version();
-	$apache_vers=substr($apache_vers,strpos($apache_vers,'/')+1);
-	$apache_vers=substr($apache_vers,0,strpos($apache_vers,' '));
-	if (version_compare($apache_vers,'2','>='))
+	$result="<font color='red'>Mauvaise version<br>MySQL 5</font>";
+	$mysql_vers=mysqli_get_client_version();
+	$v_max=(int)($mysql_vers/10000);
+	$v_min=(int)(($mysql_vers-$v_max*10000)/100);
+	$v_rel=(int)($mysql_vers-$v_max*10000-$v_min*100);
+	$mysql_vers_txt="$v_max.$v_min.$v_rel";
+	if ($mysql_vers>50000)
 		$result="<font color='blue'>OK</font>";
 	else
 		$depend_OK=0;
-	echo "<tr><td>Apache</td><td>$apache_vers</td><td>$result</td></tr>\n";
+	echo "<tr><td>MySQL</td><td>$mysql_vers_txt</td><td>$result</td></tr>\n";
 	
 	$result="<font color='red'>Mauvaise version<br>(php5)</font>";
 	if (version_compare(phpversion(),'5','>='))

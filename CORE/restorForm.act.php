@@ -1,6 +1,24 @@
 <?php
-// Action file write by SDK tool
-// --- Last modification: Date 16 June 2008 22:40:23 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // Action file write by SDK tool
+// --- Last modification: Date 04 October 2008 12:38:06 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -58,29 +76,26 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 			throw new LucteriosException( IMPORTANT,"Fichier ".$temp_path.$item." non trouvé!");
 		}
 	}
-	$query = file($temp_path."data.sql");
 	global $connect;
 	$connect->begin();
-	
 	try {
 		$query_txt = "";
-		$new_query = array();
-		foreach($query as $q) {
-			if(( substr( trim($q),0,2) != '--') && ( trim($q) != '')) {
-				$q = trim($q);
-				$query_txt .= " ".$q;
-				if( substr($q,-1) == ';') {
-					$new_query[] = $query_txt;
+		$handle = @fopen($temp_path."data.sql", "r");
+		while ($handle && !feof($handle)) {
+        		$line = @fgets($handle);
+			if(( substr( trim($line),0,2) != '--') && ( trim($line) != '')) {
+				$line = trim($line);
+				$query_txt .= " ".$line;
+				if((substr($line,-1) == ';') && ($query_txt != '')) {
+					if(!$connect->execute($query_txt)) {
+						throw new LucteriosException( IMPORTANT,"Erreur dans les données (".$connect->errorMsg.")!");
+					}
 					$query_txt = '';
 				}
 			}
-		}
-		if($query_txt != '')$new_query[] = $query_txt;
-		foreach($new_query as $q) {
-			if(!$connect->execute($q)) {
-				throw new LucteriosException( IMPORTANT,"Erreur dans les données (".$connect->errorMsg.")!");
-			}
-		}
+    		}
+		if ($handle)
+			@fclose($handle);
 		foreach($items as $item) {
 			$r = rm_recursive($item);
 			$r = rename($temp_path.$item,$item);

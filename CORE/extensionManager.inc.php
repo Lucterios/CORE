@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 27 August 2008 21:59:04 By  ---
+// --- Last modification: Date 05 October 2008 18:37:44 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -379,12 +379,14 @@ class Extension {
 				$DBparams->fetch();
 				$act = "modification";
 			}
-			$DBparams->value = $val->defaultvalue;
 			$DBparams->description = $val->description;
 			$DBparams->type = $val->type;
 			$DBparams->param = $val->getExtendToText( false);
 			if($nb != 0)$DBparams->update();
-			else $DBparams->insert();
+			else {
+				$DBparams->value = $val->defaultvalue;
+				$DBparams->insert();
+			}
 			if( PEAR:: isError($DBparams->_lastError)) {
 				$this->message .= "$actduparamètre:".$key." ".$DBparams->_lastError."{[newline]}";
 				$success = false;
