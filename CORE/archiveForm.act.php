@@ -1,6 +1,24 @@
 <?php
-// Action file write by SDK tool
-// --- Last modification: Date 16 June 2008 22:39:47 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // Action file write by SDK tool
+// --- Last modification: Date 09 October 2008 19:24:09 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -64,6 +82,13 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	$tar->addString("data.sql",$q);
 	if( is_file($file_path)) {
 		$lbl->setValue("{[center]}{[bold]}Archivage Terminer.{[/bold]}{[/center]}");
+		$path = getcwd();
+		if (substr($file_path,0,strlen($path))==$path) $path=substr($file_path,strlen($path)+1);
+		$lbl = new Xfer_Comp_LinkLabel("archive");
+		$lbl->setLocation(0,2,2);
+		$lbl->setFileToLoad($path);
+		$lbl->setValue('Telecharger');
+		$xfer_result->addComponent($lbl);
 	}
 	else $lbl->setValue("{[center]}{[bold]}Sauvegarde échouer!!{[/bold]}{[/center]}");
 }

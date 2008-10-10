@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 04 October 2008 12:20:22 By  ---
+// --- Last modification: Date 09 October 2008 19:09:02 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -50,15 +50,15 @@ else {
 	else if (($dir!='.') && is_dir($path.'/'.$dir))
 		$path .= '/'.$dir;
 }
-$path = realpath($path);
+$path = realpath($path).'/';
 $self->m_context['path'] = $path;
 $dir_list = array();
 $file_list = array();
 $handle = opendir($path);
 while( false !== ($file = readdir($handle))) {
-	if( is_dir($path.'/'.$file) && is_readable($path.'/'.$file))
+	if( is_dir($path.$file) && is_readable($path.$file))
 		$dir_list[] = $file;
-	if( is_file($path.'/'.$file) && is_writable($path.'/'.$file) && ( substr($file,-1*( strlen($FileExt)+1)) == '.'.$FileExt))
+	if( is_file($path.$file) && is_writable($path.$file) && ( substr($file,-1*( strlen($FileExt)+1)) == '.'.$FileExt))
 		$file_list[] = $file;
 }
 closedir($handle);
