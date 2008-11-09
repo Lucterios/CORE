@@ -8,17 +8,25 @@ if (isset($_GET['extensions']) && isset($_GET['dbuser']) && isset($_GET['dbpass'
 	$dbuser=$_GET['dbuser'];
 	$dbpass=$_GET['dbpass'];
 	$dbname=$_GET['dbname'];
+	if (isset($_GET['title']))
+		$title=$_GET['title'];
+	else
+		$title="LucteriosTest";
 }
-elseif (count($argv)==5) {
+elseif ((count($argv)==5) || (count($argv)==6)) {
 	$run=true;
 	$extensions=split(';',$argv[1]);
 	$dbuser=$argv[2];
 	$dbpass=$argv[3];
 	$dbname=$argv[4];
+	if (count($argv)==6)
+		$title=$argv[5];
+	else
+		$title="LucteriosTest";
 }
 
 include_once('CORE/UnitTest.inc.php');
-$GlobalTest=new TestItem("LucteriosTest","");
+$GlobalTest=new TestItem($title,"");
 if ($run) {
 	include_once("CORE/extensionManager.inc.php");
 	require_once("CORE/dbcnx.inc.php");
