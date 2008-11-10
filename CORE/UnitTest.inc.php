@@ -1,5 +1,26 @@
-<?
+<?php
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 10 November 2008 12:12:34 By  ---
 
+//@BEGIN@
 function microtime_float()
 {
     list($usec, $sec) = explode(" ", microtime());
@@ -100,12 +121,12 @@ class TestItem {
     			$string_text.="\t\t<error message='Error' type='Error'>".utf8_encode($this->errorObj)."</error>\n";
 		elseif (is_subclass_of($this->errorObj, 'Exception')) {
 			if (get_class($this->errorObj)=='AssertException') {
-				$string_text.="\t\t<failure message='".utf8_encode($this->errorObj->getMessage())."' type='".get_class($this->errorObj)."'>\n";
+				$string_text.="\t\t<failure message='".str_replace("'","`",utf8_encode($this->errorObj->getMessage()))."' type='".get_class($this->errorObj)."'>\n";
 				$string_text.="\t\t\t".utf8_encode($this->errorObj->getTraceAsString())."\n";
 				$string_text.="\t\t</failure>\n";
 			}
 			else {
-				$string_text.="\t\t<error message='".utf8_encode($this->errorObj->getMessage())."' type='".get_class($this->errorObj)."'>\n";
+				$string_text.="\t\t<error message='".str_replace("'","`",utf8_encode($this->errorObj->getMessage()))."' type='".get_class($this->errorObj)."'>\n";
 				$string_text.="\t\t\t".utf8_encode($this->errorObj->getTraceAsString())."\n";
 				$string_text.="\t\t</error>\n";
 			}
@@ -131,5 +152,5 @@ class TestItem {
 		return $string_text;
 	}
 }
-
+//@END@
 ?>

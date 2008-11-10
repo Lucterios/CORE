@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 05 February 2008 23:46:42 By  ---
+// --- Last modification: Date 10 November 2008 12:19:07 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -46,7 +46,7 @@ $right=getParams($Params,"right",-1);
 if ($right>=0) $self->get($right);
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","extension_rights_APAS_editer",$Params);
-$xfer_result->Caption='Liste des droits de groupes';
+$xfer_result->Caption="Liste des droits de groupes";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
 $img->setValue('group.png');
@@ -55,7 +55,7 @@ $xfer_result->addComponent($img);
 
 $comp2= &new Xfer_Comp_LabelForm('Comp2');
 $ext=$self->getField('extension');
-$comp2->setValue("{[center]}{[underline]}{[bold]}Droits {[italc]}".$self->description."{[/italc]} de l'extension {[italc]}".$ext->toText()."{[/italc]}{[/bold]}{[/center]}");
+$comp2->setValue("{[center]}{[underline]}{[bold]}Droits {[italc]}".$self->description."{[/italc]} de l'extension {[italc]}".$ext->toText()."{[/italc]}{[/bold]}{[/underline]}{[/center]}");
 $comp2->setLocation(1, 0);
 $xfer_result->addComponent($comp2);
 
