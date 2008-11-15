@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 01 February 2008 18:13:17 By  ---
+// --- Last modification: Date 13 November 2008 21:19:34 By  ---
 
 //@BEGIN@
 function studyReponse($current_reponse)
@@ -112,11 +112,13 @@ function BoucleReponse($lesRequettes,$internal=false)
 				}
 				else
 				{
+					if (is_file("$EXT_FOLDER/includes.inc.php"))
+						require_once("$EXT_FOLDER/includes.inc.php");
 					// l'action existe, on la lance:
 					$current_reponse=call_user_func($action,$params);
 				}
 			}
-			else 
+			else
 				throw new LucteriosException(CRITIC,'Mauvais droit');
 
 			if (is_string($current_reponse)){

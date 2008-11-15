@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 27 August 2008 21:59:04 By  ---
+// --- Last modification: Date 13 November 2008 18:51:45 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -61,49 +61,49 @@ function deleteDir($dirPath) {
 }
 
 class Extension {
-	
+
 	private $version_max = 0;
-	
+
 	private $version_min = 0;
-	
+
 	private $version_release = 0;
-	
+
 	private $version_build = 0;
-	
+
 	private $description = "";
-	
+
 	private $depencies = array();
-	
+
 	private $rights = array();
-	
+
 	private $actions = array();
-	
+
 	private $menus = array();
-	
+
 	private $params = array();
-	
+
 	public $extend_tables = array();
-	
+
 	public $Name = "";
-	
+
 	public $Dir = "";
-	
+
 	public $ID = 0;
-	
+
 	public $message = "";
-	
+
 	public $titre = "";
-	
+
 	public $famille = "";
-	
+
 	public $Appli = "";
-	
+
 	public function __construct($Name,$Dir) {
 		$this->Name = $Name;
 		$this->Dir = $Dir;
 		$this->read();
 	}
-	
+
 	private function read() {
 		if( is_file($this->Dir."setup.inc.php")) {
 			$extend_tables = array();
@@ -127,7 +127,7 @@ class Extension {
 			$this->Appli = $extention_appli;
 		}
 	}
-	
+
 	private function convertID($text) {
 		$text = str_replace(array("'"," ",'"'),"",$text);
 		$text = str_replace(array("é","è","ê","ë"),"e",$text);
@@ -137,7 +137,7 @@ class Extension {
 		$text = str_replace(array("û","ü"),"u",$text);
 		return $text;
 	}
-	
+
 	public function getDaughterClasses($motherClass) {
 		$res = array();
 		foreach($this->extend_tables as $key => $value) {
@@ -146,7 +146,16 @@ class Extension {
 		}
 		return $res;
 	}
-	
+
+	public function getReferenceTables($tableName) {
+		$res = array();
+		foreach($this->extend_tables as $key => $value) {
+			if( is_array($value) && isset($value[2][$tableName]))
+				$res[$this->Name.'_'.$key] = $value[2][$tableName];
+		}
+		return $res;
+	}
+
 	public function getFolder($ext,$root = "",$isClient = false) {
 		if($isClient) {
 			if($ext == 'SDK')$pathext = $root.$ext."/";
@@ -158,7 +167,7 @@ class Extension {
 		}
 		return $pathext;
 	}
-	
+
 	public function getDBVersion() {
 		global $connect;
 		$q = "SELECT versionMaj, versionMin, versionRev, versionBuild ";
@@ -169,19 +178,19 @@ class Extension {
 		else
 		return "0.0.0.0";
 	}
-	
+
 	public function getPHPVersion() {
 		return $this->version_max.".".$this->version_min.".".$this->version_release.".".$this->version_build;
 	}
-	
+
 	public function compareVersionPHP_DB() {
 		return version_compare($this->getPHPVersion(),$this->getDBVersion());
 	}
-	
+
 	public function getVersions() {
 		return array($this->getDBVersion(),$this->getPHPVersion());
 	}
-	
+
 	public function isVersionsInRange($versMax,$versMin) {
 		$version = $this->getDBVersion();
 		$pos_p = strpos($version,'.');
@@ -191,7 +200,7 @@ class Extension {
 		$check_min = ( version_compare($version,$versMin) >= 0);
 		return ($check_max && $check_min);
 	}
-	
+
 	public function isDepencies($Name,$rootPath = '',$except = array()) {
 		foreach($this->depencies as $dep)if($dep->name == $Name)
 		return true;
@@ -202,7 +211,7 @@ class Extension {
 		}
 		return false;
 	}
-	
+
 	public function getDepencies($rootPath = '',$exclude_txt = '') {
 		$text = "";
 		foreach($this->depencies as $dep) {
@@ -214,7 +223,7 @@ class Extension {
 		}
 		return trim($text);
 	}
-	
+
 	public function getDependants($exclude = array(),$rootPath = '') {
 		$excludes[] = $this->Name;
 		$ext_dep = array();
@@ -230,7 +239,7 @@ class Extension {
 		}
 		return $ext_dep;
 	}
-	
+
 	public function insertion($first) {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -267,7 +276,7 @@ class Extension {
 		$this->ID = $DBextension->id;
 		return $DBextension->id>0? true: false;
 	}
-	
+
 	public function updateTable() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -292,7 +301,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function upgradeDefaultValueTable() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -317,7 +326,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function updateRights() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -354,7 +363,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function updateParams() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -393,7 +402,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function updateMenu() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -417,7 +426,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function checkActions() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -462,7 +471,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function checkReportModel() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -498,7 +507,7 @@ class Extension {
 		}
 		return $success;
 	}
-	
+
 	public function validation() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -516,7 +525,7 @@ class Extension {
 		else $this->message .= "Extension inconnue!{[newline]}";
 		return $DBextension->id>0? true: false;
 	}
-	
+
 	public function postInstall() {
 		if( is_file($this->Dir."postInstall.inc.php")) {
 			require_once$this->Dir."postInstall.inc.php";
@@ -530,7 +539,7 @@ class Extension {
 		}
 		return 0;
 	}
-	
+
 	function callApplicationPostInstallation($ExtensionDescription) {
 		global $rootPath;
 		$message = "";
@@ -543,11 +552,11 @@ class Extension {
 		else $message .= 'Pas de post-installation{[newline]}';
 		return $message;
 	}
-	
+
 	public function installComplete() {
 		$nb = 0;
 		$nb += $this->updateTable();
-		
+
 		try {
 			$nb += $this->insertion( true);
 			$insert = true;
@@ -566,7 +575,7 @@ class Extension {
 		$nb += $this->validation();
 		return "$nb/10";
 	}
-	
+
 	public function delete() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -715,5 +724,15 @@ function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$i
 	return $ret;
 }
 
+function getReferenceTablesList($tableName) {
+	$ret = array();
+	$ext_list = getExtensions($rootPath);
+	foreach($ext_list as $current_name => $current_dir) {
+		$current_obj = new Extension($current_name,$current_dir);
+		$current_ret = $current_obj->getReferenceTables($tableName);
+		$ret = array_merge($ret,$current_ret);
+	}
+	return $ret;
+}
 //@END@
 ?>

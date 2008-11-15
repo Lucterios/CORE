@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 10 November 2008 12:42:34 By  ---
+// --- Last modification: Date 15 November 2008 2:21:40 By  ---
 
 
 //@TABLES@
@@ -32,7 +32,7 @@ function CORE_groups_APAS_AjoutSuppressionGroup(&$test)
 {
 //@CODE_ACTION@
 // ajout group
-$rep=$test->CallAction("CORE","groups_APAS_ajouter",array("groupName"=>"Truc Muche","weigth"=>"38"),"xfer_container_acknowledge");
+$rep=$test->CallAction("CORE","groups_APAS_ajouter",array("groupName"=>"Truc Muche","weigth"=>"38"),"Xfer_Container_Acknowledge");
 
 $rep=$test->CallAction("CORE","groups_APAS_liste",array(),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);

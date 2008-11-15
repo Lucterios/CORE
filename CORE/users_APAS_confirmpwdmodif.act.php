@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 03 September 2007 18:43:19 By Laurent GAY ---
+// --- Last modification: Date 14 November 2008 18:59:14 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -50,32 +50,29 @@ $newpass2=getParams($Params,"newpass2",0);
 $self=new DBObj_CORE_users();
 try {
 $xfer_result=&new Xfer_Container_DialogBox("CORE","users_APAS_confirmpwdmodif",$Params);
-$xfer_result->Caption='Changer mot de passe';
+$xfer_result->Caption="Changer mot de passe";
 //@CODE_ACTION@
 $ses=new DBObj_CORE_sessions;
-$login=$ses->call("CurrentLogin");
+$login=$ses->CurrentLogin();
 
 $self->query("SELECT * FROM CORE_users WHERE login='$login' AND pass=PASSWORD('$oldpass')");
 if ($self->fetch())
 {
   if (($newpass1!= "") && ($newpass1==$newpass2))
   {
-    $self->call("ChangePWD",$newpass1);
-    $xfer_result->setTypeAndText("Mot de passe changé", 1);
-    $xfer_result->addAction(new Xfer_Action("_Ok",'ok.png'));
+    $self->ChangePWD($newpass1);
+    $xfer_result->message("Mot de passe changé", 1);
   }
   else
   {
 // erreur double newpass, reaffichage du formalaire de changement plus message d'erreur
-    $xfer_result->setTypeAndText("Les mots de passe ne sont pas égaux!",4);
-    $xfer_result->addAction(new Xfer_Action("_Ok",'ok.png'));
+    $xfer_result->message("Les mots de passe ne sont pas égaux!",4);
   }
 }
 else
 {
 // erreur de oldpass, reaffichage du formalaire de changement plus message d'erreur
-  $xfer_result->setTypeAndText("Mot de passe actuel érroné.($login)", 4);
-  $xfer_result->addAction(new Xfer_Action("_Ok",'ok.png'));
+  $xfer_result->message("Mot de passe actuel érroné.($login)", 4);
 }
 //@CODE_ACTION@
 }catch(Exception $e) {

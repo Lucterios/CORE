@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 10 September 2008 23:06:39 By  ---
+// --- Last modification: Date 15 November 2008 2:20:14 By  ---
 
 //@BEGIN@
 /**
@@ -195,7 +195,7 @@ class DBObj_Basic extends DB_DataObject {
 	public function staticGet($k,$v = NULL) {
 		return DB_DataObject:: staticGet('DBObj_'.$this->tblname,$k,$v);
 	}
-	
+
 	private $is_super = false;
 	/**
 	 * Constructeur DBObj_Basic
@@ -207,9 +207,9 @@ class DBObj_Basic extends DB_DataObject {
 		$this->sequenceKey('id', true);
 		$this->__super = null;
 	}
-	
+
 	private $__son = null;
-	
+
 	public function getSon() {
 		if(($this->__son == null) && ($this->id>0)) {
 			require_once('CORE/extensionManager.inc.php');
@@ -234,7 +234,7 @@ class DBObj_Basic extends DB_DataObject {
 		}
 		return $this->__son;
 	}
-	
+
 	public function getMotherId($ClassMother) {
 		if( get_class($this) == $ClassMother)
 		return $this->id;
@@ -549,10 +549,85 @@ class DBObj_Basic extends DB_DataObject {
 		}
 		return $res;
 	}
+
+	/**
+	 * test si l'on peut supprimer cette enregistrement (cf deleteCascade)
+	 * @return int (0: Oui ; 1: reference existe ; 2: blocage via methode canDelete()
+	 */
+	public function canBeDelete() {
+		try {
+			if (!$this->canDelete())
+				return 2;
+		} catch(Exception $e){}
+
+		global $connect;
+		$res=0;
+		require_once('CORE/extensionManager.inc.php');
+		$class_list = getReferenceTablesList($this->__table);
+		foreach($class_list as $table=>$fieldname) {
+			$search=true;
+			foreach($this->__DBMetaDataField as $values)
+				if ($values['type']==9) {
+					$params=$values['params'];
+					if (($params['TableName']==$table) && ($params['RefField']==$fieldname))
+						$search=false;
+				}
+			if ($search) {
+				$q="SELECT id FROM $table WHERE $fieldname=$this->id";
+				$row_id=$connect->execute($q,true);
+				if ($connect->getRow($row_id)!=false)
+					$res=1;
+			}
+		}
+		if(($res==0) && !$this->is_super) {
+			$son = $this->getSon();
+			if($son != null)
+				$res=$son->canBeDelete();
+		}
+		if (($res==0) && ($this->Heritage != ""))
+			$res=$this->Super->canBeDelete();
+		return $res;
+	}
+
+	/**
+	 * supprime l'enregistrement et ses enfants en cascade
+	 *
+	 */
+	public function deleteCascade() {
+		require_once"Lucterios_Error.inc.php";
+		$res=$this->canBeDelete();
+		if ($res==1)
+			throw new LucteriosException(GRAVE,"Suppression impossible: Des references existent");
+		if ($res==2)
+			throw new LucteriosException(GRAVE,"Suppression impossible: Enregistrement protege");
+		global $connect;
+		$connect->begin();
+		try {
+			if(!$this->is_super) {
+				$son = $this->getSon();
+				if($son != null) {
+					return $son->deleteCascade();
+				}
+			}
+			foreach($this->__DBMetaDataField as $fieldname=>$values) {
+				if ($values['type']==9) {
+					$children=$this->getField($fieldname);
+					while ($children->fetch())
+						$children->deleteCascade();
+				}
+			}
+			if($this->Heritage != "")$this->Super->deleteCascade();
+			$this->delete();
+			$connect->commit();
+		} catch(Exception $e) {
+			$connect->rollback();
+			throw $e;
+		}
+	}
+
 	/**
 	 * supprime l'enregistrement
 	 *
-	 * @param boolean $useWhere
 	 */
 	public function delete() {
 		if(!$this->is_super) {
@@ -638,6 +713,95 @@ class DBObj_Basic extends DB_DataObject {
 		}
 		return $result;
 	}
+
+	/**
+	 * Recherche le super objet d'une classe donnee.
+	 *
+	 * @param string $className
+	 */
+	public function getSuperObject($tableName) {
+		$obj=$this;
+		while (($obj!=null) && ($obj->__table!=$tableName))
+			$obj=$obj->Super;
+		return $obj;
+	}
+
+	/**
+	 * Remplace les references de l'objet externe.
+	 *
+	 * @param DBObj_Basic $DBObject
+	 */
+	private function __replaceReference($DBObject) {
+		global $connect;
+		require_once('CORE/extensionManager.inc.php');
+		$class_list = getReferenceTablesList($this->__table);
+		foreach($class_list as $table=>$fieldname) {
+			$q="UPDATE $table SET $fieldname=$this->id WHERE $fieldname=$DBObject->id";
+			$connect->execute($q,true);
+		}
+		if($this->Heritage != "")
+			$this->Super->__replaceReference($DBObject->Super);
+	}
+
+	/**
+	 * Fusionne un autre objet de même nature (fille ou mere)
+	 * Les reference seront remplacé et l'ancien objet supprimer.
+	 *
+	 * @param DBObj_Basic $DBObject
+	 */
+	public function merge($DBObject) {
+		require_once"Lucterios_Error.inc.php";
+		if (!is_object($DBObject))
+			throw new LucteriosException(GRAVE,"Fusion impossible: Objet non un DBObject");
+		global $connect;
+		$connect->begin();
+		try {
+			if ($this->__table==$DBObject->__table) {
+				$this_son = null;
+				if(!$this->is_super)
+					$this_son = $this->getSon();
+				$DBObject_son = null;
+				if(!$DBObject->is_super)
+					$DBObject_son = $DBObject->getSon();
+
+				if (($this_son == null) && ($DBObject_son == null)) {
+					if ($this->id==$DBObject->id)
+						throw new LucteriosException(GRAVE,"Fusion impossible: Objet identique");
+					$this->__replaceReference($DBObject);
+					$DBObject->delete();
+				}
+				else if ($this_son == null)
+					$this->merge($DBObject_son);
+				else if ($DBObject_son == null)
+					$this_son->merge($DBObject);
+				else
+					$this_son->merge($DBObject_son);
+			}
+			else {
+				$sup_obj=$DBObject->getSuperObject($this->__table);
+				if ($sup_obj!=null) {
+					$this->__replaceReference($sup_obj);
+					$q="UPDATE $DBObject->__table SET superId=$this->id WHERE id=$DBObject->id";
+					$connect->execute($q,true);
+					$sup_obj->delete();
+				}
+				else {
+					$sup_obj=$this->getSuperObject($DBObject->__table);
+					if ($sup_obj!=null) {
+						$sup_obj->__replaceReference($DBObject);
+						$DBObject->delete();
+					}
+					else
+						throw new LucteriosException(GRAVE,"Fusion impossible: Objet incompatible ".get_class($this).' !! '.get_class($DBObject));
+				}
+			}
+			$connect->commit();
+		} catch(Exception $e) {
+			$connect->rollback();
+			throw $e;
+		}
+	}
+
 	/**
 	 * retourne le nom de la classe DBObject correspondant
 	 *
@@ -952,6 +1116,5 @@ class DBObj_Basic extends DB_DataObject {
 		}
 	}
 }
-
 //@END@
 ?>

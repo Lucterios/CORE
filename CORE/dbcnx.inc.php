@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 29 October 2007 20:58:59 By Laurent GAY ---
+// --- Last modification: Date 13 November 2008 21:03:12 By  ---
 
 //@BEGIN@
 //
@@ -93,7 +93,7 @@ class DBCNX {
 		return true;
 	}
 
-	function execute($query) {
+	function execute($query,$throw=false) {
 		$this->printDebug("DBCNX::execute : $query\n");
 
 		$this->errorMsg = "";
@@ -103,6 +103,7 @@ class DBCNX {
 			$this->printDebug("DBCNX::execute : non connecté à une base de données\n");
 			$this->errorMsg = "non connecté à une base de données";
 			$this->errorCode = "NOTCONNECTED";
+			if ($throw) $this->throwError();
 			return false;
 		}
 
@@ -111,6 +112,7 @@ class DBCNX {
 			$this->printDebug("DBCNX::execute : apres execution de la requette: ".$r->getMessage()."\n");
 			$this->errorMsg = $r->getMessage();
 			$this->errorCode = $r->getCode();
+			if ($throw) $this->throwError();
 			return false;
 		}
 		else {
@@ -125,6 +127,12 @@ class DBCNX {
 		}
 	}
 
+	function throwError() {
+		if ($this->errorMsg!='') {
+			require_once("CORE/Lucterios_Error.inc.php");
+			throw new LucteriosException(GRAVE,$this->errorMsg);
+		}
+	}
 
 	function begin() {
 		if (!$this->execute("BEGIN"))
@@ -180,9 +188,5 @@ class DBCNX {
 $connect = new DBCNX();
 $connect->connect($dbcnf);
 //if(!$connect->connected) print $connect->errorMsg;
-
-
-
-
 //@END@
 ?>

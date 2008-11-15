@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 10 November 2008 12:12:34 By  ---
+// --- Last modification: Date 14 November 2008 23:13:30 By  ---
 
 //@BEGIN@
 function microtime_float()
@@ -50,29 +50,38 @@ class TestItem {
 		$this->errorObj=null;
 	}
 
-	function CallAction($extension,$action,$params,$class_name)
+	function CallAction($extension,$action,$params,$class_name='')
 	{
 		require_once("CORE/Lucterios_Error.inc.php");
-		$xfer_result=null;
-		if (strtoupper($extension)=="CORE")
-			$EXT_FOLDER="CORE";
-		else
-			$EXT_FOLDER="extensions/$extension";
-		$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
-		if (!is_dir($EXT_FOLDER))
-			throw new LucteriosException(CRITIC,"Extension '$extension' inconnue !");
-		else if (!is_file($ACTION_FILE_NAME))
-			throw new LucteriosException(CRITIC,"Action '$action' inconnue !");
-		else
-		{
-			require_once $ACTION_FILE_NAME;
-			if (!function_exists($action))
-				throw new LucteriosException(CRITIC,"Function '$action' inconnue !");
+		try {
+			$xfer_result=null;
+			if (strtoupper($extension)=="CORE")
+				$EXT_FOLDER="CORE";
 			else
-				$xfer_result=call_user_func($action,$params);
+				$EXT_FOLDER="extensions/$extension";
+			$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
+			if (!is_dir($EXT_FOLDER))
+				throw new LucteriosException(CRITIC,"Extension '$extension' inconnue !");
+			else if (!is_file($ACTION_FILE_NAME))
+				throw new LucteriosException(CRITIC,"Action '$action' inconnue !");
+			else {
+				require_once $ACTION_FILE_NAME;
+				if (!function_exists($action))
+					throw new LucteriosException(CRITIC,"Function '$action' inconnue !");
+				else
+					$xfer_result=call_user_func($action,$params);
+			}
+			if ($class_name!='') {
+				$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
+				if (substr($class_name,0,4)!='Xfer')
+					$this->assertEquals($class_name,null,"Exception attendue");
+			}
+			return $xfer_result;
+		} catch (Exception $e) {
+			if ($class_name==get_class($e))
+				return $e;
+			throw $e;
 		}
-		$this->assertClass($class_name,$xfer_result,"Mauvaise classe retournée");
-		return $xfer_result;
 	}
     	function assertClass($expected, $actual, $message = '')
 	{

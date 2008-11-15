@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // setup file write by SDK tool
-// --- Last modification: Date 10 November 2008 12:42:34 By  ---
+// --- Last modification: Date 15 November 2008 2:21:40 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.";
@@ -28,8 +28,8 @@ $extention_titre="Noyau Lucterios";
 $extension_libre=true;
 
 $version_max=0;
-$version_min=15;
-$version_release=102;
+$version_min=16;
+$version_release=1;
 $version_build=52;
 
 $depencies=array();
@@ -122,18 +122,18 @@ $actions[48] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiv
 $params=array();
 
 $extend_tables=array();
-$extend_tables["access"] = array("CORE.access","");
-$extend_tables["etiquettes"] = array("CORE.etiquettes","");
-$extend_tables["extension"] = array("CORE.extension","");
-$extend_tables["extension_actions"] = array("CORE.extension_actions","");
-$extend_tables["extension_params"] = array("CORE.extension_params","");
-$extend_tables["extension_rights"] = array("CORE.extension_rights","");
-$extend_tables["finalreport"] = array("CORE.finalreport","");
-$extend_tables["group_rights"] = array("CORE.group_rights","");
-$extend_tables["groups"] = array("CORE.groups","");
-$extend_tables["menu"] = array("CORE.menu","");
-$extend_tables["printmodel"] = array("CORE.printmodel","");
-$extend_tables["sessions"] = array("CORE.sessions","");
-$extend_tables["users"] = array("CORE.users","");
+$extend_tables["access"] = array("CORE.access","",array());
+$extend_tables["etiquettes"] = array("CORE.etiquettes","",array());
+$extend_tables["extension"] = array("CORE.extension","",array());
+$extend_tables["extension_actions"] = array("CORE.extension_actions","",array("CORE_extension"=>"extension","CORE_extension_rights"=>"rights",));
+$extend_tables["extension_params"] = array("CORE.extension_params","",array());
+$extend_tables["extension_rights"] = array("CORE.extension_rights","",array("CORE_extension"=>"extension",));
+$extend_tables["finalreport"] = array("CORE.finalreport","",array());
+$extend_tables["group_rights"] = array("CORE.group_rights","",array("CORE_extension_rights"=>"rightref","CORE_groups"=>"groupref",));
+$extend_tables["groups"] = array("CORE.groups","",array());
+$extend_tables["menu"] = array("CORE.menu","",array());
+$extend_tables["printmodel"] = array("CORE.printmodel","",array());
+$extend_tables["sessions"] = array("CORE.sessions","",array());
+$extend_tables["users"] = array("CORE.users","",array("CORE_groups"=>"groupId",));
 
 ?>

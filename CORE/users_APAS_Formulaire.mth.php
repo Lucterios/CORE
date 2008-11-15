@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 February 2008 23:28:38 By  ---
+// --- Last modification: Date 14 November 2008 18:03:28 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -43,7 +43,7 @@ if (isset($xfer_result->WithActif))
 else
   $xfer_result->setDBObject($self,array("login","realName","groupId"),false,1,1);
 
-$lab= &new Xfer_Comp_LabelForm('lab');
+$lab= &new Xfer_Comp_LabelForm('lab1');
 $lab->setValue('{[bold]}mot de passe{[/bold]}');
 $lab->setLocation(1, 4, 1, 1);
 $xfer_result->addComponent($lab);
@@ -51,7 +51,7 @@ $comp1= &new Xfer_Comp_Passwd('newpass1');
 $comp1->setLocation(2, 4, 1, 1);
 $xfer_result->addComponent($comp1);
 
-$lab= &new Xfer_Comp_LabelForm('lab');
+$lab= &new Xfer_Comp_LabelForm('lab2');
 $lab->setValue('{[bold]}re-mot de passe{[/bold]}');
 $lab->setLocation(1, 5, 1, 1);
 $xfer_result->addComponent($lab);

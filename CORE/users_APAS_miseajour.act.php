@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 03 September 2007 18:45:53 By Laurent GAY ---
+// --- Last modification: Date 14 November 2008 18:23:19 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -54,34 +54,23 @@ global $connect;
 $connect->begin();
 try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_miseajour",$Params);
-$xfer_result->Caption='modifier un utilisateur';
+$xfer_result->Caption="modifier un utilisateur";
 //@CODE_ACTION@
-if (($newpass1!= "") && ($newpass1==$newpass2))
-{
-  if ($self->call("ModifierUser",$Params))
-  {
-  $self->actif='o';
-  if ($user_actif>0)
-    $self->update();
-  else
-    $self->insert();
-  $self->call("ChangePWD",$newpass1);
-  }
-  else
-  {
-   require_once "CORE/xfer_dialogBox.inc.php";
-   $xfer_result=new Xfer_Container_DialogBox("CORE","users_APAS_miseajour");
-   $xfer_result->setTypeAndText("Ce login exists déjà!",4);
-   $xfer_result->addAction(new Xfer_Action("OK","ok.png"));
-  }
+if ((($newpass1!= "") || ($self->id>0)) && ($newpass1==$newpass2)) {
+	if ($self->ModifierUser($Params)) {
+  		$self->actif='o';
+		if ($user_actif>0)
+    			$self->update();
+  		else
+    			$self->insert();
+		if ($newpass1!= "")
+  			$self->ChangePWD($newpass1);
+	}
+  	else
+		$xfer_result->message("Ce login exists déjà!",4);
 }
 else
-{
-   require_once "CORE/xfer_dialogBox.inc.php";
-   $xfer_result=new Xfer_Container_DialogBox("CORE","users_APAS_miseajour");
-   $xfer_result->setTypeAndText("Les mots de passe ne sont pas égaux!",4);
-   $xfer_result->addAction(new Xfer_Action("OK","ok.png"));
-}
+   $xfer_result->message("Les mots de passe ne sont pas égaux!",4);
 //@CODE_ACTION@
 	$connect->commit();
 }catch(Exception $e) {
