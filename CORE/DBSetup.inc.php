@@ -1,6 +1,24 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 17 June 2008 23:20:29 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 18 November 2008 18:21:07 By  ---
 
 //@BEGIN@
 /**
@@ -21,9 +39,9 @@
 * @author Pierre-Oliver Vershoore/Laurent Gay
 */
 class DBObj_Setup {
-	
+
 	private $DBObject;
-	
+
 	private $Dbh;
 	/**
 	 * ID_KEY_TYPE
@@ -68,6 +86,7 @@ class DBObj_Setup {
 			if( array_key_exists('id',$field_values))$field_id = (int)$field_values['id'];
 			$this->refreshDefaultValue($field_values,$field_id,$refresh_data);
 		}
+		$this->ReaffectAutoinc();
 		return $this->Return;
 	}
 	/**
@@ -84,7 +103,7 @@ class DBObj_Setup {
 		$DBObj = new $DBObjClass;
 		$nb_find = 0;
 		if($fieldId != -1) {
-			
+
 			try {
 				$nb_find = $DBObj->get($fieldId);
 			}
@@ -150,6 +169,7 @@ class DBObj_Setup {
 		}
 		return $this->Return;
 	}
+
 	/**
 	* GetValueFromStr
 	* @access private
@@ -204,6 +224,19 @@ class DBObj_Setup {
 			else $this->Return .= "Controle de la table '".$this->DBObject->__table."'.{[newline]}";
 		}
 		return true;
+	}
+
+	/**
+	* ReaffectAutoinc
+	* @access private
+	*/
+	private function ReaffectAutoinc() {
+		$q = "ALTER TABLE ".$this->DBObject->__table." AUTO_INCREMENT =100";
+		$rep = $this->Dbh->query($q);
+		$this->Return .= "Refresh AutoInc";
+		if( DB:: isError($rep))
+			$this->Return .= "{".$rep->getMessage()."}";
+		$this->Return .= "{[newline]}";
 	}
 	/**
 	* getCurrentFieldDescription
@@ -489,7 +522,8 @@ class DBObj_Setup {
 		if($old_field == null)
 		return false;
 		if(!$this->CheckFields($old_field))
-		return false;
+			return false;
+		$this->ReaffectAutoinc();
 		return $this->CheckIndexes();
 	}
 	/**
@@ -556,6 +590,5 @@ class DBObj_Setup {
 		return $q;
 	}
 }
-
 //@END@
 ?>

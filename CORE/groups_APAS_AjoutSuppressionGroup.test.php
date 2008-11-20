@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 15 November 2008 2:21:40 By  ---
+// --- Last modification: Date 18 November 2008 18:32:33 By  ---
 
 
 //@TABLES@
@@ -38,10 +38,10 @@ $rep=$test->CallAction("CORE","groups_APAS_liste",array(),"Xfer_Container_Custom
 $comp=$rep->getComponents(2);
 $test->assertEquals(1,count($comp->m_records));
 $key=array_keys($comp->m_records);
-$test->assertEquals(2,$key[0],"Group 'Truc Muche'");
+$test->assertEquals(100,$key[0],"Group 'Truc Muche'");
 //$test->assertEquals("Truc Muche",$comp->m_records[$keys[0]]['groupName']);
 
-$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"6"),"Xfer_Container_Custom");
+$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"105"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
 $test->assertEquals(3,count($comp->m_records));
 $keys=array_keys($comp->m_records);
@@ -52,7 +52,7 @@ $test->assertEquals("Oui",$comp->m_records[$keys[0]]['value'],"Admin");
 $test->assertEquals("Oui",$comp->m_records[$keys[1]]['value'],"Truc Muche");
 $test->assertEquals("Non",$comp->m_records[$keys[2]]['value'],"tous");
 
-$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"2"),"Xfer_Container_Custom");
+$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"101"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
 $test->assertEquals(3,count($comp->m_records));
 $keys=array_keys($comp->m_records);
@@ -63,9 +63,9 @@ $test->assertEquals("Oui",$comp->m_records[$keys[0]]['value'],"Admin");
 $test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"Truc Muche");
 $test->assertEquals("Non",$comp->m_records[$keys[2]]['value'],"tous");
 
-$rep=$test->CallAction("CORE","groups_APAS_supprimer",array("group"=>2,"CONFIRME"=>"YES"),"Xfer_Container_Acknowledge");
+$rep=$test->CallAction("CORE","groups_APAS_supprimer",array("group"=>100,"CONFIRME"=>"YES"),"Xfer_Container_Acknowledge");
 
-$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"6"),"Xfer_Container_Custom");
+$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"105"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
 $test->assertEquals(2,count($comp->m_records));
 $keys=array_keys($comp->m_records);

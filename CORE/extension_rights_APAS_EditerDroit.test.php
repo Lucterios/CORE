@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 10 November 2008 12:16:15 By  ---
+// --- Last modification: Date 18 November 2008 18:25:35 By  ---
 
 
 //@TABLES@
@@ -31,7 +31,7 @@ require_once('CORE/extension_rights.tbl.php');
 function CORE_extension_rights_APAS_EditerDroit(&$test)
 {
 //@CODE_ACTION@
-$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"6"),"Xfer_Container_Custom");
+$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"105"),"Xfer_Container_Custom");
 $test->assertEquals(1,COUNT($rep->m_actions));
 $test->assertEquals(new Xfer_Action("Fermer","ok.png"),$rep->m_actions[0]);
 $test->assertEquals(3,$rep->getComponentCount());

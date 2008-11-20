@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 10 November 2008 12:30:26 By  ---
+// --- Last modification: Date 18 November 2008 18:27:14 By  ---
 
 
 //@TABLES@
@@ -31,17 +31,17 @@ require_once('CORE/group_rights.tbl.php');
 function CORE_group_rights_APAS_ModifierTousDroit(&$test)
 {
 //@CODE_ACTION@
-$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"11","groupright"=>"0"),"Xfer_Container_Acknowledge");
+$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"110","groupright"=>"0"),"Xfer_Container_Acknowledge");
 
-$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"11"),"Xfer_Container_Custom");
+$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"110"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
 $test->assertEquals(2,count($comp->m_records));
 $keys=array_keys($comp->m_records);
 $test->assertEquals("Oui",$comp->m_records[$keys[0]]['value'],"Admin");
 $test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"tous");
 
-$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"11","groupright"=>"11"),"Xfer_Container_Acknowledge");
-$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"11"),"Xfer_Container_Custom");
+$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"110","groupright"=>"110"),"Xfer_Container_Acknowledge");
+$rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"110"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
 $test->assertEquals(2,count($comp->m_records));
 $keys=array_keys($comp->m_records);

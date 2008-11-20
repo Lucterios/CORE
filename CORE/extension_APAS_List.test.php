@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 14 November 2008 17:38:27 By  ---
+// --- Last modification: Date 18 November 2008 18:23:58 By  ---
 
 
 //@TABLES@
@@ -58,10 +58,10 @@ $test->assertEquals('Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild
 $test->assertEquals("description",$headers[2]);
 $test->assertEquals("validite",$headers[3]);
 
-$test->assertEquals("Noyau Lucterios",$comp->m_records["1"]["titre"]);
-$test->assertEquals("0.16",substr($comp->m_records["1"]['Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild'],0,4));
-$test->assertEquals("Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.",$comp->m_records["1"]["description"]);
-$test->assertEquals("Oui",$comp->m_records["1"]["validite"]);
+$test->assertEquals("Noyau Lucterios",$comp->m_records["100"]["titre"]);
+$test->assertEquals("0.16",substr($comp->m_records["100"]['Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild'],0,4));
+$test->assertEquals("Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.",$comp->m_records["100"]["description"]);
+$test->assertEquals("Oui",$comp->m_records["100"]["validite"]);
 //@CODE_ACTION@
 }
 
