@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 November 2008 18:21:07 By  ---
+// --- Last modification: Date 21 November 2008 14:33:57 By  ---
 
 //@BEGIN@
 /**
@@ -83,7 +83,7 @@ class DBObj_Setup {
 			$refresh_data = false;
 			if( array_key_exists('@refresh@',$field_values))$refresh_data = $field_values['@refresh@'];
 			$field_id = -1;
-			if( array_key_exists('id',$field_values))$field_id = (int)$field_values['id'];
+			if( array_key_exists('id',$field_values) && ($field_values['id']!=''))$field_id = (int)$field_values['id'];
 			$this->refreshDefaultValue($field_values,$field_id,$refresh_data);
 		}
 		$this->ReaffectAutoinc();
