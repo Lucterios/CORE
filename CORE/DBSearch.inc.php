@@ -1,6 +1,24 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 25 May 2008 12:31:35 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 23 November 2008 15:05:30 By  ---
 
 //@BEGIN@
 /**
@@ -21,7 +39,7 @@
 * @author Pierre-Oliver Vershoore/Laurent Gay
 */
 class DB_Search {
-	
+
 	private $DBObject;
 	/**
 	 * Constructeur DB_Search
@@ -84,11 +102,14 @@ class DB_Search {
 			case 7:
 				//long text
 				// "ignorer","contiens"
-				if(( trim($value1) != "") && ($select_id == 1))$search_query = $tbref.".".$FieldName." like '%".$value1."%'";
+				if(( trim($value1) != "") && ($select_id == 1))
+					$search_query = "$tbref.$FieldName like '%$value1%'";
 				break;
 			case 3:
 				//bool
-				// " ignorer"," = "if($select_id== 1)$search_query="$tbref.$FieldName = $value1";
+				// " ignorer"," = "
+				if($select_id== 1)
+					$search_query="$tbref.$FieldName = $value1";
 				break;
 			case 4:
 				//Date
@@ -120,14 +141,16 @@ class DB_Search {
 					$param_fld = $field_item['params'];
 					$TableName = $param_fld[" TableName"];
 					$val = new DB_Search($this->DBObject->getField($FieldName));
-					if($subname == "")$new_sub_field = $FieldName;
-					else $new_sub_field = $subname. SEP_SEARCH.$FieldName;
+					if ($subname == "")
+						$new_sub_field = $FieldName;
+					else
+						$new_sub_field = $subname.SEP_SEARCH.$FieldName;
 					$search = $val->SearchByField($Params,$field_name,$TableName,$new_sub_field);
 					if($search[1] != "") {
 						$search_tbl[] = $TableName;
 						$search_tbl = array_merge($search_tbl,$search[0]);
 						$search_query = $search[1];
-						$search_query .= "AND$TableName. id =$tbref.$FieldName";
+						$search_query .= "AND $TableName.id =$tbref.$FieldName";
 					}
 				}
 				else if( trim($value1) != "") {
@@ -136,15 +159,18 @@ class DB_Search {
 					case 1:
 						$or_item = "";
 						foreach($list as $item) {
-							if($or_item != "")$or_item .= " OR ";
+							if($or_item != "")
+								$or_item .= " OR ";
 							$or_item .= "($tbref.$FieldName=$item)";
 						}
-						if($or_item != "")$search_query = "(".$or_item.")";
+						if($or_item != "")
+							$search_query = "($or_item)";
 						break;
 					case 2:
 						$search_query = "";
 						foreach($list as $item) {
-							if($search_query != "")$search_query .= " AND ";
+							if($search_query != "")
+								$search_query .= " AND ";
 							$search_query .= "$tbref.$FieldName=$item";
 						}
 						break;
@@ -152,15 +178,21 @@ class DB_Search {
 				}
 				break;
 			case 9:
-				// child$param_fld=$field_item['params'];$TableName=$param_fld[" TableName"];$RefField=$param_fld[" RefField"];$val= new DB_Search($this->DBObject->getField($FieldName));
-				if($subname == "")$new_sub_field = $FieldName;
-				else $new_sub_field = $subname. SEP_SEARCH.$FieldName;
+				// child
+				$param_fld=$field_item['params'];
+				$TableName=$param_fld["TableName"];
+				$RefField=$param_fld["RefField"];
+				$val= new DB_Search($this->DBObject->getField($FieldName));
+				if($subname == "")
+					$new_sub_field = $FieldName;
+				else
+					$new_sub_field = $subname.SEP_SEARCH.$FieldName;
 				$search = $val->SearchByField($Params,$field_name,$TableName,$new_sub_field);
 				if($search[1] != "") {
 					$search_tbl[] = $TableName;
 					$search_tbl = array_merge($search_tbl,$search[0]);
 					$search_query = $search[1];
-					$search_query .= " AND ".$TableName.$RefField." = ".$tbref.". id";
+					$search_query .= " AND $TableName.$RefField = $tbref.id";
 				}
 				break;
 			}
@@ -171,6 +203,8 @@ class DB_Search {
 				list($super_search_tbl,$super_search_query) = $super_setup->SearchByField($Params,$field_name,'',$subname);
 				if($super_search_query != '') {
 					$search_tbl = $super_search_tbl;
+					if (!in_array($this->DBObject->__table,$search_tbl))
+						$search_tbl[]=$this->DBObject->__table;
 					$search_query = $super_search_query." AND ".$this->DBObject->__table.".superId=".$this->DBObject->Super->__table.".id";
 				}
 			}
@@ -188,14 +222,16 @@ class DB_Search {
 		$search_tbl = array($this->DBObject->__table);
 		$search_query = "";
 		$FieldNames = $this->DBObject->getFieldEditable();
-		foreach($Params as $key => $val)if(( substr($key,-7) == "_select") && ($Params[$key] != "0")) {
-			list($tbls,$q) = $this->SearchByField($Params, substr($key,0,-7));
-			if($q != "") {
-				$search_tbl = array_merge($search_tbl,$tbls);
-				if($search_query != "")$search_query .= " AND ";
-				$search_query .= $q;
+		foreach($Params as $key => $val)
+			if(( substr($key,-7) == "_select") && ($Params[$key] != "0")) {
+				list($tbls,$q) = $this->SearchByField($Params, substr($key,0,-7));
+				if($q != "") {
+					$search_tbl = array_merge($search_tbl,$tbls);
+					if($search_query != "")
+						$search_query .= " AND ";
+					$search_query .= $q;
+				}
 			}
-		}
 		$order_by = "";
 		if($OrderBy != '') {
 			list($sub_field_name,$field_name) = $this->getSubField($OrderBy);
@@ -203,11 +239,11 @@ class DB_Search {
 				$field_item = $this->DBObject->__DBMetaDataField[$field_name];
 				if($field_item['type'] == 10) {
 					$param_fld = $field_item['params'];
-					$TableName = $param_fld[" TableName"];
+					$TableName = $param_fld["TableName"];
 					$order_by = "$TableName.$sub_field_name";
 					if( count( array_keys($search_tbl,$TableName)) == 0) {
 						$search_tbl[] = $TableName;
-						$search_query .= " AND ".$field_name."=".$TableName.".id";
+						$search_query .= " AND $field_name=$TableName.id";
 					}
 				}
 			}
@@ -221,12 +257,13 @@ class DB_Search {
 			$query = " SELECT DISTINCT ".$this->DBObject->__table.".* FROM ".$table_list;
 			$query = substr($query,0,-1);
 			$query .= " WHERE ".$search_query;
-			if($order_by != '')$query .= " ORDER BY ".$order_by; logAutre("Recherche:$query");
+			if($order_by != '')
+				$query.=" ORDER BY ".$order_by;
+			logAutre("Recherche:$query");
 		}
 		else logAutre("Pas de recherche:$search_query-$table_list");
 		return $query;
 	}
 }
-
 //@END@
 ?>

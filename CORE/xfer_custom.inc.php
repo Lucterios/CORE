@@ -1,6 +1,24 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 18 June 2008 22:59:27 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 23 November 2008 13:19:03 By  ---
 
 //@BEGIN@
 /**
@@ -61,9 +79,11 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 */
 	function setDBObject($DBObjs,$FieldNames = null,$ReadOnly = false,$posY = 0,$posX = 0,$colspan = 1) {
 		$field_desc = $DBObjs->getDBMetaDataField();
-		if( is_int($FieldNames))$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
-		else if($FieldNames == null)$FieldNames = $DBObjs->getFieldEditable($RefTableName);
-		elseif (! is_array($FieldNames)) {
+		if(is_int($FieldNames))
+			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
+		else if($FieldNames == null)
+			$FieldNames = $DBObjs->getFieldEditable($RefTableName);
+		elseif (!is_array($FieldNames)) {
 			$FieldNames = array($FieldNames);
 		}
 		foreach($FieldNames as $FieldName) {
@@ -190,11 +210,12 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 * @return integer position final
 	 */
 	function setDBSearch($DBObjs,$FieldNames = null,$posY = 0,$SubSearch = "",$SubTitle = "",$SubFieldOfChield = false) {
-		$vars = get_object_vars($DBObjs);
-		$field_desc = $vars['__DBMetaDataField'];
-		if( is_int($FieldNames))$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
-		else if($FieldNames == null)$FieldNames = $DBObjs->getFieldEditable($RefTableName);
-		elseif (! is_array($FieldNames)) {
+		$field_desc = $DBObjs->getDBMetaDataField();
+		if(is_int($FieldNames))
+			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
+		else if($FieldNames == null)
+			$FieldNames = $DBObjs->getFieldEditable($RefTableName);
+		elseif (!is_array($FieldNames)) {
 			$FieldNames = array($FieldNames);
 		}
 		foreach($FieldNames as $FieldName) {
@@ -209,13 +230,16 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 						$new_field .= ",". substr($tmp_names,0,$sep_pos+1);
 						$tmp_names = substr($tmp_names,$sep_pos+1);
 					}
-					if($new_field != "")$SubField[] = $new_field;
+					if($new_field != "")
+						$SubField[] = $new_field;
 				}
-				if($tmp_names != "")$SubField[] = $tmp_names;
+				if($tmp_names != "")
+					$SubField[] = $tmp_names;
 				$FieldName = substr($FieldName,0,$pos);
 			}
 			$field_name = $FieldName;
-			if($SubSearch != "")$field_name = $SubSearch. SEP_SEARCH.$field_name;
+			if($SubSearch != "")
+				$field_name = $SubSearch. SEP_SEARCH.$field_name;
 			$field_item = $field_desc[$FieldName];
 			$type_fld = $field_item['type'];
 			$select_list = null;
@@ -519,6 +543,5 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		return $xml_text;
 	}
 }
-
 //@END@
 ?>

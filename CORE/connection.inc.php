@@ -1,9 +1,26 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 17 July 2008 21:21:38 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 24 November 2008 22:12:36 By  ---
 
 //@BEGIN@
-
 function mustAutentificate($mess) {
 	global $REPONSE;
 	$REPONSE .= "<REPONSE observer='CORE.Auth' source_extension='CORE' source_action='authentification'><![CDATA[$mess]]></REPONSE>";
@@ -27,16 +44,16 @@ elseif ( array_key_exists("login",$GLOBAL) && array_key_exists("pass",$GLOBAL)) 
 			require_once'CORE/setup_param.inc.php';
 			require'CORE/setup.inc.php';
 			$CORE_version = $version_max.".".$version_min.".".$version_release.".".$version_build;
-			if( is_dir('applis'))$appli_dir = 'applis';
-			else $appli_dir = 'extensions/applis';
-			require"$appli_dir/setup.inc.php";
+			require "extensions/applis/setup.inc.php";
 			$applis_version = $version_max.".".$version_min.".".$version_release.".".$version_build;
 			$application_subtitle = "";
 			$CopyRight = "";
-			if( is_file("$appli_dir/application.inc.php")) {
-				require"$appli_dir/application.inc.php";
-				if( function_exists('application_subtitle'))$application_subtitle = application_subtitle();
-				if( function_exists('application_CopyRight'))$CopyRight = application_CopyRight();
+			if( is_file("extensions/applis/application.inc.php")) {
+				require"extensions/applis/application.inc.php";
+				if( function_exists('application_subtitle'))
+					$application_subtitle = application_subtitle();
+				if( function_exists('application_CopyRight'))
+					$CopyRight = application_CopyRight();
 			}
 			$path = split('/',$_SERVER["SCRIPT_NAME"]);
 			unset($path[ count($path)-1]);
@@ -49,7 +66,7 @@ elseif ( array_key_exists("login",$GLOBAL) && array_key_exists("pass",$GLOBAL)) 
 					<VERSION>".$applis_version."</VERSION>
 					<SERVERVERSION>".$CORE_version."</SERVERVERSION>
 					<COPYRIGHT>".$CopyRight."</COPYRIGHT>
-					<LOGONAME>http://".$_SERVER['SERVER_NAME'].":".$_SERVER['SERVER_PORT'].$path."/$appli_dir/images/logo.gif</LOGONAME>
+					<LOGONAME>extensions/applis/images/logo.gif</LOGONAME>
 					<LOGIN>".$GLOBAL['login']."</LOGIN>
 					<REALNAME>".$realName."</REALNAME>
 					</CONNECTION>
@@ -75,6 +92,5 @@ else {
 		list($LOGIN_ID) = $connect->getRow($r);
 	}
 }
-
 //@END@
 ?>
