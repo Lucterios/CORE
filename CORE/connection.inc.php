@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 24 November 2008 22:12:36 By  ---
+// --- Last modification: Date 28 November 2008 11:01:51 By  ---
 
 //@BEGIN@
 function mustAutentificate($mess) {
@@ -58,17 +58,24 @@ elseif ( array_key_exists("login",$GLOBAL) && array_key_exists("pass",$GLOBAL)) 
 			$path = split('/',$_SERVER["SCRIPT_NAME"]);
 			unset($path[ count($path)-1]);
 			$path = trim( implode("/",$path));
-			if( strlen($path)>0)$path = "/".$path;
+			if( strlen($path)>0)
+				$path = "/".$path;
+			$http_referer=$_SERVER["HTTP_REFERER"];
+			$protocol=substr($http_referer,0,strpos($http_referer,'://'));
+			$protocol=($protocol=='')?'http':$protocol;
+			$server_name=$_SERVER['SERVER_NAME'];
+			$server_port=$_SERVER['SERVER_PORT'];
+
 			$REPONSE .= "<REPONSE observer='CORE.Auth' source_extension='CORE' source_action='authentification'>
 					<CONNECTION>
-					<TITLE>".$extention_titre."</TITLE>
-					<SUBTITLE>".$application_subtitle."</SUBTITLE>
-					<VERSION>".$applis_version."</VERSION>
-					<SERVERVERSION>".$CORE_version."</SERVERVERSION>
-					<COPYRIGHT>".$CopyRight."</COPYRIGHT>
-					<LOGONAME>extensions/applis/images/logo.gif</LOGONAME>
+					<TITLE>$extention_titre</TITLE>
+					<SUBTITLE>$application_subtitle</SUBTITLE>
+					<VERSION>$applis_version</VERSION>
+					<SERVERVERSION>$CORE_version</SERVERVERSION>
+					<COPYRIGHT>$CopyRight</COPYRIGHT>
+					<LOGONAME>$protocol://$server_name:$server_port$path/extensions/applis/images/logo.gif</LOGONAME>
 					<LOGIN>".$GLOBAL['login']."</LOGIN>
-					<REALNAME>".$realName."</REALNAME>
+					<REALNAME>$realName</REALNAME>
 					</CONNECTION>
 					<PARAM name='ses' type='str'>".$GLOBAL["ses"]."</PARAM>
 					<![CDATA[OK]]>

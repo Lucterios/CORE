@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 13 November 2008 18:51:45 By  ---
+// --- Last modification: Date 28 November 2008 13:49:44 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -201,43 +201,47 @@ class Extension {
 		return ($check_max && $check_min);
 	}
 
-	public function isDepencies($Name,$rootPath = '',$except = array()) {
-		foreach($this->depencies as $dep)if($dep->name == $Name)
-		return true;
-		else if( in_array($dep->name,$except)) {
-			$except[] = $dep->name;
-			$current_obj = new Extension($dep->name, Extension:: getFolder($dep->name,$rootPath));
-			return $current_obj->isDepencies($Name,$rootPath,$except);
+	public function isDepencies($Name,$rootPath = '',$except = array(),$ignoreOptionel=false) {
+		foreach($this->depencies as $dep) {
+			if($dep->name == $Name) {
+				if ($ignoreOptionel)
+					return !$dep->optionnal;
+				else
+					return true;
+			}
+			else if( in_array($dep->name,$except)) {
+				$except[] = $dep->name;
+				$current_obj = new Extension($dep->name, Extension:: getFolder($dep->name,$rootPath));
+				return $current_obj->isDepencies($Name,$rootPath,$except);
+			}
 		}
 		return false;
+	}
+
+	public function getDependants($exclude = array(),$rootPath = '',$ignoreOptionel=false) {
+		$excludes[] = $this->Name;
+		$ext_dep = array();
+		$ext_list = getExtensions($rootPath);
+		foreach($ext_list as $current_name => $current_dir) {
+			$current_obj = new Extension($current_name,$current_dir);
+			$dep_a = $current_obj->isDepencies($this->Name,$rootPath,array(),$ignoreOptionel);
+			if($dep_a)
+				$ext_dep[] = $current_name;
+		}
+		return $ext_dep;
 	}
 
 	public function getDepencies($rootPath = '',$exclude_txt = '') {
 		$text = "";
 		foreach($this->depencies as $dep) {
-			if( strpos($exclude_txt,$dep->name) === false) {
+			if (strpos($exclude_txt,$dep->name) === false) {
 				$current_obj = new Extension($dep->name, Extension:: getFolder($dep->name,$rootPath));
-				$text .= $current_obj->getDepencies($rootPath,$exclude_txt.$text)." ";
-				if( strpos($text,$dep->name) === false)$text .= $dep->name." ";
+				$text.=$current_obj->getDepencies($rootPath,$exclude_txt.$this->Name,$ignoreOptionel)." ";
+				if( strpos($text,$dep->name) === false)
+					$text.= $dep->name." ";
 			}
 		}
 		return trim($text);
-	}
-
-	public function getDependants($exclude = array(),$rootPath = '') {
-		$excludes[] = $this->Name;
-		$ext_dep = array();
-		$ext_list = getExtensions($rootPath);
-		foreach($ext_list as $current_name => $current_dir) {
-			//if (!in_array($current_name,$excludes)) {
-			$current_obj = new Extension($current_name,$current_dir);
-			$dep_a = $current_obj->isDepencies($this->Name,$rootPath);
-			if($dep_a)$ext_dep[] = $current_name;
-			//$dep_b = ( strpos($current_obj->getDepencies($rootPath),$this->Name) !== false);
-			//if($dep_b)$ext_dep[] = $current_name;
-			//}
-		}
-		return $ext_dep;
 	}
 
 	public function insertion($first) {

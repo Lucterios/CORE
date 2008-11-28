@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 03 March 2008 22:15:01 By  ---
+// --- Last modification: Date 28 November 2008 12:48:09 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -63,7 +63,7 @@ if (($self->extensionId=='CORE') || ($self->extensionId=='applis'))
 }
 require_once("CORE/extensionManager.inc.php");
 $ext_obj=new Extension($self->extensionId,Extension::getFolder($self->extensionId));
-$deps=$ext_obj->getDependants();
+$deps=$ext_obj->getDependants(array(),'',true);
 $ext_list=array();
 if (count($deps)==0)
 	$text="";
