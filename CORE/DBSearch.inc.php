@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 23 November 2008 15:05:30 By  ---
+// --- Last modification: Date 03 December 2008 18:41:42 By  ---
 
 //@BEGIN@
 /**
@@ -139,7 +139,7 @@ class DB_Search {
 				//
 				if($sub_fields != "") {
 					$param_fld = $field_item['params'];
-					$TableName = $param_fld[" TableName"];
+					$TableName = $param_fld["TableName"];
 					$val = new DB_Search($this->DBObject->getField($FieldName));
 					if ($subname == "")
 						$new_sub_field = $FieldName;
@@ -150,7 +150,7 @@ class DB_Search {
 						$search_tbl[] = $TableName;
 						$search_tbl = array_merge($search_tbl,$search[0]);
 						$search_query = $search[1];
-						$search_query .= "AND $TableName.id =$tbref.$FieldName";
+						$search_query .= " AND $TableName.id =$tbref.$FieldName";
 					}
 				}
 				else if( trim($value1) != "") {

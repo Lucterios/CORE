@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 28 November 2008 13:49:44 By  ---
+// --- Last modification: Date 04 December 2008 8:20:05 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -380,7 +380,8 @@ class Extension {
 		$DBparams->extensionId = $this->Name;
 		$DBparams->find();
 		while($DBparams->fetch()) {
-			if(! array_key_exists($DBparams->paramName,$this->params))$DBparams->delete();
+			if(! array_key_exists($DBparams->paramName,$this->params))
+				$DBparams->delete();
 		}
 		foreach($this->params as $key => $val) {
 			$DBparams = new DBObj_CORE_extension_params;
@@ -392,14 +393,17 @@ class Extension {
 				$DBparams->fetch();
 				$act = "modification";
 			}
-			$DBparams->value = $val->defaultvalue;
 			$DBparams->description = $val->description;
 			$DBparams->type = $val->type;
 			$DBparams->param = $val->getExtendToText( false);
-			if($nb != 0)$DBparams->update();
-			else $DBparams->insert();
+			if($nb != 0)
+				$DBparams->update();
+			else {
+				$DBparams->insert();
+				$DBparams->value = $val->defaultvalue;
+			}
 			if( PEAR:: isError($DBparams->_lastError)) {
-				$this->message .= "$actduparamètre:".$key." ".$DBparams->_lastError."{[newline]}";
+				$this->message .= "$act du paramètre:".$key." ".$DBparams->_lastError."{[newline]}";
 				$success = false;
 			}
 			else $this->message .= $act." du paramètre:".$key."{[newline]}";

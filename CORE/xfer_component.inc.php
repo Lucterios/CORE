@@ -1,6 +1,24 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 20 June 2008 13:26:55 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 29 November 2008 0:01:09 By  ---
 
 //@BEGIN@
 /**
@@ -11,7 +29,13 @@
  * @package Lucterios
  * @subpackage Xfer
 
- */require_once'xfer.inc.php';
+ */
+
+require_once'xfer.inc.php';
+
+define('MAX_GRID_RECORD',100);
+define('GRID_PAGE','GRID_PAGE%');
+
 /**
  * Classe abtraite de composant
  *
@@ -25,72 +49,99 @@ class Xfer_Component extends Xfer_Object {
 	 *
 	 * @access public
 	 * @var string
-	 */var$_component;
+	 */
+	var $_component;
+
 	/**
 	 * Identifiant du composant
 	 *
 	 * @var string
-	 */var$m_name;
+	 */
+	var $m_name;
+
 	/**
 	 * Valeur véhiculée par le composant
 	 *
 	 * @var unknown_type
-	 */var$m_value;
+	 */
+	var $m_value;
+
 	/**
 	 * Identifiant de l'onglet associé. 0=Hors onglet
 	 *
 	 * @var integer
-	 */var$tab;
+	 */
+	var $tab;
+
 	/**
 	 * position horizontal
 	 *
 	 * @var integer
-	 */var$x;
+	 */
+	var $x;
+
 	/**
 	 * position vertical
 	 *
 	 * @var integer
-	 */var$y;
+	 */
+	var $y;
 	/**
 	 * Encombrement horizontal. 1 par defaut
 	 *
 	 * @var integer
-	 */var$colspan;
+	 */
+	var $colspan;
+
 	/**
 	 * Encombrement vertical. 1 par defaut.
 	 *
 	 * @var integer
-	 */var$rowspan;
+	 */
+	var $rowspan;
+
 	/**
 	 * Description du composant
 	 *
 	 * @var string
-	 */var$m_description;
+	 */
+	var $m_description;
+
 	/**
 	 * Précise si le champ est obligatoire. False par defaut.
 	 *
 	 * @var boolean
-	 */var$needed;
+	 */
+	var $needed;
+
 	/**
 	 * Taille vertical minimum
 	 *
 	 * @var integer
-	 */var$VMin;
+	 */
+	var $VMin;
+
 	/**
 	 * Taille horizontal minimum
 	 *
 	 * @var integer
-	 */var$HMin;
+	 */
+	var $HMin;
+
 	/**
 	 * Taille vertical maximum
 	 *
 	 * @var integer
-	 */var$VMax;
+	 */
+	var $VMax;
+
 	/**
 	 * Taille horizontal maximum
 	 *
 	 * @var integer
-	 */var$HMax;
+	 */
+	var $HMax;
+
 	/**
 	 * Constructeur
 	 *
@@ -115,6 +166,7 @@ class Xfer_Component extends Xfer_Object {
 		$this->m_description = "";
 		$this->needed = false;
 	}
+
 	/**
 	 * Change la position en l'encombrement du composant
 	 *
@@ -129,6 +181,7 @@ class Xfer_Component extends Xfer_Object {
 		$this->colspan = $colspan;
 		$this->rowspan = $rowspan;
 	}
+
 	/**
 	*  Change la taille min/max du composant
 	*
@@ -143,6 +196,7 @@ class Xfer_Component extends Xfer_Object {
 		$this->VMax = $VMax;
 		$this->HMax = $HMax;
 	}
+
 	/**
 	 * Change la valeur véhiculée par le composant
 	 *
@@ -151,6 +205,7 @@ class Xfer_Component extends Xfer_Object {
 	function setValue($value) {
 		$this->m_value = $value;
 	}
+
 	/**
 	 * Change l'état obligatoire du composant
 	 *
@@ -159,6 +214,7 @@ class Xfer_Component extends Xfer_Object {
 	function setNeeded($needed) {
 		$this->needed = $needed;
 	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -168,6 +224,7 @@ class Xfer_Component extends Xfer_Object {
 	function _getContent() {
 		return $this->m_value;
 	}
+
 	/**
 	 * Retourne l'identification du composant pour ordonnancer un ensemble de composants
 	 *
@@ -175,14 +232,21 @@ class Xfer_Component extends Xfer_Object {
 	 */
 	function getId() {
 		$text = "";
-		if( is_int($this->tab))$text .= sprintf("tab=%4d",(int)$this->tab);
-		else $text .= sprintf("tab=%4d",0);
-		if( is_int($this->y) && ($this->y >= 0))$text .= sprintf("_y=%4d",(int)$this->y);
-		else $text .= "_y=    ";
-		if( is_int($this->x) && ($this->x >= 0))$text .= sprintf("_x=%4d",(int)$this->x);
-		else $text .= "_x=    ";
+		if( is_int($this->tab))
+			$text.= sprintf("tab=%4d",(int)$this->tab);
+		else
+			$text.= sprintf("tab=%4d",0);
+		if( is_int($this->y) && ($this->y >= 0))
+			$text.= sprintf("_y=%4d",(int)$this->y);
+		else
+			$text.= "_y=    ";
+		if( is_int($this->x) && ($this->x >= 0))
+			$text.= sprintf("_x=%4d",(int)$this->x);
+		else
+			$text.= "_x=    ";
 		return $text;
 	}
+
 	/**
 	 * Retourne l'ensemble des attributs du composant
 	 *
@@ -201,9 +265,11 @@ class Xfer_Component extends Xfer_Object {
 		if( is_int($this->HMin))$xml_attr .= sprintf(" HMin='%s'",$this->HMin);
 		if( is_int($this->VMax))$xml_attr .= sprintf(" VMax='%s'",$this->VMax);
 		if( is_int($this->HMax))$xml_attr .= sprintf(" HMax='%s'",$this->HMax);
-		if($this->needed != false)$xml_attr .= " needed='1'";
+		if($this->needed != false)
+			$xml_attr .= " needed='1'";
 		return $xml_attr;
 	}
+
 	/**
 	 * Retourne le contenu XML du composant
 	 *
@@ -216,6 +282,7 @@ class Xfer_Component extends Xfer_Object {
 		return $xml_text;
 	}
 }
+
 /**
  * Composant Tab permettant de changer d'onglet.
  *
@@ -233,6 +300,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 		$this->Xfer_Component("");
 		$this->_component = "TAB";
 	}
+
 	/**
 	* Nom/description de l'onglet
 	*
@@ -241,6 +309,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	function setValue($value) {
 		$this->m_value = trim($value);
 	}
+
 	/**
 	 * Retourne le contenu XML du composant
 	 *
@@ -253,6 +322,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 		$xml_text=$xml_text.sprintf("</%s>\ n",$this->_component);
 		return $xml_text;
 	}*/
+
 	/**
 	 * Contenu du composant
 	 *
@@ -281,6 +351,7 @@ class Xfer_Comp_Label extends Xfer_Component {
 		$this->Xfer_Component($name);
 		$this->_component = "LABEL";
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -289,6 +360,7 @@ class Xfer_Comp_Label extends Xfer_Component {
 	function setValue($value) {
 		$this->m_value = trim($value);
 	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -311,7 +383,9 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 * Type du format (liens fichier si vide)
 	 *
 	 * @var string
-	 */var$m_type = "";
+	 */
+	var $m_type = "";
+
 	/**
 	 * Constructeur
 	 *
@@ -322,6 +396,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 		$this->Xfer_Component($name);
 		$this->_component = "IMAGE";
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -331,15 +406,20 @@ class Xfer_Comp_Image extends Xfer_Component {
 		$this->m_type = $type;
 		if($type == "") {
 			global $extension;
-			if( is_file("extensions/$extension/images/$icon"))$this->m_value = "extensions/$extension/images/$icon";
-			else if( is_file("images/$icon"))$this->m_value = "images/$icon";
-			else if( is_file($icon))$this->m_value = $icon;
-			else $this->m_value = "";
+			if( is_file("extensions/$extension/images/$icon"))
+				$this->m_value = "extensions/$extension/images/$icon";
+			else if( is_file("images/$icon"))
+				$this->m_value = "images/$icon";
+			else if( is_file($icon))
+				$this->m_value = $icon;
+			else
+				$this->m_value = "";
 		}
 		else
 		// envoie en flux text
 		$this->m_value = $icon;
 	}
+
 	/**
 	 * Retourne l'ensemble des attributs du composant
 	 *
@@ -354,6 +434,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 		$xml_attr = sprintf("%s size='%d' height='%d' width='%d' ",$xml_attr,$size,$height,$width);
 		return $xml_attr;
 	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -376,7 +457,9 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 * Valeur de l'hyper-liens
 	 *
 	 * @var string
-	 */var$Link = "";
+	 */
+	var $Link = "";
+
 	/**
 	 * Constructeur
 	 *
@@ -387,6 +470,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 		$this->Xfer_Component($name);
 		$this->_component = "LINK";
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -395,6 +479,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	function setValue($value) {
 		$this->m_value = trim($value);
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -405,12 +490,14 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 		foreach($grid->m_records as $rec) {
 			$rec[$FieldName] = trim($rec[$FieldName]);
 			if($rec[$FieldName] != "" && $rec[$FieldName] == htmlentities($rec[$FieldName])) {
-				if($mails == "")$mails .= $rec[$FieldName];
+				if($mails == "")
+					$mails .= $rec[$FieldName];
 				else $mails .= ','.$rec[$FieldName];
 			}
 		}
 		$this->setLink('mailto:'.$mails);
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -424,6 +511,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 		$server_dir = substr($server_dir,0,$pos);
 		$this->setLink( sprintf('http://%s:%d%s%s',$server_name,$server_port,$server_dir,$filename));
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -432,6 +520,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	function setLink($value) {
 		$this->m_Link = trim($value);
 	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -460,6 +549,7 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 		$this->Xfer_Component($name);
 		$this->_component = "LABELFORM";
 	}
+
 	/**
 	 * Change le text contenu
 	 *
@@ -468,6 +558,7 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 	function setValue($value) {
 		$this->m_value = trim($value);
 	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -490,17 +581,23 @@ class Xfer_Comp_Header extends Xfer_Object {
 	 * nom identifiant de la colonne
 	 *
 	 * @var string
-	 */var$m_name = "";
+	 */
+	var $m_name = "";
+
 	/**
 	 * Description de la colonne
 	 *
 	 * @var string
-	 */var$m_descript = "";
+	 */
+	var $m_descript = "";
+
 	/**
 	 * type de la colonne
 	 *
 	 * @var string
-	 */var$m_type = "";
+	 */
+	var $m_type = "";
+
 	/**
 	 * Constructeur
 	 *
@@ -515,6 +612,7 @@ class Xfer_Comp_Header extends Xfer_Object {
 		$this->m_descript = $descript;
 		$this->m_type = $type;
 	}
+
 	/**
 	 * Retourne le contenu XML de l'entête
 	 *
@@ -522,8 +620,9 @@ class Xfer_Comp_Header extends Xfer_Object {
 	 */
 	function getReponseXML() {
 		$xml_text = sprintf("<HEADER name='%s'",$this->m_name);
-		if($this->m_type != "")$xml_text = $xml_text. sprintf(" type='%s'",$this->m_type);
-		$xml_text = $xml_text. sprintf("><![CDATA[%s]]></HEADER>",$this->m_descript);
+		if($this->m_type != "")
+			$xml_text = $xml_text.sprintf(" type='%s'",$this->m_type);
+		$xml_text = $xml_text.sprintf("><![CDATA[%s]]></HEADER>",$this->m_descript);
 		return $xml_text;
 	}
 }
@@ -539,17 +638,37 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * Liste d'entêtes
 	 *
 	 * @var array
-	 */var$m_headers = array();
+	 */
+	var $m_headers = array();
+
 	/**
 	 * Liste de cellules
 	 *
 	 * @var array
-	 */var$m_records = array();
+	 */
+	var $m_records = array();
+
 	/**
 	 * Liste d'actions
 	 *
 	 * @var array
-	 */var$m_actions = array();
+	 */
+	var $m_actions = array();
+
+	/**
+	 * Nombre total de pages
+	 *
+	 * @var int
+	 */
+	var $mPageMax = 0;
+
+	/**
+	 * Numéro page courant
+	 *
+	 * @var int
+	 */
+	var $mPageMum = 0;
+
 	/**
 	 * Constructeur
 	 *
@@ -560,6 +679,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$this->Xfer_Component($name);
 		$this->_component = "GRID";
 	}
+
 	/**
 	 * Ajoute un entête de colonne dans une grille
 	 *
@@ -571,6 +691,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$new_obs = & new Xfer_Comp_Header($name,$descript,$type);
 		$this->m_headers[$name] = $new_obs;
 	}
+
 	/**
 	 * Ajoute l'action associé au bouton
 	 *
@@ -580,6 +701,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		if($this->checkActionRigth($action)) { array_push($this->m_actions,$action);
 		}
 	}
+
 	/**
 	 * Ajoute un entête de colonne dans une grille
 	 *
@@ -607,6 +729,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		}
 		$this->addHeader($FieldName,$desc_fld,$type_col);
 	}
+
 	/**
 	 * Rempli l'entête d'une grille avec la déscription de l'objet $DBObjs et les champs décrits.
 	 *
@@ -642,6 +765,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 			}
 		}
 	}
+
 	/**
 	 * Rempli une cellule dans une grille avec la déscription de l'objet $DBObjs et le champ décrit.
 	 *
@@ -684,34 +808,52 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		}
 		$this->setValue($NewId,$FieldName,$val);
 	}
+
 	/**
 	 * Remplis une grille avec la déscription de l'objet $DBObjs et les champs décrits.
 	 *
 	 * @param DBObj_Basic $DBObjs
 	 * @param null|string|array $FieldNames
 	 * @param string $RefTableName
+	 * @param array $Params Context des parametres => Numero de la page [0,N-1]
 	 */
-	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "") {
-		if( is_int($FieldNames))$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
-		else if($FieldNames == null)$FieldNames = $DBObjs->getFieldEditable($RefTableName);
+	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=array()) {
+		$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);
+		global $Params;
+		$page_num=$ContextParams[GRID_PAGE.$this->m_name];
+		$this->mPageMum = $page_num;
+
+		if( is_int($FieldNames))
+			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
+		else if($FieldNames == null)
+			$FieldNames = $DBObjs->getFieldEditable($RefTableName);
 		$this->setDBObjectHeader($DBObjs,$FieldNames,$RefTableName);
 		$field_desc = $DBObjs->getDBMetaDataField();
-		while($DBObjs->fetch()) {
-			foreach($FieldNames as $FieldName) {
-				$pos = strpos($FieldName,"[");
-				if($pos === false)$this->setDBObjectData($DBObjs->id,$DBObjs,$FieldName,$field_desc);
-				else {
-					$new_field_name = substr($FieldName,0,$pos);
-					if( array_key_exists($new_field_name,$field_desc)) {
-						$new_obj = $DBObjs->getField($new_field_name);
-						$new_FieldNames = split(',', substr($FieldName,$pos+1,-1));
-						$new_field_desc = $new_obj->__DBMetaDataField;
-						foreach($new_FieldNames as $new_FieldName)$this->setDBObjectData($DBObjs->id,$new_obj,$new_FieldName,$new_field_desc);
+
+		$record_min=$this->mPageMum*MAX_GRID_RECORD;
+		$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
+		$record_current=0;
+		while($DBObjs->fetch() && ($record_current<$record_max)) {
+			if ($record_current>=$record_min)
+				foreach($FieldNames as $FieldName) {
+					$pos = strpos($FieldName,"[");
+					if($pos === false)
+						$this->setDBObjectData($DBObjs->id,$DBObjs,$FieldName,$field_desc);
+					else {
+						$new_field_name = substr($FieldName,0,$pos);
+						if( array_key_exists($new_field_name,$field_desc)) {
+							$new_obj = $DBObjs->getField($new_field_name);
+							$new_FieldNames = split(',', substr($FieldName,$pos+1,-1));
+							$new_field_desc = $new_obj->__DBMetaDataField;
+							foreach($new_FieldNames as $new_FieldName)
+								$this->setDBObjectData($DBObjs->id,$new_obj,$new_FieldName,$new_field_desc);
+						}
 					}
 				}
-			}
+			$record_current++;
 		}
 	}
+
 	/**
 	 * Crée une nouvelle ligne dans la grille
 	 *
@@ -751,6 +893,20 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$this->_newRecord($id);
 		$this->m_records[$id][$name] = $value;
 	}
+
+	/**
+	 * Retourne l'ensemble des attributs du composant
+	 *
+	 * @access public
+	 * @return string
+	 */
+	function _attributs() {
+		$xml_attr = parent:: _attributs();
+		if( is_int($this->mPageMax) && ($this->mPageMax > 1))
+			$xml_attr .= " PageMax='".$this->mPageMax."' PageNum='".$this->mPageMum."'";
+		return $xml_attr;
+	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -762,12 +918,14 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		foreach($this->m_headers as $header)$xml_text = $xml_text.$header->getReponseXML();
 		foreach($this->m_records as $key => $record) {
 			$xml_text = $xml_text. sprintf("<RECORD id='%s'>",$key);
-			foreach($record as $name => $value)$xml_text = $xml_text. sprintf("<VALUE name='%s'><![CDATA[%s]]></VALUE>",$name,$value);
+			foreach($record as $name => $value)
+				$xml_text = $xml_text.sprintf("<VALUE name='%s'><![CDATA[%s]]></VALUE>",$name,$value);
 			$xml_text = $xml_text."</RECORD>";
 		}
 		if( count($this->m_actions) != 0) {
 			$xml_text = $xml_text."<ACTIONS>";
-			foreach($this->m_actions as $action)$xml_text = $xml_text.$action->getReponseXML();
+			foreach($this->m_actions as $action)
+				$xml_text = $xml_text.$action->getReponseXML();
 			$xml_text = $xml_text."</ACTIONS>";
 		}
 		return $xml_text;
@@ -836,7 +994,8 @@ class Xfer_Comp_Button extends Xfer_Component {
 		$xml_text = sprintf("\t<%s %s>",$this->_component,$this->_attributs());
 		$xml_text = $xml_text.$this->_getContent();
 		$xml_text = $xml_text.$this->_getActionContent();
-		if( strlen($this->JavaScript)>0)$xml_text = $xml_text. sprintf("<JavaScript><![CDATA[%s]]></JavaScript>\n", urlencode($this->JavaScript));
+		if(strlen($this->JavaScript)>0)
+			$xml_text = $xml_text. sprintf("<JavaScript><![CDATA[%s]]></JavaScript>\n", urlencode($this->JavaScript));
 		$xml_text = $xml_text. sprintf("</%s>\n",$this->_component);
 		return $xml_text;
 	}
@@ -869,6 +1028,7 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	function setValue($value) {
 		$this->m_value = trim($value);
 	}
+
 	/**
 	 * Retourne l'ensemble des attributs du composant
 	 *
@@ -877,9 +1037,11 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 */
 	function _attributs() {
 		$xml_attr = parent:: _attributs();
-		if( is_int($this->StringSize) && ($this->StringSize != 0))$xml_attr .= " stringSize='".$this->StringSize."'";
+		if( is_int($this->StringSize) && ($this->StringSize != 0))
+			$xml_attr .= " stringSize='".$this->StringSize."'";
 		return $xml_attr;
 	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -888,7 +1050,8 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 */
 	function _getContent() {
 		$content = sprintf("<![CDATA[%s]]>",$this->m_value);
-		if( is_string($this->ExprReg) && ($this->ExprReg != ""))$content .= sprintf("<REG_EXPR><![CDATA[%s]]></REG_EXPR>",$this->ExprReg);
+		if( is_string($this->ExprReg) && ($this->ExprReg != ""))
+			$content .= sprintf("<REG_EXPR><![CDATA[%s]]></REG_EXPR>",$this->ExprReg);
 		return $content;
 	}
 }
@@ -1089,7 +1252,8 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 		$xml_attr = parent:: _attributs();
 		$xml_attr .= " FirstLine='".$this->FirstLine."'";
 		if($this->Encode != false)$xml_attr .= " Encode='1'";
-		if( is_int($this->StringSize) && ($this->StringSize != 0))$xml_attr .= " stringSize='".$this->StringSize."'";
+		if( is_int($this->StringSize) && ($this->StringSize != 0))
+			$xml_attr .= " stringSize='".$this->StringSize."'";
 		return $xml_attr;
 	}
 	/**
@@ -1304,7 +1468,8 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 		if(! array_key_exists($ClassName,$select)) {
 			$ClassName = '';
 			$keys = array_keys($select);
-			if( count($keys)>0)$ClassName = $keys[0];
+			if(count($keys)>0)
+				$ClassName = $keys[0];
 		}
 		$this->setSelect($select);
 		$this->setValue($ClassName);
@@ -1318,7 +1483,8 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 */
 	function _getContent() {
 		$xml_text = sprintf("%s",$this->m_value);
-		foreach($this->m_select as $key => $value)$xml_text = $xml_text. sprintf("<CASE id='%s'><![CDATA[%s]]></CASE>",$key,$value);
+		foreach($this->m_select as $key => $value)
+			$xml_text = $xml_text.sprintf("<CASE id='%s'><![CDATA[%s]]></CASE>",$key,$value);
 		return $xml_text;
 	}
 }
@@ -1334,12 +1500,16 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 * Liste de selection
 	 *
 	 * @var array
-	 */var$m_select = array();
+	 */
+	var $m_select = array();
+
 	/**
-	 * Liste de selection
+	 * La selection est unique
 	 *
-	 * @var array
-	 */var$simple = false;
+	 * @var boolean
+	 */
+	var $simple = false;
+
 	/**
 	 * Constructeur
 	 *
@@ -1379,12 +1549,16 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 		$xml_text = "";
 		foreach($this->m_select as $key => $value) {
 			$att_checked = " checked='0'";
-			if( is_array($this->m_value))foreach($this->m_value as $select)if("$select" == "$key")$att_checked = " checked='1'";
+			if( is_array($this->m_value))
+				foreach($this->m_value as $select)
+					if("$select" == "$key")
+						$att_checked = " checked='1'";
 			$xml_text = $xml_text. sprintf("<CASE id='%s'%s><![CDATA[%s]]></CASE>",$key,$att_checked,$value);
 		}
 		return $xml_text;
 	}
 }
+
 /**
  * Composant gérant le téléchargement d'un fichier
  *
@@ -1397,7 +1571,16 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 * Liste des filtre
 	 *
 	 * @var array
-	 */var$m_fitre = array();
+	 */
+	var $m_fitre = array();
+
+	/**
+	 * Le fichier est transmis compressé
+	 *
+	 * @var string
+	 */
+	var $compress=false;
+
 	/**
 	 * Constructeur
 	 *
@@ -1416,10 +1599,24 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	function setValue($value) {
 		$this->m_value = trim($value);
 	}
-	
+
 	function addFilter($newfiltre) {
 		$this->m_fitre[] = $newfiltre;
 	}
+
+	/**
+	 * Retourne l'ensemble des attributs du composant
+	 *
+	 * @access public
+	 * @return string
+	 */
+	function _attributs() {
+		$xml_attr = parent:: _attributs();
+		if($this->compress==true)
+			$xml_attr .= " Compress='".$this->compress."'";
+		return $xml_attr;
+	}
+
 	/**
 	 * Contenu du composant
 	 *
@@ -1428,10 +1625,88 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 */
 	function _getContent() {
 		$content = sprintf("<![CDATA[%s]]>",$this->m_value);
-		foreach($this->m_fitre as $current_fitre)$content .= sprintf("<FILTER><![CDATA[%s]]></FILTER>",$current_fitre);
+		foreach($this->m_fitre as $current_fitre)
+			$content .= sprintf("<FILTER><![CDATA[%s]]></FILTER>",$current_fitre);
 		return $content;
 	}
 }
 
+/**
+ * Composant gérant l'extraction d'un fichier
+ *
+ * @package Lucterios
+ * @subpackage Xfer
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ */
+class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
+
+	/**
+	 * Nom du fichier à extraire
+	 *
+	 * @var string
+	 */
+	var $m_FileName="";
+
+	/**
+	 * Le fichier est transmis compressé
+	 *
+	 * @var string
+	 */
+	var $compress=false;
+
+	/**
+	 * Constructeur
+	 *
+	 * @param string $name
+	 * @return Xfer_Comp_DownLoad
+	 */
+	function Xfer_Comp_DownLoad($name) {
+		$this->Xfer_Component($name);
+		$this->_component = "DOWNLOAD";
+	}
+
+	/**
+	 * Change le text contenu
+	 *
+	 * @param string $value
+	 */
+	function setValue($value) {
+		$this->m_value = trim($value);
+	}
+
+	/**
+	 * Change le fichier à télécharger
+	 *
+	 * @param string $filename
+	 */
+	function setFileName($filename) {
+		$this->m_FileName = trim($filename);
+	}
+
+	/**
+	 * Retourne l'ensemble des attributs du composant
+	 *
+	 * @access public
+	 * @return string
+	 */
+	function _attributs() {
+		$xml_attr = parent:: _attributs();
+		if($this->compress==true)
+			$xml_attr .= " Compress='".$this->compress."'";
+		return $xml_attr;
+	}
+
+	/**
+	 * Contenu du composant
+	 *
+	 * @access private
+	 * @return string
+	 */
+	function _getContent() {
+		$content = sprintf("<![CDATA[%s]]>",$this->m_value);
+		$content.= sprintf("<FILENAME><![CDATA[%s]]></FILENAME>",$this->m_FileName);
+		return $content;
+	}
+}
 //@END@
 ?>

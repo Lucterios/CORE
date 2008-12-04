@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 23 November 2008 13:19:03 By  ---
+// --- Last modification: Date 28 November 2008 22:16:22 By  ---
 
 //@BEGIN@
 /**
@@ -29,7 +29,10 @@
  * @package Lucterios
  * @subpackage Xfer
 
- */require_once'xfer_component.inc.php';
+ */
+
+require_once'xfer_component.inc.php';
+
 /**
  * Classe containaire d'une fenêtre personnalisée
  *
@@ -43,18 +46,24 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 * Liste des actions
 	 *
 	 * @var array
-	 */var$m_actions = array();
+	 */
+	var $m_actions = array();
+
 	/**
 	 * Liste des composants
 	 *
 	 * @var array
-	 */var$m_components = array();
+	 */
+	var $m_components = array();
+
 	/**
 	 * tabulation courante
 	 *
 	 * @access private
 	 * @var integer
-	 */var$m_tab = 0;
+	 */
+	var $m_tab = 0;
+
 	/**
 	 * Constructor
 	 *
@@ -67,6 +76,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 		$this->Xfer_Container_Abstract($extension,$action,$context);
 		$this->m_observer_name = "Core.Custom";
 	}
+
 	/**
 	 * Remplire une fenêtre avec des controles dépandant de la classe
 	 *
@@ -107,13 +117,15 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				case 9:
 					//Child
 					$comp = new Xfer_Comp_Grid($FieldName);
-					$comp->setDBObject($DBObjs->getField($FieldName), null,$DBObjs->__table);
+					$comp->setDBObject($DBObjs->getField($FieldName), null,$DBObjs->__table,$this->m_context);
 					break;
 				default :
 					$comp = new Xfer_Comp_Label($FieldName);
 					$field_val = $DBObjs->getField($FieldName);
-					if( is_object($field_val))$comp->setValue($field_val->toText());
-					else $comp->setValue($field_val);
+					if(is_object($field_val))
+						$comp->setValue($field_val->toText());
+					else
+						$comp->setValue($field_val);
 					break;
 				}
 			}
@@ -132,8 +144,10 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 					break;
 				case 2:
 					//text
-					if( array_key_exists('Multi',$param_fld) && $param_fld['Multi'])$comp = new Xfer_Comp_Memo($FieldName);
-					else $comp = new Xfer_Comp_Edit($FieldName);
+					if(array_key_exists('Multi',$param_fld) && $param_fld['Multi'])
+						$comp = new Xfer_Comp_Memo($FieldName);
+					else
+						$comp = new Xfer_Comp_Edit($FieldName);
 					$comp->setValue($DBObjs->getField($FieldName));
 					break;
 				case 3:
@@ -178,7 +192,8 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 						$class_name = "DBObj_".$tbl_name;
 						$sub_object = new $class_name;
 						$sub_object->find();
-						while($sub_object->fetch())$select_list[$sub_object->id] = $sub_object->toText();
+						while($sub_object->fetch())
+							$select_list[$sub_object->id] = $sub_object->toText();
 					}
 					$comp->setSelect($select_list);
 					$comp->setValue($DBObjs->$FieldName);
@@ -199,6 +214,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 			}
 		}
 	}
+
 	/**
 	 * Remplire une fenêtre avec des controle de selection de recherche
 	 *
@@ -262,8 +278,10 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				break;
 			case 2:
 				//text
-				if( array_key_exists('Multi',$param_fld) && $param_fld['Multi'])$comp = new Xfer_Comp_Memo($field_name."_value1");
-				else $comp = new Xfer_Comp_Edit($field_name."_value1");
+				if(array_key_exists('Multi',$param_fld) && $param_fld['Multi'])
+					$comp = new Xfer_Comp_Memo($field_name."_value1");
+				else
+					$comp = new Xfer_Comp_Edit($field_name."_value1");
 				$comp->setValue($DBObjs->getField($FieldName));
 				$select_list = array("contient");
 				$line[] = $comp;
@@ -309,8 +327,10 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				$comp->setSelect($param_fld['Enum']);
 				$comp->setValue($DBObjs->$FieldName);
 				$comp->setSize( min(120,20* count($comp->m_select)),200);
-				if($SubFieldOfChield)$select_list = array("ou","et");
-				else $select_list = array("ou");
+				if($SubFieldOfChield)
+					$select_list = array("ou","et");
+				else
+					$select_list = array("ou");
 				$line[] = $comp;
 				break;
 			case 9:
@@ -322,10 +342,14 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 					$RefField = $param_fld["RefField"];
 					$SubField = $value->getFieldEditable($DBObjs->__table);
 				}
-				if($SubTitle == "")$new_title = $desc_fld;
-				else $new_title = "$SubTitle-$desc_fld";
-				if($SubSearch == "")$new_subsearch = $FieldName;
-				else $new_subsearch = $SubSearch. SEP_SEARCH.$FieldName;
+				if($SubTitle == "")
+					$new_title = $desc_fld;
+				else
+					$new_title = "$SubTitle-$desc_fld";
+				if($SubSearch == "")
+					$new_subsearch = $FieldName;
+				else
+					$new_subsearch = $SubSearch. SEP_SEARCH.$FieldName;
 				$posY = $this->setDBSearch($value,$SubField,$posY,$new_subsearch,$new_title, true);
 				break;
 			case 10:
@@ -340,23 +364,30 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 						$class_name = "DBObj_".$tbl_name;
 						$sub_object = new $class_name;
 						$sub_object->find();
-						while($sub_object->fetch())$selectlist[$sub_object->id] = $sub_object->toText();
+						while($sub_object->fetch())
+							$selectlist[$sub_object->id] = $sub_object->toText();
 					}
 					$comp->setSelect($selectlist);
 					$comp->setValue($DBObjs->$FieldName);
 					$comp->setSize( min(120,20* count($comp->m_select)),200);
-					if($SubSearch)$select_list = array("ou","et");
-					else $select_list = array("ou");
+					if($SubSearch)
+						$select_list = array("ou","et");
+					else
+						$select_list = array("ou");
 					$line[] = $comp;
 				}
 				else {
 					$param_fld = $field_item['params'];
 					$desc_fld = $field_item['description'];
 					$value = $DBObjs->getField($FieldName);
-					if($SubTitle == "")$new_title = $desc_fld;
-					else $new_title = "$SubTitle-$desc_fld";
-					if($SubSearch == "")$new_subsearch = $FieldName;
-					else $new_subsearch = $SubSearch. SEP_SEARCH.$FieldName;
+					if($SubTitle == "")
+						$new_title = $desc_fld;
+					else
+						$new_title = "$SubTitle-$desc_fld";
+					if($SubSearch == "")
+						$new_subsearch = $FieldName;
+					else
+						$new_subsearch = $SubSearch. SEP_SEARCH.$FieldName;
 					$posY = $this->setDBSearch($value,$SubField,$posY,$new_subsearch,$new_title);
 				}
 				break;
@@ -364,8 +395,10 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 			if($select_list != null) {
 				$desc_fld = $field_item['description'];
 				$label = new Xfer_Comp_LabelForm('label'.$field_name);
-				if($SubTitle == "")$label->setValue("{[bold]}$desc_fld{[/bold]}");
-				else $label->setValue("{[bold]}$SubTitle-$desc_fld{[/bold]}");
+				if($SubTitle == "")
+					$label->setValue("{[bold]}$desc_fld{[/bold]}");
+				else
+					$label->setValue("{[bold]}$SubTitle-$desc_fld{[/bold]}");
 				$label->setLocation(0,$posY);
 				$this->addComponent($label);
 				if( count($select_list) == 1) {
@@ -399,6 +432,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		}
 		return $posY;
 	}
+
 	/**
 	 * Ajoute un composant
 	 *
@@ -409,6 +443,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		$id = $component->getId();
 		$this->m_components[$id] = $component;
 	}
+
 	/**
 	 * Modifie la taille par defaut des composants d'une même position
 	 *
@@ -417,8 +452,11 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 * @param int $vmin
 	 */
 	function resize($col,$hmin,$vmin) {
-		foreach($this->m_components as $comp)if(($comp->x == $col) && ($comp->colspan == 1))$comp->setSize($vmin,$hmin);
+		foreach($this->m_components as $comp)
+			if(($comp->x == $col) && ($comp->colspan == 1))
+				$comp->setSize($vmin,$hmin);
 	}
+
 	/**
 	 * Cherche une tabulation
 	 *
@@ -430,14 +468,16 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		foreach($this->m_components as $comp) {
 			if('Xfer_Comp_Tab' == get_class($comp)) {
 				$index = max($index,$comp->tab);
-				if($comp->m_value == $tabName)$num = $comp->tab;
+				if($comp->m_value == $tabName)
+					$num = $comp->tab;
 			}
 		}
 		if( is_string($tabName))
-		return $num;
+			return $num;
 		else
-		return $index;
+			return $index;
 	}
+
 	/**
 	 * Ajoute une tabulation
 	 *
@@ -446,7 +486,8 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	function newTab($tabName,$num = -1) {
 		$old_num = $this->findTab($tabName);
 		if($old_num == -1) {
-			if($num == -1)$this->m_tab = $this->findTab( null)+1;
+			if($num == -1)
+				$this->m_tab = $this->findTab( null)+1;
 			else {
 				foreach($this->m_components as $comp)if($comp->tab >= $num)$comp->tab = $comp->tab+1;
 				$this->m_tab = $num;
@@ -456,7 +497,8 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 			$new_tab->setLocation(-1,-1);
 			$this->addComponent($new_tab);
 		}
-		else $this->m_tab = $old_num;
+		else
+			$this->m_tab = $old_num;
 	}
 	/**
 	 * Nombre de composants
@@ -465,10 +507,11 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 */
 	function getComponentCount() {
 		if($this->m_components == null)
-		return "NULL";
+			return "NULL";
 		else
-		return count($this->m_components);
+			return count($this->m_components);
 	}
+
 	/**
 	 * Retourne un composant identifier par son numéro ou son nom
 	 *
@@ -478,26 +521,30 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	function getComponents($cmp_idx) {
 		if( is_int($cmp_idx)) {
 			$nb = count($this->m_components);
-			if($cmp_idx<0)$cmp_idx = $nb+$cmp_idx;
+			if($cmp_idx<0)
+				$cmp_idx = $nb+$cmp_idx;
 			if(($cmp_idx >= 0) && ($cmp_idx<$nb)) {
 				$list_ids = array_keys($this->m_components);
 				$comp_id = $list_ids[$cmp_idx];
 				return $this->m_components[$comp_id];
 			}
 			else
-			return "$cmp_idx-$nb";
+				return "$cmp_idx-$nb";
 		}
 		else if( is_string($cmp_idx)) {
 			$comp_id = '';
-			foreach($this->m_components as $key => $comp)if($comp->m_name == $cmp_idx)$comp_id = $key;
+			foreach($this->m_components as $key => $comp)
+				if($comp->m_name == $cmp_idx)
+					$comp_id = $key;
 			if($comp_id != '')
-			return $this->m_components[$comp_id];
+				return $this->m_components[$comp_id];
 			else
-			return null;
+				return null;
 		}
 		else
 		return null;
 	}
+
 	/**
 
 	 * Ajoute une action à la fenêtre personnalisée
@@ -505,9 +552,11 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 * @param Xfer_Action $action
 	 */
 	function addAction($action) {
-		if($this->checkActionRigth($action)) { array_push($this->m_actions,$action);
+		if($this->checkActionRigth($action)) {
+			array_push($this->m_actions,$action);
 		}
 	}
+
 	/**
 	 * getSortComponents
 	 *
@@ -518,9 +567,11 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		foreach($this->m_components as $component) {
 			$id = $component->getId();
 			$final_components[$id] = $component;
-		} ksort($final_components);
+		}
+		ksort($final_components);
 		return $final_components;
 	}
+
 	/**
 	 * _ReponseXML
 	 *
@@ -532,12 +583,14 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		if( count($this->m_components) != 0) {
 			$final_components = $this->getSortComponents();
 			$xml_text = $xml_text."<COMPONENTS>";
-			foreach($final_components as $component)$xml_text = $xml_text.$component->getReponseXML();
+			foreach($final_components as $component)
+				$xml_text = $xml_text.$component->getReponseXML();
 			$xml_text = $xml_text."</COMPONENTS>\n";
 		}
 		if( count($this->m_actions) != 0) {
 			$xml_text = $xml_text."<ACTIONS>";
-			foreach($this->m_actions as $action)$xml_text = $xml_text.$action->getReponseXML();
+			foreach($this->m_actions as $action)
+				$xml_text = $xml_text.$action->getReponseXML();
 			$xml_text = $xml_text."</ACTIONS>\n";
 		}
 		return $xml_text;
