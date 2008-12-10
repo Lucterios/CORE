@@ -1088,10 +1088,10 @@ class DBObj_Basic extends DB_DataObject {
 	 * @param array $Params
 	 * @param string $OrderBy
 	 */
-	public function setForSearch($Params,$OrderBy = '') {
+	public function setForSearch($Params,$OrderBy = '',$searchQuery = "",$searchTable=array()) {
 		require_once"DBSearch.inc.php";
 		$search = new DB_Search($this);
-		$query = $search->Execute($Params,$OrderBy);
+		$query = $search->Execute($Params,$OrderBy,$searchQuery,$searchTable);
 		if($query != "")$this->query($query);
 	}
 	/**

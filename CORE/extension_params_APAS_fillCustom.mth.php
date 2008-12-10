@@ -18,51 +18,42 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 December 2008 0:36:41 By  ---
+// --- Last modification: Date 05 December 2008 21:49:46 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
+require_once('CORE/extension_params.tbl.php');
 //@TABLES@
 
-//@DESC@
-//@PARAM@ Params
-//@PARAM@ Name
-//@PARAM@ PathFile
-//@PARAM@ httpFile
+//@DESC@Ajouter un ensemble de parametres d'une extension
+//@PARAM@ extensionName
+//@PARAM@ xfer_result
 
-function saveFileDownloaded(&$self,$Params,$Name,$PathFile,$httpFile)
+function extension_params_APAS_fillCustom(&$self,$extensionName,$xfer_result)
 {
 //@CODE_ACTION@
-echo "<!-- Name:$Name => PathFile:$PathFile -->\n";
-if ($httpFile) {
-	if (is_array($_FILES[$Name])) {
-		@move_uploaded_file($_FILES[$Name]['tmp_name'],$PathFile);
-		return is_file($PathFile);
+$ParamsDesc=$xfer_result->ParamsDesc;
+$DBParam=new DBObj_CORE_extension_params();
+$DBParam->extensionId=$extensionName;
+$DBParam->find();
+while ($DBParam->fetch()) {
+	$name_comp=$DBParam->paramName;
+	if (array_key_exists($name_comp,$ParamsDesc)) {
+		$lbl=new Xfer_Comp_LabelForm($name_comp.'Lbl');
+		$lbl->setValue("{[bold]}".$DBParam->description."{[/bold]}");
+		$lbl->setLocation($ParamsDesc[$name_comp][0], $ParamsDesc[$name_comp][1]);
+		$xfer_result->addComponent($lbl);
+		if ($xfer_result->ReadOnly)
+		    	$cmp=$DBParam->getParamComponentReadOnly($name_comp);
+		else
+		    	$cmp=$DBParam->getParamComponent($name_comp);
+		$cmp->setLocation($ParamsDesc[$name_comp][0]+1, $ParamsDesc[$name_comp][1]);
+		$xfer_result->addComponent($cmp);
 	}
-	else
-		return false;
 }
-else {
-	$uploadfile = $Params[$Name];
-	list($name_upload,$value_upload) = split(';',$uploadfile);
-	if($name_upload != '') {
-		require_once "CORE/Lucterios_Error.inc.php";
-		$value_upload=str_replace(array("\n"," ","\t"),"",$value_upload);
-		echo "\n\n<!-- VALUE=||$value_upload|| -->\n\n";
-		$content = base64_decode($value_upload);
-		@unlink($PathFile);
-		if($handle = @fopen($PathFile,'a')) {
-			if( fwrite($handle,$content) == 0)
-				throw new LucteriosException(IMPORTANT,"fichier non sauvé!");
-			fclose($handle);
-		}
-		return is_file($PathFile);
-	}
-	else
-		return false;
-}
+return $xfer_result;
 //@CODE_ACTION@
 }
 

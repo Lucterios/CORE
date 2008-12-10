@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 29 November 2008 0:01:09 By  ---
+// --- Last modification: Date 09 December 2008 22:06:17 By  ---
 
 //@BEGIN@
 /**
@@ -792,6 +792,11 @@ class Xfer_Comp_Grid extends Xfer_Component {
 			//time
 			$val = convertTime($data);
 			break;
+		case 6:
+			//Date & time
+			List($date_val,$time_val)=split(' ',$data);
+			$val = convertTime($time_val)." ".convertDate($date_val);
+			break;
 		case 9:
 			//Childs
 			$val = "";
@@ -817,11 +822,18 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $RefTableName
 	 * @param array $Params Context des parametres => Numero de la page [0,N-1]
 	 */
-	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=array()) {
-		$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);
-		global $Params;
-		$page_num=$ContextParams[GRID_PAGE.$this->m_name];
-		$this->mPageMum = $page_num;
+	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
+		if (is_array($ContextParams)) {
+			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
+			$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);
+			$this->mPageMum = $page_num;
+			$record_min=$this->mPageMum*MAX_GRID_RECORD;
+			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
+		}
+		else {
+			$record_min=0;
+			$record_max=$DBObjs->N;
+		}
 
 		if( is_int($FieldNames))
 			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
@@ -830,8 +842,6 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$this->setDBObjectHeader($DBObjs,$FieldNames,$RefTableName);
 		$field_desc = $DBObjs->getDBMetaDataField();
 
-		$record_min=$this->mPageMum*MAX_GRID_RECORD;
-		$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
 		$record_current=0;
 		while($DBObjs->fetch() && ($record_current<$record_max)) {
 			if ($record_current>=$record_min)
@@ -1582,6 +1592,13 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	var $compress=false;
 
 	/**
+	 * Le fichier n'est pas transmis en Base64
+	 *
+	 * @var boolean
+	 */
+	var $HttpFile=false;
+
+	/**
 	 * Constructeur
 	 *
 	 * @param string $name
@@ -1614,6 +1631,8 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 		$xml_attr = parent:: _attributs();
 		if($this->compress==true)
 			$xml_attr .= " Compress='".$this->compress."'";
+		if ($this->HttpFile==true)
+			$xml_attr .= " HttpFile='1'";
 		return $xml_attr;
 	}
 
@@ -1650,9 +1669,16 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	/**
 	 * Le fichier est transmis compressé
 	 *
-	 * @var string
+	 * @var boolean
 	 */
 	var $compress=false;
+
+	/**
+	 * Le fichier n'est pas transmis en Base64
+	 *
+	 * @var boolean
+	 */
+	var $HttpFile=false;
 
 	/**
 	 * Constructeur
@@ -1693,6 +1719,8 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 		$xml_attr = parent:: _attributs();
 		if($this->compress==true)
 			$xml_attr .= " Compress='".$this->compress."'";
+		if ($this->HttpFile==true)
+			$xml_attr .= " HttpFile='1'";
 		return $xml_attr;
 	}
 

@@ -18,49 +18,53 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 08 December 2008 0:20:14 By  ---
+// --- Last modification: Date 05 December 2008 20:46:28 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
+require_once('CORE/extension_params.tbl.php');
 //@TABLES@
-//@XFER:menu
-require_once('CORE/xfer_menu.inc.php');
-//@XFER:menu@
+//@XFER:acknowledge
+require_once('CORE/xfer.inc.php');
+//@XFER:acknowledge@
 
 
-//@DESC@Menu de l application
-//@PARAM@ 
+//@DESC@Valider une modification de paramètres
+//@PARAM@ extensionName
 
+//@TRANSACTION:
 
 //@LOCK:0
 
-function menu($Params)
+function extension_params_APAS_validerModif($Params)
 {
+if (($ret=checkParams("CORE", "extension_params_APAS_validerModif",$Params ,"extensionName"))!=null)
+	return $ret;
+$extensionName=getParams($Params,"extensionName",0);
+$self=new DBObj_CORE_extension_params();
+
+global $connect;
+$connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Menu("CORE","menu",$Params);
-$xfer_result->Caption="Menu de l application";
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","extension_params_APAS_validerModif",$Params);
+$xfer_result->Caption="Valider une modification de paramètres";
 //@CODE_ACTION@
-global $connect, $login;
-
-require_once('menufunction.inc.php');
-
-// recup du menu dans la base
-$last_menuItemId='';
-$q = "SELECT menuItemId, extensionId, action, description, icon, shortcut, help FROM CORE_menu WHERE pere='' order by position";
-$req = $connect->execute($q);
-while(list($menuItemId, $extensionId, $action, $description, $icon, $shortcut, $help) = $connect->getRow($req))
-{
-	if ($last_menuItemId!=$menuItemId) {
-		$menu = createMenuRecurse($menuItemId, $extensionId, $action, $description, $icon,'', $shortcut, $help);
-		if($menu!=null)
-			$xfer_result->addSubMenu($menu);
-		$last_menuItemId=$menuItemId;
-	}
+foreach($Params as $name=>$value) {
+	$DBObjextension_params=new DBObj_CORE_extension_params;
+     $DBObjextension_params->extensionId=$extensionName;
+     $DBObjextension_params->paramName=$name;
+     if ($DBObjextension_params->find()>0) {
+		$DBObjextension_params->fetch();
+		$DBObjextension_params->value=$value;
+		$DBObjextension_params->update();
+     }
 }
 //@CODE_ACTION@
+	$connect->commit();
 }catch(Exception $e) {
+	$connect->rollback();
 	throw $e;
 }
 return $xfer_result;

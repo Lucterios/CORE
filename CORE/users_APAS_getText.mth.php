@@ -17,53 +17,25 @@
 //     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // Action file write by SDK tool
-// --- Last modification: Date 08 December 2008 0:20:14 By  ---
+//  // Method file write by SDK tool
+// --- Last modification: Date 09 December 2008 23:23:43 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
+require_once('CORE/users.tbl.php');
 //@TABLES@
-//@XFER:menu
-require_once('CORE/xfer_menu.inc.php');
-//@XFER:menu@
 
-
-//@DESC@Menu de l application
+//@DESC@
 //@PARAM@ 
 
-
-//@LOCK:0
-
-function menu($Params)
+function users_APAS_getText(&$self)
 {
-try {
-$xfer_result=&new Xfer_Container_Menu("CORE","menu",$Params);
-$xfer_result->Caption="Menu de l application";
 //@CODE_ACTION@
-global $connect, $login;
-
-require_once('menufunction.inc.php');
-
-// recup du menu dans la base
-$last_menuItemId='';
-$q = "SELECT menuItemId, extensionId, action, description, icon, shortcut, help FROM CORE_menu WHERE pere='' order by position";
-$req = $connect->execute($q);
-while(list($menuItemId, $extensionId, $action, $description, $icon, $shortcut, $help) = $connect->getRow($req))
-{
-	if ($last_menuItemId!=$menuItemId) {
-		$menu = createMenuRecurse($menuItemId, $extensionId, $action, $description, $icon,'', $shortcut, $help);
-		if($menu!=null)
-			$xfer_result->addSubMenu($menu);
-		$last_menuItemId=$menuItemId;
-	}
-}
+$groupe=$self->getField('groupId');
+return $self->login." [".$groupe->toText()."]";
 //@CODE_ACTION@
-}catch(Exception $e) {
-	throw $e;
-}
-return $xfer_result;
 }
 
 ?>

@@ -218,9 +218,10 @@ class DB_Search {
 	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencé dans$Params* _select: référence l'operateur de comparaison
 	 * _value1: valeur à comparer
 	 * @param array$Params* @param string$OrderBy*/
-	function Execute($Params,$OrderBy = '') {
-		$search_tbl = array($this->DBObject->__table);
-		$search_query = "";
+	function Execute($Params,$OrderBy = '',$searchQuery = "",$searchTable=array()) {
+		$search_tbl = $searchTable;
+		$search_tbl[]= $this->DBObject->__table;
+		$search_query = $searchQuery;
 		$FieldNames = $this->DBObject->getFieldEditable();
 		foreach($Params as $key => $val)
 			if(( substr($key,-7) == "_select") && ($Params[$key] != "0")) {

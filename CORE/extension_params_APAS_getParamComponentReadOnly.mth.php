@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 December 2008 21:44:45 By  ---
+// --- Last modification: Date 05 December 2008 21:44:17 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -30,41 +30,22 @@ require_once('CORE/extension_params.tbl.php');
 //@DESC@
 //@PARAM@ compName
 
-function extension_params_APAS_getParamComponent(&$self,$compName)
+function extension_params_APAS_getParamComponentReadOnly(&$self,$compName)
 {
 //@CODE_ACTION@
 require_once 'CORE/setup_param.inc.php';
-eval('$params=array('.$self->param.');');
 if (is_numeric($compName)) $compName='value';
-$cmp=null;
+$cmp=new Xfer_Comp_LabelForm($compName);
 switch ($self->type) {
-  case PARAM_TYPE_STR:
-	    if (array_key_exists("Multi",$params) && ($params['Multi']=='true'))
-      	$cmp=new Xfer_Comp_Memo($compName);
-	    else
-      	$cmp=new Xfer_Comp_Edit($compName);
-	    $cmp->setValue($self->value);
-	    break;
-  case PARAM_TYPE_INT:
-	    $cmp=new Xfer_Comp_Float($compName,$params['Min'],$params['Max'],0);
-	    $cmp->setValue($self->value);
-	    break;
-  case PARAM_TYPE_REAL:
-	    $cmp=new Xfer_Comp_Float($compName,$params['Min'],$params['Max'],$params['Prec']);
-	    $cmp->setValue($self->value);
-	    break;
   case PARAM_TYPE_BOOL:
-	    $cmp=new Xfer_Comp_Check($compName);
-	    $cmp->setValue($self->value=='o');
-	    break;
+ 	$cmp->setValue($self->value=='o'?"Oui":"Non");
+	break;
   case PARAM_TYPE_ENUM:
-	    $cmp=new Xfer_Comp_Select($compName);
-	    $select=array();
-	    foreach($params['Enum'] as $key=>$val)
-	       $select[$key]=$val;
-	    $cmp->setSelect($select);
-	    $cmp->setValue($self->value);
-	    break;
+	eval('$params=array('.$self->param.');');
+     $cmp->setValue($params['Enum'][$self->value]);
+     break;
+  default:
+    	$cmp->setValue($self->value);
 }
 return $cmp;
 //@CODE_ACTION@

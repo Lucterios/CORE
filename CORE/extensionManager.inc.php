@@ -399,8 +399,8 @@ class Extension {
 			if($nb != 0)
 				$DBparams->update();
 			else {
-				$DBparams->insert();
 				$DBparams->value = $val->defaultvalue;
+				$DBparams->insert();
 			}
 			if( PEAR:: isError($DBparams->_lastError)) {
 				$this->message .= "$act du paramètre:".$key." ".$DBparams->_lastError."{[newline]}";

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 28 November 2008 22:16:22 By  ---
+// --- Last modification: Date 08 December 2008 22:27:42 By  ---
 
 //@BEGIN@
 /**
@@ -113,6 +113,13 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 					$comp = new Xfer_Comp_Label($FieldName);
 					$field_val = $DBObjs->getField($FieldName);
 					$comp->setValue( convertTime($field_val));
+					break;
+				case 6:
+					//Date & time
+					$comp = new Xfer_Comp_Label($FieldName);
+					$field_val = $DBObjs->getField($FieldName);
+					List($date_val,$time_val)=split(' ',$field_val);
+					$comp->setValue(convertDate($date_val, true)." ".convertTime($time_val));
 					break;
 				case 9:
 					//Child
