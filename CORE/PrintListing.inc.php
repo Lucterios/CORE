@@ -18,10 +18,9 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 25 August 2007 13:52:42 By Laurent GAY ---
+// --- Last modification: Date 17 December 2008 22:10:01 By  ---
 
 //@BEGIN@
-
 require_once 'CORE/ConvertPrintModel.inc.php';
 
 class PrintListing
@@ -56,7 +55,7 @@ class PrintListing
 	 * @var int
 	 */
 	public $HeaderFooterHeight=10;
-	
+
 	/**
 	 * Titre du listing
 	 *
@@ -128,8 +127,9 @@ class PrintListing
 		}
 		foreach($this->GridContent as $row) {
 			$content.='<rows>';
-			foreach($row as $cell) { 
-				$content.='<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="start" line_height="12" font_family="sans-serif" font_weight="" font_size="6">';
+			foreach($row as $cell) {
+				if (substr($cell,0,20)=="data:image/*;base64,") $img='image="1"'; else $img='image="0"';
+				$content.='<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="start" line_height="12" font_family="sans-serif" font_weight="" font_size="6" '.$img.'>';
 				$content.=ModelConverter::convertApasFormat($cell);
 				$content.='</cell>';
 			}
@@ -152,7 +152,7 @@ class PrintListing
 		$content.='</bottom>';
 		return $content;
 	}
-	
+
 	public function generate()
 	{
 		$content='<?xml version="1.0" encoding="ISO-8859-1"?>';
@@ -168,6 +168,5 @@ class PrintListing
 		return str_replace('>',">\n",$content);
 	}
 }
-
 //@END@
 ?>

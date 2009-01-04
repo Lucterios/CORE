@@ -1,6 +1,24 @@
 <?php
-// Action file write by SDK tool
-// --- Last modification: Date 18 June 2008 22:25:26 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // Action file write by SDK tool
+// --- Last modification: Date 12 December 2008 17:09:48 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -28,17 +46,14 @@ $img_title = new Xfer_Comp_Image('img_title');
 $img_title->setLocation(0,0,1);
 $img_title->setValue('config.png');
 $xfer_result->addComponent($img_title);
-$lab_bord3 = new Xfer_Comp_LabelForm('bord3');
-$lab_bord3->setLocation(1,0);
-$lab_bord3->setValue('');
-$lab_bord3->setSize(20,20);
-//$xfer_result->addComponent($lab_bord3);
 $lab = new Xfer_Comp_LabelForm('title');
-$lab->setLocation(1,0,3);
-$lab->setValue('{[center]}{[bold]}{[underline]}Configuration de votre système{[/underline]}{[/bold]}{[/center]}');
+$lab->setLocation(1,0,10);
+$lab->setValue('{[newline]}{[center]}{[bold]}{[underline]}Configuration de votre système{[/underline]}{[/bold]}{[/center]}');
 $xfer_result->addComponent($lab);
+global $rootPath;
+if(!isset($rootPath)) $rootPath = "";
 require_once"CORE/extensionManager.inc.php";
-$extlist = getExtensions();
+$extlist = getExtensions($rootPath);
 $set_of_ext = array();
 foreach($extlist as $name => $path) {
 	$set_of_ext[] = new Extension($name,$path);
@@ -53,7 +68,6 @@ foreach($set_of_ext as $ext) {
 		}
 	}
 }
-//$img_title->setSize(100,100);
 $xfer_result->addAction( new Xfer_Action("_Imprimer","print.png","CORE","printConf", FORMTYPE_MODAL, CLOSE_NO));
 $xfer_result->addAction( new Xfer_Action("_Fermer","close.png"));
 //@CODE_ACTION@

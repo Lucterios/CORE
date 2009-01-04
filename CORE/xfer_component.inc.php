@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 09 December 2008 22:06:17 By  ---
+// --- Last modification: Date 20 December 2008 18:38:23 By  ---
 
 //@BEGIN@
 /**
@@ -33,7 +33,7 @@
 
 require_once'xfer.inc.php';
 
-define('MAX_GRID_RECORD',100);
+define('MAX_GRID_RECORD',50);
 define('GRID_PAGE','GRID_PAGE%');
 
 /**
@@ -406,12 +406,14 @@ class Xfer_Comp_Image extends Xfer_Component {
 		$this->m_type = $type;
 		if($type == "") {
 			global $extension;
-			if( is_file("extensions/$extension/images/$icon"))
-				$this->m_value = "extensions/$extension/images/$icon";
-			else if( is_file("images/$icon"))
-				$this->m_value = "images/$icon";
-			else if( is_file($icon))
-				$this->m_value = $icon;
+			global $rootPath;
+			if(!isset($rootPath))$rootPath = "";
+			if( is_file($rootPath."extensions/$extension/images/$icon"))
+				$this->m_value = $rootPath."extensions/$extension/images/$icon";
+			else if( is_file($rootPath."images/$icon"))
+				$this->m_value = $rootPath."images/$icon";
+			else if( is_file($rootPath.$icon))
+				$this->m_value = $rootPath.$icon;
 			else
 				$this->m_value = "";
 		}
@@ -826,6 +828,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		if (is_array($ContextParams)) {
 			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
 			$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);
+			if ($this->mPageMax<$page_num) $page_num=0;
 			$this->mPageMum = $page_num;
 			$record_min=$this->mPageMum*MAX_GRID_RECORD;
 			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;

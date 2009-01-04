@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 09 December 2008 23:23:43 By  ---
+// --- Last modification: Date 10 December 2008 20:03:18 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -33,8 +33,10 @@ require_once('CORE/users.tbl.php');
 function users_APAS_getText(&$self)
 {
 //@CODE_ACTION@
-$groupe=$self->getField('groupId');
-return $self->login." [".$groupe->toText()."]";
+if ($self->id>0)
+	return $self->evalByText('$login [$groupId]');
+else
+	return "---";
 //@CODE_ACTION@
 }
 

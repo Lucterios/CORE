@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 15 November 2008 2:20:14 By  ---
+// --- Last modification: Date 12 December 2008 17:09:02 By  ---
 
 //@BEGIN@
 /**
@@ -339,7 +339,7 @@ class DBObj_Basic extends DB_DataObject {
 			$part1 = array_slice($this->__DBMetaDataField,0,$this->PosChild);
 			$part2 = array_slice($this->__DBMetaDataField,$this->PosChild);
 			$fields = array();
-			foreach($part1 as $key => $field)$fields[$key] = $field;
+			foreach($part1 as $key => $field) $fields[$key] = $field;
 			$cur_super = $this->Super;
 			$part_sup = $cur_super->getDBMetaDataField();
 			foreach($part_sup as $key => $field)$fields[$key] = $field;
@@ -358,7 +358,8 @@ class DBObj_Basic extends DB_DataObject {
 		$FieldNames = array();
 		$meta_data_field = $this->getDBMetaDataField();
 		foreach($meta_data_field as $field_names => $field_item) {
-			if(($field_item['type'] != 10) || ($field_item['params']['TableName'] != $RefTableName)) array_push($FieldNames,$field_names);
+			if(($field_item['type'] != 10) || ($field_item['params']['TableName'] != $RefTableName)) 
+				array_push($FieldNames,$field_names);
 		}
 		if($nbfield>-1)
 		return array_slice($FieldNames,0,$nbfield);
@@ -388,8 +389,10 @@ class DBObj_Basic extends DB_DataObject {
 			if($son != null) {
 				return $son->setFrom($object);
 			}
-		} DB_DataObject:: setFrom($object);
-		if($this->Heritage != "")$this->Super->setFrom($object);
+		} 
+		DB_DataObject:: setFrom($object);
+		if($this->Heritage != "")
+			$this->Super->setFrom($object);
 	}
 	/**
 	 * Verifier le vérouillage
@@ -408,9 +411,11 @@ class DBObj_Basic extends DB_DataObject {
 			global $connect;
 			$res = $connect->execute("SELECT sid FROM CORE_sessions WHERE valid='o' AND sid='$lock_session'");
 			list($sid) = $connect->getRow($res);
-			if($sid != $lock_session)$this->lockRecord = "";
+			if($sid != $lock_session)
+				$this->lockRecord = "";
 		}
-		if($this->Heritage != "")$this->Super->checkLockRecord();
+		if($this->Heritage != "")
+			$this->Super->checkLockRecord();
 	}
 	/**
 	 * Retourne l'état de vérouillage
@@ -434,9 +439,9 @@ class DBObj_Basic extends DB_DataObject {
 		else {
 			if($this->lockRecord == "") {
 				if($this->Heritage != "")
-				return $this->Super->setLockRecord();
+					return $this->Super->setLockRecord();
 				else
-				return LOCKRECORD_NO;
+					return LOCKRECORD_NO;
 			}
 			else
 			return LOCKRECORD_OTHER;
@@ -463,7 +468,8 @@ class DBObj_Basic extends DB_DataObject {
 			global $GLOBAL;
 			$session = $GLOBAL["ses"];
 			$this->lockRecord = "$session@$origine";
-			if($this->Heritage != "")$this->Super->lockRecord($origine);
+			if($this->Heritage != "")
+				$this->Super->lockRecord($origine);
 			$this->update();
 		}
 		return true;
@@ -488,7 +494,8 @@ class DBObj_Basic extends DB_DataObject {
 		if($lock_session == $session) {
 			if($lock_origine = $origine) {
 				$this->lockRecord = "";
-				if($this->Heritage != "")$this->Super->unlockRecord($origine);
+				if($this->Heritage != "")
+					$this->Super->unlockRecord($origine);
 				$this->update();
 			}
 		}
@@ -616,7 +623,8 @@ class DBObj_Basic extends DB_DataObject {
 						$children->deleteCascade();
 				}
 			}
-			if($this->Heritage != "")$this->Super->deleteCascade();
+			if($this->Heritage != "")
+				$this->Super->deleteCascade();
 			$this->delete();
 			$connect->commit();
 		} catch(Exception $e) {
@@ -636,7 +644,8 @@ class DBObj_Basic extends DB_DataObject {
 				return $son->delete();
 			}
 		}
-		if($this->Heritage != "")$this->Super->delete();
+		if($this->Heritage != "")
+			$this->Super->delete();
 		//$result = DB_DataObject:: delete($useWhere);
 		$q = "DELETE FROM ".$this->__table." WHERE id=".$this->id;
 		global $connect;
@@ -684,7 +693,8 @@ class DBObj_Basic extends DB_DataObject {
 		$fields = $this->table();
 		$fields['superId'] = DB_DATAOBJECT_INT;
 		foreach($fields as $field_name => $field_item)if(! is_null($this->$field_name)) {
-			if(substr($q,-4) != "SET ")$q .= ",";
+			if(substr($q,-4) != "SET ")
+				$q .= ",";
 			$value = $this->$field_name;
 			$value = str_replace("'","''",$value);
 			$q .= "$field_name='$value' ";
@@ -696,7 +706,8 @@ class DBObj_Basic extends DB_DataObject {
 			require_once"Lucterios_Error.inc.php";
 			throw new LucteriosException( IMPORTANT,"Modification impossible{[newline]}Veuillez rafraichir votre application.[$q]");
 		}
-		if($this->Heritage != "")$this->Super->update();
+		if($this->Heritage != "")
+			$this->Super->update();
 		return $result;
 	}
 	/**
@@ -817,8 +828,12 @@ class DBObj_Basic extends DB_DataObject {
 	 * @return string
 	 */
 	public function getTableName($tbl_select,$ByLeft = false,$sep = '_') {
-		if($ByLeft)$pos = strpos($tbl_select,$sep);
-		else $pos = strrpos($tbl_select,$sep);
+		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
+		if($ByLeft)
+			$pos = strpos($tbl_select,$sep);
+		else 
+			$pos = strrpos($tbl_select,$sep);
 		if($pos === false) {
 			$extName = "";
 			$tableName = $tbl_select;
@@ -827,9 +842,14 @@ class DBObj_Basic extends DB_DataObject {
 			$extName = substr($tbl_select,0,$pos);
 			$tableName = substr($tbl_select,$pos+1);
 		}
-		if($extName != "CORE")$table_file_name = "extensions/$extName/$tableName.tbl.php";
-		else $table_file_name = "$extName/$tableName.tbl.php";
-		if(! is_file($table_file_name))$table_file_name = DBObj_Basic:: getTableName($tbl_select, true);
+		if($extName != "CORE")
+			$table_file_name = "extensions/$extName/$tableName.tbl.php";
+		else 
+			$table_file_name = "$extName/$tableName.tbl.php";
+		if(! is_file($rootPath.$table_file_name)) 
+			$table_file_name = DBObj_Basic:: getTableName($tbl_select, true);
+		else
+			$table_file_name=$rootPath.$table_file_name;
 		return $table_file_name;
 	}
 	/**
@@ -841,7 +861,7 @@ class DBObj_Basic extends DB_DataObject {
 	public function getTableAndClass($Heritage) {
 		$file_class_name = $this->getTableName($Heritage, true,'/');
 		$class_name = 'DBObj_'. str_replace('/','_',$Heritage);
-		return array($file_class_name,$class_name);
+		return array($rootPath.$file_class_name,$class_name);
 	}
 	/**
 	 * retourne la valeur d'un champs
@@ -875,13 +895,17 @@ class DBObj_Basic extends DB_DataObject {
 						else {
 							$child_field_name = $item['params']['RefField'];
 							$sub_object->$child_field_name = $this->id;
-							if($filter != "")$sub_object->whereadd($filter);
-							if($order != "")$sub_object->orderby($order);
-							else $sub_object->orderby('id');
+							if($filter != "")
+								$sub_object->whereadd($filter);
+							if($order != "")
+								$sub_object->orderby($order);
+							else 
+								$sub_object->orderby('id');
 							$sub_object->find();
 						}
 					}
-					else $sub_object = "???";
+					else 
+						$sub_object = "???";
 					return $sub_object;
 				}
 				else {
@@ -900,14 +924,16 @@ class DBObj_Basic extends DB_DataObject {
 				}
 			}
 			else
-			return $field_val;
+				return $field_val;
 		}
 		else if(($this->Super != null) && array_key_exists($fieldname,$this->Super->getDBMetaDataField()))
-		return $this->Super->getField($fieldname,$filter,$order);
+			return $this->Super->getField($fieldname,$filter,$order);
 		else {
 			$pos = strpos($fieldname, SEP_SHOW);
-			if($pos === false)$field_name = $fieldname;
-			else $field_name = substr($fieldname,$pos+3);
+			if($pos === false)
+				$field_name = $fieldname;
+			else 
+				$field_name = substr($fieldname,$pos+3);
 			return $this->evalByText($field_name);
 		}
 	}
@@ -932,10 +958,10 @@ class DBObj_Basic extends DB_DataObject {
 				list($file_class_name,$class_name) = $this->getTableAndClass($this->Heritage);
 				if(! class_exists($class_name)) {
 					if(! is_file($file_class_name))
-					throw new Exception("file$file_class_namenotfound!");
+						throw new Exception("file $file_class_name notfound!");
 					require_once($file_class_name);
 					if(! class_exists($class_name))
-					throw new Exception("class$class_namenotfound!");
+						throw new Exception("class $class_name notfound!");
 				}
 				$this->__super = new $class_name( true);
 			}
@@ -952,10 +978,12 @@ class DBObj_Basic extends DB_DataObject {
 	 */
 	public function getMethodFileName($method) {
 		global $rootPath;
-		if(!isset($rootPath))$rootPath = "";
+		if(!isset($rootPath)) $rootPath = "";
 		$fct_name = $this->tblname."_APAS_$method";
-		if($this->extname == "CORE")$fct_file_name = $rootPath.$this->extname."/$fct_name.mth.php";
-		else $fct_file_name = $rootPath."extensions/".$this->extname."/$fct_name.mth.php";
+		if($this->extname == "CORE")
+			$fct_file_name = $rootPath.$this->extname."/$fct_name.mth.php";
+		else 
+			$fct_file_name = $rootPath."extensions/".$this->extname."/$fct_name.mth.php";
 		return array($fct_file_name,$fct_name);
 	}
 	/**
@@ -991,8 +1019,10 @@ class DBObj_Basic extends DB_DataObject {
 							$param_arr .= ", \$obj3";
 						}
 					}
-					elseif ( is_null($val))$param_arr .= ", null";
-					else $param_arr .= ",$val";
+					elseif ( is_null($val))
+						$param_arr .= ", null";
+					else 
+						$param_arr .= ",$val";
 				}
 				$cmd = "return ".$fct_name."($param_arr);";
 				return eval($cmd);
@@ -1026,7 +1056,7 @@ class DBObj_Basic extends DB_DataObject {
 		}
 		list($fct_file_name,$fct_name) = $this->getMethodFileName($method);
 		if(! is_file($fct_file_name) && ($this->Super != null))
-		return $this->Super-> __call($method,$params);
+			return $this->Super-> __call($method,$params);
 		return $this->callMethod($fct_file_name,$fct_name,$params);
 	}
 	/**
@@ -1037,9 +1067,8 @@ class DBObj_Basic extends DB_DataObject {
 	 */
 	public function Call($MethodName) {
 		$params = array();
-		for($i = 1;
-		$i< func_num_args();
-		$i++)$params[] = func_get_arg($i);
+		for($i = 1;$i< func_num_args();$i++)
+			$params[] = func_get_arg($i);
 		return $this-> __call($MethodName,$params);
 	}
 	/**
@@ -1056,9 +1085,9 @@ class DBObj_Basic extends DB_DataObject {
 	public function NewAction($title,$icon = "",$action = "",$modal = 1,$close = 1,$select = "") {
 		require_once'xfer.inc.php';
 		if($action == "")
-		return new Xfer_Action($title,$icon,"","",$modal,$close,$select);
+			return new Xfer_Action($title,$icon,"","",$modal,$close,$select);
 		else
-		return new Xfer_Action($title,$icon,$this->extname,$this->tblname."_APAS_$action",$modal,$close,$select);
+			return new Xfer_Action($title,$icon,$this->extname,$this->tblname."_APAS_$action",$modal,$close,$select);
 	}
 	/**
 	 * Rempli un retour d'impression
@@ -1071,12 +1100,16 @@ class DBObj_Basic extends DB_DataObject {
 	 */
 	public function PrintReport(&$XferPrint,$Name,$Title,$writeMode = WRITE_MODE_NONE,$printRef = 0) {
 		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
 		$print_name = $this->tblname."_APAS_$Name";
-		if($this->extname == "CORE")$print_file_name = $rootPath.$this->extname."/$print_name.prt.php";
-		else $print_file_name = $rootPath."extensions/".$this->extname."/$print_name.prt.php";
-		if( is_file($print_file_name))$XferPrint->selectReport($print_name,0,$XferPrint->m_context,$Title,$writeMode,$printRef);
+		if($this->extname == "CORE")
+			$print_file_name = $rootPath.$this->extname."/$print_name.prt.php";
+		else 
+			$print_file_name = $rootPath."extensions/".$this->extname."/$print_name.prt.php";
+		if( is_file($print_file_name))
+			$XferPrint->selectReport($print_name,0,$XferPrint->m_context,$Title,$writeMode,$printRef);
 		else
-		return trigger_error("File$print_file_namenotfound!");
+			return trigger_error("File $print_file_name not found!");
 	}
 	/**
 	 * Lance une recherche d'enregistrement
@@ -1092,7 +1125,8 @@ class DBObj_Basic extends DB_DataObject {
 		require_once"DBSearch.inc.php";
 		$search = new DB_Search($this);
 		$query = $search->Execute($Params,$OrderBy,$searchQuery,$searchTable);
-		if($query != "")$this->query($query);
+		if($query != "")
+			$this->query($query);
 	}
 	/**
 	* debug

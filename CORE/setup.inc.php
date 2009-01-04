@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // setup file write by SDK tool
-// --- Last modification: Date 09 December 2008 23:23:43 By  ---
+// --- Last modification: Date 20 December 2008 18:38:23 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.";
@@ -30,7 +30,7 @@ $extension_libre=true;
 $version_max=0;
 $version_min=16;
 $version_release=10;
-$version_build=9;
+$version_build=57;
 
 $depencies=array();
 
@@ -78,7 +78,7 @@ $actions[5] = new Param_Action("Sauvegarder les données", "archiveForm", 3);
 $actions[6] = new Param_Action("Sauvegarder les données", "archive", 3);
 $actions[7] = new Param_Action("Configuration", "configuration", 9);
 $actions[8] = new Param_Action("Validation", "etiquettes_APAS_ajouteract", 6);
-$actions[9] = new Param_Action("Ajouter une étiquette", "etiquettes_APAS_ajouter", 6);
+$actions[9] = new Param_Action("Ajouter/Modifier une étiquette", "etiquettes_APAS_ajouter", 6);
 $actions[10] = new Param_Action("Liste des étiquettes", "etiquettes_APAS_liste", 6);
 $actions[11] = new Param_Action("Supprimer une étiquette", "etiquettes_APAS_supprimer", 6);
 $actions[12] = new Param_Action("Desconnection", "exitConnection", 0);
@@ -94,9 +94,9 @@ $actions[21] = new Param_Action("Liste des droits de groupes", "extension_rights
 $actions[22] = new Param_Action("Liste des impression", "finalreport_APAS_list", 6);
 $actions[23] = new Param_Action("reimprimer", "finalreport_APAS_reprint", 6);
 $actions[24] = new Param_Action("Modifier un droit", "group_rights_APAS_modify", 2);
-$actions[25] = new Param_Action("Ajouter un groupe de droit", "groups_APAS_ajouter", 2);
+$actions[25] = new Param_Action("Ajouter un groupe", "groups_APAS_ajouter", 2);
 $actions[26] = new Param_Action("Liste des groupes", "groups_APAS_liste", 2);
-$actions[27] = new Param_Action("Ajouter un groupe", "groups_APAS_modifier", 2);
+$actions[27] = new Param_Action("Ajouter/Modifier un groupe", "groups_APAS_modifier", 2);
 $actions[28] = new Param_Action("Supprimer un groupe", "groups_APAS_supprimer", 2);
 $actions[29] = new Param_Action("Import grille", "importGrid", 0);
 $actions[30] = new Param_Action("Menu de l application", "menu", 0);

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 08 August 2008 21:48:13 By  ---
+// --- Last modification: Date 10 December 2008 19:56:54 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -32,7 +32,7 @@ require_once('CORE/xfer.inc.php');
 //@XFER:acknowledge@
 
 
-//@DESC@Ajouter un groupe de droit
+//@DESC@Ajouter un groupe
 //@PARAM@ 
 //@INDEX:group
 
@@ -50,7 +50,7 @@ global $connect;
 $connect->begin();
 try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_ajouter",$Params);
-$xfer_result->Caption="Ajouter un groupe de droit";
+$xfer_result->Caption="Ajouter un groupe";
 //@CODE_ACTION@
 $self->setFrom($Params);
 if ($group>0)

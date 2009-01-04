@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 13 November 2008 21:19:34 By  ---
+// --- Last modification: Date 12 December 2008 18:31:38 By  ---
 
 //@BEGIN@
 function studyReponse($current_reponse)
@@ -54,6 +54,44 @@ function studyReponse($current_reponse)
 		return null;
 }
 
+function callAction($extension,$action,$params) {
+	global $login,$dbcnf;
+	global $rootPath;
+	if(!isset($rootPath)) $rootPath = "";
+	if (strtoupper($extension)=="CORE") {
+		$extension=strtoupper($extension);
+		$EXT_FOLDER=$rootPath.$extension;
+	}
+	else
+		$EXT_FOLDER=$rootPath."extensions/$extension";
+	$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
+	if (!is_dir($EXT_FOLDER)) {
+		// l'extension n'existe pas
+		$current_reponse= xfer_returnError($extension, $action, $params, new Xfer_Error("Extension '$extension' inconnue !",10001));
+	}
+	else if (!is_file($ACTION_FILE_NAME)) {
+		// le fichier n'existe pas dans l'extension
+		$current_reponse=  xfer_returnError($extension, $action, $params, new Xfer_Error("Action '$action' inconnue !",10002));
+	}
+	else if($internal or checkRight($login, $extension, $action)){
+		 // verif des droits d'executions
+		require_once $ACTION_FILE_NAME;
+		if (!function_exists($action)) {
+			// la fonction n'existe pas dans le fichier
+			$current_reponse=xfer_returnError($extension,$action,$params,new Xfer_Error("Function inconnue !",10003));
+		}
+		else {
+			if (is_file("$EXT_FOLDER/includes.inc.php"))
+				require_once("$EXT_FOLDER/includes.inc.php");
+				// l'action existe, on la lance:
+				$current_reponse=call_user_func($action,$params);
+			}
+		}
+		else
+			throw new LucteriosException(CRITIC,'Mauvais droit');
+	return $current_reponse;
+}
+
 function BoucleReponse($lesRequettes,$internal=false)
 {
 	global $login,$dbcnf;
@@ -83,50 +121,13 @@ function BoucleReponse($lesRequettes,$internal=false)
 			}
 
 			// on sait maintenant qu'on ?es droits d'executer l'action voulue
-			$CURRENT_PATH=".";
-			if (strtoupper($extension)=="CORE")
-			{
-				$extension=strtoupper($extension);
-				$EXT_FOLDER="$CURRENT_PATH/$extension";
-			}
-			else
-				$EXT_FOLDER="$CURRENT_PATH/extensions/$extension";
-			$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
-			if (!is_dir($EXT_FOLDER))
-			{
-				// l'extension n'existe pas
-				$current_reponse= xfer_returnError($extension, $action, $params, new Xfer_Error("Extension '$extension' inconnue !",10001));
-			}
-			else if (!is_file($ACTION_FILE_NAME))
-			{
-				// le fichier n'existe pas dans l'extension
-				$current_reponse=  xfer_returnError($extension, $action, $params, new Xfer_Error("Action '$action' inconnue !",10002));
-			}
-			else if($internal or checkRight($login, $extension, $action)) // verif des droits d'executions
-			{
-				require_once $ACTION_FILE_NAME;
-				if (!function_exists($action))
-				{
-					// la fonction n'existe pas dans le fichier
-					$current_reponse=xfer_returnError($extension,$action,$params,new Xfer_Error("Function inconnue !",10003));
-				}
-				else
-				{
-					if (is_file("$EXT_FOLDER/includes.inc.php"))
-						require_once("$EXT_FOLDER/includes.inc.php");
-					// l'action existe, on la lance:
-					$current_reponse=call_user_func($action,$params);
-				}
-			}
-			else
-				throw new LucteriosException(CRITIC,'Mauvais droit');
+			$current_reponse=callAction($extension,$action,$params);
 
 			if (is_string($current_reponse)){
 				if ($current_reponse!="")
 					$REPONSE.=$current_reponse."\n";
 				else
 					$REPONSE.=xfer_returnError($extension,$action,$params,new Xfer_Error("Résultat vide!!",10003));
-
 			}
 			else{
 				$REPONSE.=$current_reponse->getReponseXML()."\n";

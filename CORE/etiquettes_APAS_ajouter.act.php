@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 27 August 2007 22:45:21 By Laurent GAY ---
+// --- Last modification: Date 10 December 2008 20:00:32 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -31,7 +31,7 @@ require_once('CORE/xfer_custom.inc.php');
 //@XFER:custom@
 
 
-//@DESC@Ajouter une étiquette
+//@DESC@Ajouter/Modifier une étiquette
 //@PARAM@ 
 //@INDEX:etiquette
 
@@ -47,12 +47,15 @@ if ($etiquette>=0) $self->get($etiquette);
 $self->lockRecord("etiquettes_APAS_ajouter");
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","etiquettes_APAS_ajouter",$Params);
-$xfer_result->Caption='Ajouter une étiquette';
+$xfer_result->Caption="Ajouter/Modifier une étiquette";
 $xfer_result->m_context['ORIGINE']="etiquettes_APAS_ajouter";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;
 $xfer_result->m_context['RECORD_ID']=$self->id;
 //@CODE_ACTION@
-
+if ($self->id>0)
+	$xfer_result->Caption="Modifier une étiquette";
+else
+	$xfer_result->Caption="Ajouter une étiquette";
 $xfer_result->setDBObject($self,'nom',false,0,0,2);
 $xfer_result->setDBObject($self,array('largeur_page','hauteur_page','largeur','hauteur','colonnes','lignes','marge_gauche','marge_sup','ecart_horizontal','ecart_vertical'),false,1);
 $cmp=& $xfer_result->getComponents('largeur_page');

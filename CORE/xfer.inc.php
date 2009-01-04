@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 16 September 2008 7:54:49 By  ---
+// --- Last modification: Date 12 December 2008 8:31:37 By  ---
 
 //@BEGIN@
 /**
@@ -164,54 +164,72 @@ class Xfer_Action extends Xfer_Object {
 	 * Titre de l'action
 	 *
 	 * @var string
-	 */var$m_title = "";
+	 */
+	var $m_title = "";
+
 	/**
 	 * Nom de l'icone
 	 *
 	 * @var string
-	 */var$m_icon = "";
+	 */
+	var $m_icon = "";
+
 	/**
 	 * Nom de l'extension
 	 *
 	 * @var string
-	 */var$m_extension = "";
+	 */
+	var $m_extension = "";
+
 	/**
 	 * Nom de l'action
 	 *
 	 * @var string
-	 */var$m_action = "";
+	 */
+	var $m_action = "";
+
 	/**
 	 * CLOSE_YES=ferme la fenêtre appelante
 	 * CLOSE_NO=fenêtre reste en fond
 	 *
 	 * @var integer
-	 */var$m_close = "";
+	 */
+	var $m_close = "";
+
 	/**
 	 * FORMTYPE_MODAL=appel une fenêtre modal
 	 * FORMTYPE_NOMODAL=non modal
 	*  FORMTYPE_REFRESH=réutilise la fiche appelante
 	 *
 	 * @var integer
-	 */var$m_modal = "";
+	 */
+	var $m_modal = "";
+
 	/**
 	 * SELECT_NONE=action à l'ensemble d'une grille
 	 * SELECT_SINGLE=action associée à une sélection dans une grille
 	 * SELECT_MULTI=action associée à une ou plusieurs sélections dans une grille
 	 *
 	 * @var integer
-	 */var$m_select = "";
+	 */
+	var $m_select = "";
+
 	/**
 	 * _begin_tag
 	 *
 	 * @access private
 	 * @var string
-	 */var$_begin_tag = "";
+	 */
+	var $_begin_tag = "";
+
 	/**
 	 * _end_tag
 	 *
 	 * @access private
 	 * @var string
-	 */var$_end_tag = "";
+	 */
+	var $_end_tag = "";
+
 	/**
 	 * Constructeur
 	 *
@@ -228,8 +246,15 @@ class Xfer_Action extends Xfer_Object {
 		$this->Xfer_Object();
 		$this->m_title = $title;
 		$this->m_icon = "";
-		if( is_file("extensions/$extension/images/$icon"))$this->m_icon = "extensions/$extension/images/$icon";
-		else if( is_file("images/$icon"))$this->m_icon = "images/$icon";
+
+		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
+		if( is_file($rootPath."extensions/$extension/images/$icon"))
+			$this->m_icon = $rootPath."extensions/$extension/images/$icon";
+		else if( is_file($rootPath."images/$icon"))
+			$this->m_icon = $rootPath."images/$icon";
+		else if( is_file($rootPath."$icon"))
+			$this->m_icon = $rootPath.$icon;
 		$this->m_extension = $extension;
 		$this->m_action = $action;
 		$this->m_close = $close;
@@ -595,6 +620,5 @@ function rm_recursive($filepath) {
 	}
 	return unlink($filepath);
 }
-
 //@END@
 ?>

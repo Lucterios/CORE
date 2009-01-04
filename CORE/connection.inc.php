@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 28 November 2008 11:01:51 By  ---
+// --- Last modification: Date 12 December 2008 18:22:09 By  ---
 
 //@BEGIN@
 function mustAutentificate($mess) {
@@ -26,17 +26,21 @@ function mustAutentificate($mess) {
 	$REPONSE .= "<REPONSE observer='CORE.Auth' source_extension='CORE' source_action='authentification'><![CDATA[$mess]]></REPONSE>";
 }
 $IS_CONNECTED = false;
-if(! array_key_exists("ses",$GLOBAL) && ! array_key_exists("login",$GLOBAL)) { mustAutentificate('NEEDAUTH');
-}
+if(! array_key_exists("ses",$GLOBAL) && ! array_key_exists("login",$GLOBAL))
+	mustAutentificate('NEEDAUTH');
 elseif ( array_key_exists("login",$GLOBAL) && array_key_exists("pass",$GLOBAL)) {
 	//tentative de connexion
-	$q = "SELECT COUNT(*) FROM CORE_users WHERE login='".$GLOBAL["login"]."' AND pass=PASSWORD('".$GLOBAL["pass"]."') AND actif='o'";
+	$login=str_replace("'","''",$GLOBAL["login"]);
+	$pass=str_replace("'","''",$GLOBAL["pass"]);
+	$pass_md5=md5($pass);
+	$q = "SELECT COUNT(*) FROM CORE_users WHERE login='$login' AND (pass=PASSWORD('$pass') OR pass='$pass_md5') AND actif='o'";
 	list($nb) = $connect->getRow($connect->execute($q));
-	if($nb != 1) mustAutentificate('BADAUTH');
+	if($nb != 1) 
+		mustAutentificate('BADAUTH');
 	else {
 		$GLOBAL["ses"] = get_session_id($GLOBAL["login"],$timeOut,$connect,$GLOBAL["REMOTE_ADDR"],"multiple");
-		if($GLOBAL["ses"] == "") { mustAutentificate('BADFROMLOCATION');
-		}
+		if($GLOBAL["ses"] == "") 
+			mustAutentificate('BADFROMLOCATION');
 		else {
 			// recup du realName
 			$q = "SELECT realName FROM CORE_users WHERE login='".$GLOBAL["login"]."'";
@@ -89,7 +93,8 @@ elseif ( array_key_exists("ses",$GLOBAL) && ! verif_session($GLOBAL["ses"],$time
 }
 else {
 	$IS_CONNECTED = true;
-	if( array_key_exists("login",$GLOBAL))$login = $GLOBAL["login"];
+	if( array_key_exists("login",$GLOBAL))
+		$login = $GLOBAL["login"];
 	else {
 		$q = "SELECT uid FROM CORE_sessions WHERE sid='".$GLOBAL["ses"]."'";
 		$r = $connect->execute($q);

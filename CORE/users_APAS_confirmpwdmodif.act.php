@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 14 November 2008 18:59:14 By  ---
+// --- Last modification: Date 10 December 2008 20:46:30 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -27,9 +27,9 @@ require_once('CORE/rights.inc.php');
 require_once('CORE/sessions.tbl.php');
 require_once('CORE/users.tbl.php');
 //@TABLES@
-//@XFER:dialogbox
-require_once('CORE/xfer_dialogBox.inc.php');
-//@XFER:dialogbox@
+//@XFER:acknowledge
+require_once('CORE/xfer.inc.php');
+//@XFER:acknowledge@
 
 
 //@DESC@Changer mot de passe
@@ -49,30 +49,27 @@ $newpass1=getParams($Params,"newpass1",0);
 $newpass2=getParams($Params,"newpass2",0);
 $self=new DBObj_CORE_users();
 try {
-$xfer_result=&new Xfer_Container_DialogBox("CORE","users_APAS_confirmpwdmodif",$Params);
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_confirmpwdmodif",$Params);
 $xfer_result->Caption="Changer mot de passe";
 //@CODE_ACTION@
 $ses=new DBObj_CORE_sessions;
 $login=$ses->CurrentLogin();
-
-$self->query("SELECT * FROM CORE_users WHERE login='$login' AND pass=PASSWORD('$oldpass')");
-if ($self->fetch())
-{
-  if (($newpass1!= "") && ($newpass1==$newpass2))
-  {
-    $self->ChangePWD($newpass1);
-    $xfer_result->message("Mot de passe changé", 1);
-  }
-  else
-  {
-// erreur double newpass, reaffichage du formalaire de changement plus message d'erreur
-    $xfer_result->message("Les mots de passe ne sont pas égaux!",4);
-  }
+$oldpass_md5=md5($oldpass);
+$Q="SELECT * FROM CORE_users WHERE login='$login' AND (pass=PASSWORD('$oldpass') OR pass='$oldpass_md5')";
+$self->query($Q);
+if ($self->fetch()) {
+	if (($newpass1!= "") && ($newpass1==$newpass2)) {
+		$self->ChangePWD($newpass1);
+		$xfer_result->message("Mot de passe changé", 1);
+	}
+	else {
+	// erreur double newpass, reaffichage du formalaire de changement plus message d'erreur
+		$xfer_result->message("Les mots de passe ne sont pas égaux!",4);
+	}
 }
-else
-{
-// erreur de oldpass, reaffichage du formalaire de changement plus message d'erreur
-  $xfer_result->message("Mot de passe actuel érroné.($login)", 4);
+else {
+	// erreur de oldpass, reaffichage du formalaire de changement plus message d'erreur
+	$xfer_result->message("Mot de passe actuel érroné.($login) $Q", 4);
 }
 //@CODE_ACTION@
 }catch(Exception $e) {

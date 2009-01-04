@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 05 February 2008 23:36:54 By  ---
+// --- Last modification: Date 10 December 2008 19:58:34 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -31,7 +31,7 @@ require_once('CORE/xfer_custom.inc.php');
 //@XFER:custom@
 
 
-//@DESC@Ajouter un groupe
+//@DESC@Ajouter/Modifier un groupe
 //@PARAM@ 
 //@INDEX:group
 
@@ -45,16 +45,17 @@ $group=getParams($Params,"group",-1);
 if ($group>=0) $self->get($group);
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","groups_APAS_modifier",$Params);
-$xfer_result->Caption='Ajouter un groupe';
+$xfer_result->Caption="Ajouter/Modifier un groupe";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
 $img->setValue('group.png');
 $img->setLocation(0,0,1,3);
 $xfer_result->addComponent($img);
-
-if ($group<=0)
+if ($group>0)
 	$xfer_result->Caption="Modifier un groupe";
-$xfer_result->setDBObject($self,null,false,0,1);
+else
+	$xfer_result->Caption="Ajouter un groupe";
+$xfer_result->setDBObject($self,2,false,0,1);
 $xfer_result->addAction($self->NewAction("_OK","ok.png","ajouter"));
 $xfer_result->addAction($self->NewAction("_Annuler","cancel.png",""));
 //@CODE_ACTION@

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 03 September 2007 18:34:22 By Laurent GAY ---
+// --- Last modification: Date 12 December 2008 18:19:06 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -53,28 +53,15 @@ global $connect;
 $connect->begin();
 try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_supprimer",$Params);
-$xfer_result->Caption='Supprimer un groupe';
+$xfer_result->Caption="Supprimer un groupe";
 $xfer_result->m_context['ORIGINE']="groups_APAS_supprimer";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;
 $xfer_result->m_context['RECORD_ID']=$self->id;
 //@CODE_ACTION@
-$DBObjusers=new DBObj_CORE_users;
-$DBObjusers->groupId=$group;
-if ($DBObjusers->find()==0)
-{
-  if ($xfer_result->confirme("Etes-vous sûre de vouloir supprimer le groupe '".$self->groupName."'?"))
-  {
-    $DBObjgroup_rights=new DBObj_CORE_group_rights;
-    $DBObjgroup_rights->call("DeleteGroup",$self->id);
-    $self->delete();
-  }
-}
-else
-{
-  require_once "CORE/xfer_dialogBox.inc.php";
-  $xfer_result=new Xfer_Container_DialogBox("CORE","access_APAS_supprimer",$Params);
-  $xfer_result->setTypeAndText("Suppression impossible: Groupe non vide.",4);
-}
+if($self->canBeDelete()!=0)
+	$xfer_result->message("Suppression impossible: ce groupe est utilisé!");
+else if($xfer_result->confirme("Etes vous sûre de vouloir supprimer ce groupe?"))
+	$self->deleteCascade();
 //@CODE_ACTION@
 	$xfer_result->setCloseAction(new Xfer_Action('unlock','','CORE','UNLOCK',FORMTYPE_MODAL,CLOSE_YES,SELECT_NONE));
 	$connect->commit();
