@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 04 October 2008 12:38:06 By  ---
+// --- Last modification: Date 22 January 2009 20:12:19 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -58,13 +58,11 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 	if( is_dir($temp_path)) rmdir($temp_path);
 	if(! is_dir($temp_path)) mkdir($temp_path,0777, true);
 	//
+	PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);
 	require_once("Archive/Tar.php");
 	require_once("CORE/Lucterios_Error.inc.php");
 	$tar = new Archive_Tar($file_path);
 	$result = $tar->extract($temp_path);
-	if(! is_file($temp_path."data.sql")) {
-		throw new LucteriosException( IMPORTANT,'Données non trouvées! ('.$temp_path."/data.sql)");
-	}
 	$items = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
 	foreach($items as $item) {
 		if( substr($item,-1) == "/") {
@@ -79,34 +77,44 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 	global $connect;
 	$connect->begin();
 	try {
-		$query_txt = "";
-		$handle = @fopen($temp_path."data.sql", "r");
-		while ($handle && !feof($handle)) {
-        		$line = @fgets($handle);
-			if(( substr( trim($line),0,2) != '--') && ( trim($line) != '')) {
-				$line = trim($line);
-				$query_txt .= " ".$line;
-				if((substr($line,-1) == ';') && ($query_txt != '')) {
-					if(!$connect->execute($query_txt)) {
-						throw new LucteriosException( IMPORTANT,"Erreur dans les données (".$connect->errorMsg.")!");
+		$addSQL=false;
+		$dh = opendir($temp_path);
+		while(($file = readdir($dh)) != false)
+			if(substr($file,-4)=='.sql') {
+				$query_txt = "";
+				$SQL_file_name=$temp_path.$file;
+				$handle = @fopen($SQL_file_name, "r");
+				while ($handle && !feof($handle)) {
+	        		$line = @fgets($handle);
+				if(( substr( trim($line),0,2) != '--') && ( trim($line) != '')) {
+					$line = trim($line);
+					$query_txt .= " ".$line;
+					if((substr($line,-1) == ';') && ($query_txt != '')) {
+						$addSQL=true;
+						$connect->execute($query_txt,true);
+						$query_txt = '';
 					}
-					$query_txt = '';
 				}
-			}
-    		}
-		if ($handle)
-			@fclose($handle);
+    			}
+			if ($handle)
+				@fclose($handle);
+		}
+		closedir($dh);
+		if(!$addSQL)
+			throw new LucteriosException( IMPORTANT,'Données non trouvées! ('.$temp_path.")");
 		foreach($items as $item) {
 			$r = rm_recursive($item);
 			$r = rename($temp_path.$item,$item);
 		}
 		$connect->commit();
 		$lbl->setValue("{[center]}{[bold]}Restauration Terminer.{[newline]}Vous devez vous reconnecter.{[/bold]}{[/center]}");
+		$r = rm_recursive($temp_path);
 	}
 	 catch( Exception$e) {
 		$connect->rollback();
 		$lbl->setValue("{[center]}{[bold]}Erreur.{[newline]}{[font color=red]}".$e->getMessage()."{[/font]}{[/bold]}{[/center]}");
 	}
+	PEAR::setErrorHandling(PEAR_ERROR_RETURN);
 	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png','CORE','menu', FORMTYPE_MODAL, CLOSE_YES));
 }
 else {

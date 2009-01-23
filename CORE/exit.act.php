@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 08 January 2009 21:46:33 By  ---
+// --- Last modification: Date 12 November 2007 19:01:28 By Laurent GAY ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -31,26 +31,30 @@ require_once('CORE/xfer.inc.php');
 //@XFER:acknowledge@
 
 
-//@DESC@Tuer une session
+//@DESC@Desconnection
 //@PARAM@ 
-//@INDEX:access_actuel
 
 
 //@LOCK:0
 
-function sessions_APAS_killsession($Params)
+function exit($Params)
 {
-$self=new DBObj_CORE_sessions();
-$access_actuel=getParams($Params,"access_actuel",-1);
-if ($access_actuel>=0) $self->get($access_actuel);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","sessions_APAS_killsession",$Params);
-$xfer_result->Caption="Tuer une session";
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","exit",$Params);
+$xfer_result->Caption='Desconnection';
 //@CODE_ACTION@
-if ($xfer_result->confirme("Etes-vous sure de vouloir tuer cette session?"))
-{
-	$self->valid='n';
-	$self->update();
+global $GLOBAL;
+$session=$GLOBAL["ses"];
+
+logAutre("Exit session=$session");
+
+$DBObjsessions=new DBObj_CORE_sessions;
+$DBObjsessions->sid=$session;
+$DBObjsessions->find();
+while ($DBObjsessions->fetch()) {
+	logAutre("Exit session N°".$DBObjsessions->id);
+	$DBObjsessions->valid='n';
+	$DBObjsessions->update();
 }
 //@CODE_ACTION@
 }catch(Exception $e) {

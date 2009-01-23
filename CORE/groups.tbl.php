@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 10 September 2008 20:02:53 By  ---
+// --- Last modification: Date 08 January 2009 21:51:49 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -29,7 +29,7 @@ class DBObj_CORE_groups extends DBObj_Basic
 	var $extname="CORE";
 	var $__table="CORE_groups";
 
-	var $DefaultFields=array(array('id'=>'1', 'groupId'=>'1', 'groupName'=>'Admin', 'weigth'=>'100'));
+	var $DefaultFields=array(array('id'=>'1', 'groupId'=>'1', 'groupName'=>'Admin', 'weigth'=>'100'), array('@refresh@'=>false, 'id'=>'2', 'groupName'=>'Visiteur', 'weigth'=>'0', 'groupId'=>'0'));
 	var $NbFieldsCheck=1;
 	var $Heritage="";
 	var $PosChild=-1;

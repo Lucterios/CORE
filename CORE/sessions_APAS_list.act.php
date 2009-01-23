@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 20 August 2007 18:57:32 By Laurent GAY ---
+// --- Last modification: Date 08 January 2009 21:46:23 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -34,10 +34,15 @@ require_once('CORE/xfer_custom.inc.php');
 //@DESC@Consultation des session
 //@PARAM@ 
 
+
+//@LOCK:0
+
 function sessions_APAS_list($Params)
 {
 $self=new DBObj_CORE_sessions();
+try {
 $xfer_result=&new Xfer_Container_Custom("CORE","sessions_APAS_list",$Params);
+$xfer_result->Caption="Consultation des session";
 //@CODE_ACTION@
 $titre_actuel=new Xfer_Comp_LabelForm("titre_actuel");
 $titre_actuel->setLocation(0,0,2,1);
@@ -52,7 +57,7 @@ $access_actuel->setDBObject($self,array("uid","dtcreate","dtmod","ip"));
 $access_actuel->m_headers['dtcreate']->m_type="";
 $access_actuel->m_headers['dtmod']->m_type="";
 $access_actuel->addAction($self->NewAction("_Tuer","suppr.png","killsession", FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
-$xfer_result->addComponent($access_actuel); 
+$xfer_result->addComponent($access_actuel);
 
 $sep=new Xfer_Comp_LabelForm("sep");
 $sep->setLocation(0,2,2,1);
@@ -76,7 +81,10 @@ $xfer_result->addComponent($access_ancien);
 
 $xfer_result->addAction($self->NewAction("_Fermer","close.png"));
 //@CODE_ACTION@
-return $xfer_result->getReponseXML();
+}catch(Exception $e) {
+	throw $e;
+}
+return $xfer_result;
 }
 
 ?>

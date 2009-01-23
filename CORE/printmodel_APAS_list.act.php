@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 04 February 2008 20:28:32 By  ---
+// --- Last modification: Date 22 January 2009 22:45:32 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -42,7 +42,7 @@ function printmodel_APAS_list($Params)
 $self=new DBObj_CORE_printmodel();
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","printmodel_APAS_list",$Params);
-$xfer_result->Caption='Liste des modèles d`impression';
+$xfer_result->Caption="Liste des modèles d`impression";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
 $img->setValue('PrintReportModel.png');
@@ -53,7 +53,7 @@ $img->setValue("{[center]}{[underline]}{[bold]}Modèles d'impression{[/bold]}{[/u
 $img->setLocation(1,0);
 $xfer_result->addComponent($img);
 
-$q="SELECT CORE_printmodel.id,CORE_extension.description extensionid,CORE_printmodel.identify,CORE_printmodel.titre,CORE_printmodel.reference,CORE_printmodel.model FROM CORE_printmodel,CORE_extension ";
+$q="SELECT CORE_printmodel.id,CORE_extension.titre extensionid,CORE_printmodel.identify,CORE_printmodel.titre,CORE_printmodel.reference,CORE_printmodel.model FROM CORE_printmodel,CORE_extension ";
 $q.="WHERE CORE_printmodel.extensionid=CORE_extension.extensionid ";
 $q.="ORDER BY extensionid,identify,reference";
 $self->query($q);

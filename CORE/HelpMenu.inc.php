@@ -18,13 +18,12 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 10 October 2008 10:39:49 By  ---
+// --- Last modification: Date 13 January 2009 19:14:44 By  ---
 
 //@BEGIN@
-require_once"setup_param.inc.php";
-if( is_file("../applis/setup.inc.php"))require_once"../applis/setup.inc.php";
-else require_once"../extensions/applis/setup.inc.php";
-require_once"HelpTools.inc.php";
+require_once("setup_param.inc.php");
+require_once("../extensions/applis/setup.inc.php");
+require_once("HelpTools.inc.php");
 
 function showMenuItem($menu_item) {
 	list($extension,$main_title,$list_menu) = $menu_item;
@@ -109,6 +108,5 @@ function showClass(className, nblignes)
 </body>
 </html>";
 }
-
 //@END@
 ?>

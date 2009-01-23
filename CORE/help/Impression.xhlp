@@ -1,13 +1,13 @@
 <h2>Etiquette</h2>
-Depuis le menu <i>Administration/Rapport et Impression/Etiquette</i>, vous avez la possibilité de rédefinir des planches d'étiquettes.<br><br>
+Depuis le menu <i>Administration/Rapport et Impression/Etiquette</i>, vous avez la possibilité de redéfinir des planches d'étiquettes.<br><br>
 <center><img src='~CORE$Etiquette.jpg' alt='Etiquette.jpg' /></center><br>
 A une nouvelle planche, définissez les différentes dimensions: largeurs, hauteurs, marges et écarts.
 
 <h2>Rapports sauvegardés</h2>
-Le menu <i>Administration/Rapport et Impression/Rapports sauvegardés</i> présente la liste des document précédemment imprimer avec sauvegarde.<br>
+Le menu <i>Administration/Rapport et Impression/Rapports sauvegardés</i> présente la liste des documents précédemment imprimés avec sauvegarde.<br>
 Vous avez alors la possibilité de ré-imprimer le rapport.
 
 <h2>Modèles des rapports</h2>
 Le menu <i>Administration/Rapport et Impression/Modèles des rapports</i> présente la liste des modèle d'impression utilisés par certaines extensions.<br>
-Vous avez alors la possibilité de modifier ces modèles pour personnalisé vos rapports.<br>
+Vous avez alors la possibilité de modifier ces modèles pour personnaliser vos rapports.<br>
 <u>Attention:</u> La modification de ces modèles peut entraîner des conséquences importantes sur les rapports finaux.

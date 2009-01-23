@@ -1,0 +1,39 @@
+<h1>Les choix technologiques</h1>
+Depuis le commencement de ce logiciel, les développeurs ont voulut que cette application puisse avoir une architecture ouverte permettant à la fois des dévolution les plus large.<br/>
+<br/>
+Pour cela, l'équipe a choisi de se reposer sur des technologies du Logiciel Libre (ou Open Source)<br/>
+Logiciel est implémenté sous un architecture 3 tiers:<br/>
+<ul>
+<li>Une base de donnée MySQL pour les persitances des données</li>
+<li>Des scripts métiers en PHP hébergés sur un serveur Apache</li>
+<li>Un client graphique en Java</li>
+</ul>
+<center><img src='~CORE$Architecture.jpg' alt='Architecture.jpg' /></center><br/>
+L'avantage majeur de ces choix est la portabilité. En effet, il est facile d'installer sur n'importe quel ordinateur APACHE/PHP/MySQL et l'environnement JAVA existe pour un grand nombre de systèmes d'exploitations.<br/>
+Il est donc possible d'installer ce logiciel sur:<br/>
+<ul>
+<li>PC MS-Windows 2000, XP ou Vista</li>
+<li>Apple Mac OS X 10.3 et +</li>
+<li>PC Linux avec KDE ou Gnome</li>
+</ul>
+<br/>
+En plus, une tel architecture nous donne des possibilités de déployement très variés.<br/>
+
+<h1>L'installation en mono-poste</h1>
+Dans cette organisation, l'ordinateur embarque la totalité du logiciel: un service MySQL, un sevice Apache enrichi de scripts métiers ainsi que l'interface graphique en Java.<br/>
+C'est l'installation que l'on propose en standard à l'aide des installeurs mise en ligne sur internet.<br/>
+<center><img src='~CORE$MonoPoste.jpg' alt='MonoPoste.jpg' /></center><br/>
+L'avantage principale est que l'ordinateur reste indépendant. Il n'a nul besoin d'un connexion réseau permanant pour fonctionner correctement.<br/>
+Par contre, cet déployement limite l'utisation du logiciel par plusieurs personnes et en tout cas pas en même temps.<br/>
+<br/>
+<h1>L'installation en réseau local</h1>
+Dans cette organisation, un ordinateur dédié (appelé Serveur) embarque les différents services MySQL+Apache, par contre étant connecté à d'autre machine à l'aide d'un petit réseau filaire ou wifi, c'est d'autre poste d'utilisation (appelé Client) qui sont utilisés pour consulter le logiciel.<br/>
+<center><img src='~CORE$ReseauLocal.jpg' alt='ReseauLocal.jpg' /></center><br/>
+L'avantage est de pouvoir utiliser le logiciel à plusieurs en même temps sur des données partagés.<br/>
+Par contre, cela est plus contraignant en gestion du parc informatique et la mobilité de consultation n'est pas permise.<br/>
+<br/>
+<h1>L'installation en réseau distant</h1>
+Cette organisation est proche de la précédente à la différence que les postes clients utilisent une connexion internet pour consulter sur les données du serveur.<br/>
+<center><img src='~CORE$ReseauDistant.jpg' alt='ReseauDistant.jpg' /></center><br/>
+L'avantage ici est de pouvoir consulter ses données de n'importe où sur la plannete à partir que l'on a à disposition une connexion internet (de préférence haut-débit)<br/>
+L'inconvenient est de nécessité d'avoir la possibilité d'avoir notre ordinateur Serveur 24h/24h sur internet avec des configurations réseaux adaptés.<br>

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 09 December 2008 23:18:01 By  ---
+// --- Last modification: Date 08 January 2009 21:57:09 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -29,7 +29,7 @@ class DBObj_CORE_users extends DBObj_Basic
 	var $extname="CORE";
 	var $__table="CORE_users";
 
-	var $DefaultFields=array(array('login'=>'admin', 'pass'=>'*4ACFE3202A5FF5CF467898FC58AAB1D615029441', 'realName'=>'Administrateur', 'groupId'=>'1', 'actif'=>'o', '@refresh@'=>false, 'id'=>'100'));
+	var $DefaultFields=array(array('login'=>'admin', 'pass'=>'*4ACFE3202A5FF5CF467898FC58AAB1D615029441', 'realName'=>'Administrateur', 'groupId'=>'1', 'actif'=>'o', '@refresh@'=>false, 'id'=>'100'), array('@refresh@'=>false, 'id'=>'99', 'login'=>'', 'pass'=>'d41d8cd98f00b204e9800998ecf8427e', 'realName'=>'Visiteur', 'groupId'=>'2', 'actif'=>'n'));
 	var $NbFieldsCheck=1;
 	var $Heritage="";
 	var $PosChild=-1;

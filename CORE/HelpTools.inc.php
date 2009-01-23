@@ -18,18 +18,14 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 13 August 2008 20:26:08 By  ---
+// --- Last modification: Date 13 January 2009 19:16:04 By  ---
 
 //@BEGIN@
-
 function getExtensionPath($extension) {
 	if($extension == "CORE")
 	return "../CORE";
-	if($extension == "applis") {
-		if( file_exists("../applis"))
-		return "../applis";
+	if($extension == "applis")
 		return "../extensions/applis";
-	}
 	return "../extensions/$extension";
 }
 
@@ -114,8 +110,11 @@ function addItemInList($extension,&$menu,$includeAll = false) {
 	if(! is_null($main_title) && ($pos >= 0)) {
 		$position = sprintf("%'05d",$pos);
 		$list_menu = array();
-		foreach($descripts as $key => $desc)if($includeAll || ($desc[2] != 0))$list_menu[$key] = $desc;
-		if( count($list_menu)>0)$new_menu = array($extension,$main_title,$list_menu);
+		foreach($descripts as $key => $desc)
+			if($includeAll || ($desc[2] != 0))
+				$list_menu[$key] = $desc;
+		if( count($list_menu)>0)
+			$new_menu = array($extension,$main_title,$list_menu);
 		$menu[$position] = $new_menu;
 	}
 }
@@ -124,10 +123,14 @@ function getMenuList($includeAll = false) {
 	$MenuList = array(); addItemInList('applis',$MenuList,$includeAll);
 	$ext_path = "../extensions";
 	if($handle = opendir($ext_path)) {
-		while( false !== ($item = readdir($handle)))if(($item != ".") && ($item != "..") && ($item != "applis") && is_dir("$ext_path/$item")) addItemInList($item,$MenuList,$includeAll); closedir($handle);
-	} addItemInList('CORE',$MenuList,$includeAll); ksort($MenuList);
+		while(false !== ($item = readdir($handle)))
+			if(($item != ".") && ($item != "..") && ($item != "applis") && is_dir("$ext_path/$item")) 
+				addItemInList($item,$MenuList,$includeAll); 
+		closedir($handle);
+	} 
+	addItemInList('CORE',$MenuList,$includeAll); 
+	ksort($MenuList);
 	return $MenuList;
 }
-
 //@END@
 ?>

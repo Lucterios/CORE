@@ -31,5 +31,6 @@ $HelpDescriptions[3]=array('droits','Modification des droits',1);
 $HelpDescriptions[4]=array('backup','Sauvegarde/restauration',1);
 $HelpDescriptions[5]=array('Impression','Impression',1);
 $HelpDescriptions[6]=array('Avance','Avancé',1);
+$HelpDescriptions[7]=array('Architecture','Architecture',1);
 
 ?>

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 03 September 2007 18:46:05 By Laurent GAY ---
+// --- Last modification: Date 08 January 2009 22:06:52 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -47,15 +47,19 @@ if ($user_actif>=0) $self->get($user_actif);
 $self->lockRecord("users_APAS_modifier");
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_modifier",$Params);
-$xfer_result->Caption='Modifier un utilisateur';
+$xfer_result->Caption="Modifier un utilisateur";
 $xfer_result->m_context['ORIGINE']="users_APAS_modifier";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;
 $xfer_result->m_context['RECORD_ID']=$self->id;
 //@CODE_ACTION@
-$xfer_result=$self->call("Formulaire",$xfer_result);
+$xfer_result=$self->Formulaire($xfer_result);
 
-$xfer_result->addAction($self->NewAction("_OK",'ok.png','miseajour'));
-$xfer_result->addAction($self->NewAction("_Annuler",'cancel.png'));
+if ($self->id!=99) {
+	$xfer_result->addAction($self->NewAction("_OK",'ok.png','miseajour'));
+	$xfer_result->addAction($self->NewAction("_Annuler",'cancel.png'));
+}
+else
+	$xfer_result->addAction($self->NewAction("_Fermer",'close.png'));
 //@CODE_ACTION@
 	$xfer_result->setCloseAction(new Xfer_Action('unlock','','CORE','UNLOCK',FORMTYPE_MODAL,CLOSE_YES,SELECT_NONE));
 }catch(Exception $e) {

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 05 February 2008 23:31:00 By  ---
+// --- Last modification: Date 08 January 2009 21:53:08 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -42,7 +42,7 @@ function groups_APAS_liste($Params)
 $self=new DBObj_CORE_groups();
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","groups_APAS_liste",$Params);
-$xfer_result->Caption='Liste des groupes';
+$xfer_result->Caption="Liste des groupes";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
 $img->setValue('group.png');
@@ -53,7 +53,7 @@ $img->setValue("{[center]}{[underline]}{[bold]}Groupes Existants{[/bold]}{[/unde
 $img->setLocation(1,0);
 $xfer_result->addComponent($img);
 
-$self->whereAdd('id!=1');
+$self->whereAdd('(id!=1) AND (id!=2)');
 $self->orderBy('weigth DESC');
 $self->find();
 

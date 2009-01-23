@@ -1,5 +1,5 @@
 Depuis le menu <i>Administration/Gestion des Droits/Extensions</i> vous pouvez accéder à la liste des droits de chaques modules.<br><br>
 <center><img src='~CORE$Extension.jpg' alt='Extension.jpg' /></center><br>
-Ce nouveau écran vous indique les droits et le actions du module et vous avez la possibilité de modifier l'association de ces droits à vos groupes.<br><br>
+Ce nouvel écran vous indique les droits et le actions du module et vous avez la possibilité de modifier l'association de ces droits à vos groupes.<br><br>
 <center><img src='~CORE$Droits.jpg' alt='Droits.jpg' /></center><br>
 En modifiant ces associations vous passez outre la règle des poids des groupes (voir <a href='~CORE$groupes'>Les groupes</a>).

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 20 December 2008 18:38:23 By  ---
+// --- Last modification: Date 21 January 2009 22:14:27 By  ---
 
 //@BEGIN@
 /**
@@ -506,12 +506,15 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 * @param string $value
 	 */
 	function setFileToLoad($filename) {
+		$http_referer=$_SERVER["HTTP_REFERER"];
+		$protocol=substr($http_referer,0,strpos($http_referer,'://'));
+		$protocol=($protocol=='')?'http':$protocol;
 		$server_name = $_SERVER["SERVER_NAME"];
 		$server_port = $_SERVER["SERVER_PORT"];
 		$server_dir = $_SERVER["PHP_SELF"];
 		$pos = strpos($server_dir,'coreIndex.php');
 		$server_dir = substr($server_dir,0,$pos);
-		$this->setLink( sprintf('http://%s:%d%s%s',$server_name,$server_port,$server_dir,$filename));
+		$this->setLink( sprintf('%s://%s:%d%s%s',$protocol,$server_name,$server_port,$server_dir,$filename));
 	}
 
 	/**
@@ -530,7 +533,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 * @return string
 	 */
 	function _getContent() {
-		return sprintf("<LINK><![CDATA[%s]]></LINK>\n<![CDATA[%s]]>",$this->m_Link,$this->m_value);
+		return sprintf("<![CDATA[%s]]>\n<LINK><![CDATA[%s]]></LINK>\n",$this->m_value,$this->m_Link);
 	}
 }
 /**

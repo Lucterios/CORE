@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 December 2008 8:20:05 By  ---
+// --- Last modification: Date 13 January 2009 19:12:48 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -27,24 +27,28 @@ require_once("CORE/setup_param.inc.php");
 
 function getExtensions($rootPath = '',$WithClient = false) {
 	$exts = array();
-	if( is_dir($rootPath.'CORE'))$exts['CORE'] = $rootPath.'CORE/';
+	if(is_dir($rootPath.'CORE'))
+		$exts['CORE'] = $rootPath.'CORE/';
 	$extDir = $rootPath."extensions/";
-	if( is_dir($extDir)) {
+	if(is_dir($extDir)) {
 		$dh = opendir($extDir);
 		while(($file = readdir($dh)) != false) {
-			if(($file[0] != '.') && is_dir($extDir.$file))$exts[$file] = $extDir.$file.'/';
-		} closedir($dh);
+			if(($file[0] != '.') && is_dir($extDir.$file))
+				$exts[$file] = $extDir.$file.'/';
+		} 
+		closedir($dh);
 	}
-	if( is_dir($rootPath.'applis'))$exts['applis'] = $rootPath.'applis/';
 	if($WithClient) {
 		$extDir = $rootPath."UpdateClients/";
 		if( is_dir($extDir)) {
 			$dh = opendir($extDir);
 			while(($file = readdir($dh)) != false) {
-				if(($file[0] != '.') && is_dir($extDir.$file))$exts[$file] = $extDir.$file.'/';
+				if(($file[0] != '.') && is_dir($extDir.$file))
+					$exts[$file] = $extDir.$file.'/';
 			} closedir($dh);
 		}
-		if( is_dir($rootPath.'SDK'))$exts['SDK'] = $rootPath.'SDK/';
+		if( is_dir($rootPath.'SDK'))
+			$exts['SDK'] = $rootPath.'SDK/';
 	}
 	return $exts;
 }
@@ -551,13 +555,16 @@ class Extension {
 	function callApplicationPostInstallation($ExtensionDescription) {
 		global $rootPath;
 		$message = "";
-		if( is_file($rootPath.'applis/postInstallation.inc.php'))require'applis/postInstallation.inc.php';
-		if( is_file($rootPath.'extensions/postInstallation.inc.php'))require'extensions/applis/postInstallation.inc.php';
-		if( is_file('applis/application.inc.php'))require'applis/application.inc.php';
-		if( is_file('extensions/applis/application.inc.php'))require'extensions/applis/application.inc.php';
-		if( function_exists('postInstallation'))$message .= postInstallation($ExtensionDescription);
-		else if( function_exists('application_postInstallation'))$message .= application_postInstallation($ExtensionDescription);
-		else $message .= 'Pas de post-installation{[newline]}';
+		if( is_file($rootPath.'extensions/postInstallation.inc.php'))
+				require'extensions/applis/postInstallation.inc.php';
+		if( is_file('extensions/applis/application.inc.php'))
+				require'extensions/applis/application.inc.php';
+		if(function_exists('postInstallation'))
+			$message .= postInstallation($ExtensionDescription);
+		else if( function_exists('application_postInstallation'))
+			$message .= application_postInstallation($ExtensionDescription);
+		else 
+			$message .= 'Pas de post-installation{[newline]}';
 		return $message;
 	}
 

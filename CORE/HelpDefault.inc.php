@@ -18,12 +18,11 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 10 October 2008 10:44:15 By  ---
+// --- Last modification: Date 13 January 2009 19:14:19 By  ---
 
 //@BEGIN@
-require_once"setup_param.inc.php";
-if( is_file("../applis/setup.inc.php"))require_once"../applis/setup.inc.php";
-else require_once"../extensions/applis/setup.inc.php";
+require_once("setup_param.inc.php");
+require_once("../extensions/applis/setup.inc.php");
 $version_appli = "$version_max.$version_min.$version_release.$version_build";
 require_once"HelpTools.inc.php";
 $num_page = 0;
@@ -90,14 +89,10 @@ function showHelpPage($extension,$helpname,$title = '',$includeAll = false) {
 		<font size='-1'>$extention_description</font><br>";
 		$HtmlText .= "Guide d'utilisation<br>";
 		if($includeAll)$HtmlText .= "<br><br><br><br>";
-		if( is_dir('../applis/images/')) {
-			if( is_file('../applis/images/image.jpg'))$HtmlText .= "<img src='../applis/images/image.jpg'/><br>";
-			else $HtmlText .= "<img src='../applis/images/logo.gif'/><br>";
-		}
-		else {
-			if( is_file('../extensions/applis/images/image.jpg'))$HtmlText .= "<img src='../extensions/applis/images/image.jpg'/><br>";
-			else $HtmlText .= "<img src='../extensions/applis/images/logo.gif'/><br>";
-		}
+		if( is_file('../extensions/applis/images/image.jpg'))
+			$HtmlText .= "<img src='../extensions/applis/images/image.jpg'/><br>";
+		else 
+			$HtmlText .= "<img src='../extensions/applis/images/logo.gif'/><br>";
 		$HtmlText .= "<br><br><br><font size='-1'>Version ".$version_appli."</font></div>";
 	}
 	$HtmlText .= "</td>
@@ -174,6 +169,5 @@ else {
 }
 echo"	</body>
 </html>";
-
 //@END@
 ?>
