@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 08 January 2009 21:51:49 By  ---
+// --- Last modification: Date 26 January 2009 21:40:21 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -29,7 +29,7 @@ class DBObj_CORE_groups extends DBObj_Basic
 	var $extname="CORE";
 	var $__table="CORE_groups";
 
-	var $DefaultFields=array(array('id'=>'1', 'groupId'=>'1', 'groupName'=>'Admin', 'weigth'=>'100'), array('@refresh@'=>false, 'id'=>'2', 'groupName'=>'Visiteur', 'weigth'=>'0', 'groupId'=>'0'));
+	var $DefaultFields=array(array('id'=>'1', 'groupId'=>'1', 'groupName'=>'Admin', 'weigth'=>'100'), array('@refresh@'=>false, 'id'=>'99', 'groupName'=>'Visiteur', 'weigth'=>'0', 'groupId'=>'0'));
 	var $NbFieldsCheck=1;
 	var $Heritage="";
 	var $PosChild=-1;
@@ -37,7 +37,8 @@ class DBObj_CORE_groups extends DBObj_Basic
 	var $groupName;
 	var $weigth;
 	var $groupId;
-	var $__DBMetaDataField=array('groupName'=>array('description'=>'Nom du groupe', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'weigth'=>array('description'=>'Poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)), 'groupId'=>array('description'=>'groupId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>999)));
+	var $GroupRights;
+	var $__DBMetaDataField=array('groupName'=>array('description'=>'Nom du groupe', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'weigth'=>array('description'=>'Poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)), 'groupId'=>array('description'=>'groupId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>999)), 'GroupRights'=>array('description'=>'GroupRights', 'type'=>9, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_group_rights', 'RefField'=>'groupref')));
 
 	var $__toText='$groupName';
 }

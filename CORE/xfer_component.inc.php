@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 21 January 2009 22:14:27 By  ---
+// --- Last modification: Date 26 January 2009 19:48:57 By  ---
 
 //@BEGIN@
 /**
@@ -675,6 +675,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	var $mPageMum = 0;
 
 	/**
+	 * Nombre de lignes totales
+	 *
+	 * @var int
+	 */
+	var $mNbLines = 0;
+
+	/**
 	 * Constructeur
 	 *
 	 * @param string $name
@@ -828,6 +835,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param array $Params Context des parametres => Numero de la page [0,N-1]
 	 */
 	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
+		$this->mNbLines=$DBObjs->N;
 		if (is_array($ContextParams)) {
 			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
 			$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);

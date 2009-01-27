@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 08 January 2009 21:53:08 By  ---
+// --- Last modification: Date 26 January 2009 22:58:44 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -53,7 +53,7 @@ $img->setValue("{[center]}{[underline]}{[bold]}Groupes Existants{[/bold]}{[/unde
 $img->setLocation(1,0);
 $xfer_result->addComponent($img);
 
-$self->whereAdd('(id!=1) AND (id!=2)');
+$self->whereAdd('(id!=1) AND (id!=99)');
 $self->orderBy('weigth DESC');
 $self->find();
 
