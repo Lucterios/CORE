@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 12 December 2008 17:09:48 By  ---
+// --- Last modification: Date 11 February 2009 19:29:02 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -47,7 +47,7 @@ $img_title->setLocation(0,0,1);
 $img_title->setValue('config.png');
 $xfer_result->addComponent($img_title);
 $lab = new Xfer_Comp_LabelForm('title');
-$lab->setLocation(1,0,10);
+$lab->setLocation(1,0,7);
 $lab->setValue('{[newline]}{[center]}{[bold]}{[underline]}Configuration de votre système{[/underline]}{[/bold]}{[/center]}');
 $xfer_result->addComponent($lab);
 global $rootPath;

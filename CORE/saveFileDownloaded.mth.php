@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 December 2008 0:36:41 By  ---
+// --- Last modification: Date 04 March 2009 19:27:08 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -42,7 +42,7 @@ if ($httpFile) {
 		return is_file($PathFile);
 	}
 	else
-		return false;
+		throw new LucteriosException(IMPORTANT,"fichier $Name non transfèré!");
 }
 else {
 	$uploadfile = $Params[$Name];

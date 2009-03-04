@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 07 November 2007 22:49:41 By Laurent GAY ---
+// --- Last modification: Date 11 February 2009 19:28:11 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -40,16 +40,17 @@ function printConf($Params)
 {
 try {
 $xfer_result=&new Xfer_Container_Print("CORE","printConf",$Params);
-$xfer_result->Caption='Impression de la configuration';
+$xfer_result->Caption="Impression de la configuration";
 //@CODE_ACTION@
-
 require_once 'CORE/PrintAction.inc.php';
 
 $Params['NOPLAN']=1;
 
 $print_action=new PrintAction('CORE','configuration',$Params);
-$print_action->TabChangePage=false;
-$print_action->Extended=false;
+$print_action->largeur_page = 297;
+$print_action->hauteur_page = 210;
+$print_action->TabChangePage = false;
+$print_action->Extended = false;
 $print_action->Title="Configuration";
 $xfer_result->printListing($print_action);
 //@CODE_ACTION@

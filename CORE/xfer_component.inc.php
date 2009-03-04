@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 26 January 2009 19:48:57 By  ---
+// --- Last modification: Date 07 February 2009 15:09:17 By  ---
 
 //@BEGIN@
 /**
@@ -832,7 +832,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param DBObj_Basic $DBObjs
 	 * @param null|string|array $FieldNames
 	 * @param string $RefTableName
-	 * @param array $Params Context des parametres => Numero de la page [0,N-1]
+	 * @param array $ContextParams Context des parametres => Numero de la page [0,N-1]
 	 */
 	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
 		$this->mNbLines=$DBObjs->N;
@@ -1613,6 +1613,13 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	var $HttpFile=false;
 
 	/**
+	 * Taille maximal à télécharger
+	 *
+	 * @var int
+	 */
+	var $maxsize=1048576;
+
+	/**
 	 * Constructeur
 	 *
 	 * @param string $name
@@ -1647,6 +1654,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 			$xml_attr .= " Compress='".$this->compress."'";
 		if ($this->HttpFile==true)
 			$xml_attr .= " HttpFile='1'";
+		$xml_attr .= " maxsize='$this->maxsize'";
 		return $xml_attr;
 	}
 
@@ -1695,6 +1703,13 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	var $HttpFile=false;
 
 	/**
+	 * Taille maximal à télécharger
+	 *
+	 * @var int
+	 */
+	var $maxsize=1048576;
+
+	/**
 	 * Constructeur
 	 *
 	 * @param string $name
@@ -1735,6 +1750,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 			$xml_attr .= " Compress='".$this->compress."'";
 		if ($this->HttpFile==true)
 			$xml_attr .= " HttpFile='1'";
+		$xml_attr .= " maxsize='$this->maxsize'";
 		return $xml_attr;
 	}
 
