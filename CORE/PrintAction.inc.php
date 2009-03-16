@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 December 2008 22:08:07 By  ---
+// --- Last modification: Date 16 March 2009 22:32:24 By  ---
 
 //@BEGIN@
 /**
@@ -257,6 +257,7 @@ class PrintTable extends PrintItem {
 					$img=new PrintImage($obj,null);
 					$img->width=1000;
 					list($sizeX,$sizeY) = $img->getImgSize();
+					$sizeX=$sizeX/3;
 					$sizeY=$sizeY/4;
 					$this->rows[$idx][] = $img->getImgContent();
 				}

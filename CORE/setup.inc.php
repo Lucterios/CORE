@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // setup file write by SDK tool
-// --- Last modification: Date 04 March 2009 19:27:08 By  ---
+// --- Last modification: Date 16 March 2009 22:32:24 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.";
@@ -29,8 +29,8 @@ $extension_libre=true;
 
 $version_max=0;
 $version_min=90;
-$version_release=2;
-$version_build=16;
+$version_release=50;
+$version_build=3;
 
 $depencies=array();
 
@@ -52,7 +52,7 @@ $menus[1] = new Param_Menu("Ad_ministration", "", "", "admin.png", "", 100 , 0, 
 $menus[2] = new Param_Menu("_Utilisateurs", "_Gestion des Droits", "users_APAS_list", "user.png", "", 5 , 0, "Gestion des utilisateurs autorisés à se connecter.");
 $menus[4] = new Param_Menu("_Paramètres", "_Avancé", "extension_params_APAS_list", "", "", 20 , 0, "");
 $menus[5] = new Param_Menu("_Extensions", "_Gestion des Droits", "extension_APAS_list", "extensions.png", "", 15 , 0, "Gestion des modules et association des droits.");
-$menus[6] = new Param_Menu("_Mot de passe", "Ad_ministration", "users_APAS_changerpassword", "passwd.png", "", 1 , 1, "Changement de votre mot de passe.");
+$menus[6] = new Param_Menu("_Mot de passe", "Ad_ministration", "users_APAS_changerpassword", "passwd.png", "", 5 , 1, "Changement de votre mot de passe.");
 $menus[7] = new Param_Menu("_Groupes", "_Gestion des Droits", "groups_APAS_liste", "group.png", "", 10 , 0, "Gestion d'un groupe de droits d'accès.");
 $menus[8] = new Param_Menu("_Rapport et Impression", "Ad_ministration", "", "PrintReport.png", "", 25 , 0, "Gestion de vos rapports et des outils d'impression.");
 $menus[9] = new Param_Menu("_Modèles des rapports", "_Rapport et Impression", "printmodel_APAS_list", "PrintReportModel.png", "", 30 , 0, "Gestion des différents modèles d'impression.");
@@ -62,9 +62,9 @@ $menus[12] = new Param_Menu("_Gestion des Droits", "Ad_ministration", "", "gesti
 $menus[13] = new Param_Menu("_Avancé", "Ad_ministration", "", "", "", 50 , 0, "");
 $menus[14] = new Param_Menu("Ra_pports sauvegardés", "_Rapport et Impression", "finalreport_APAS_list", "PrintReportSave.png", "", 20 , 0, "Ré-édition des anciennes impressions sauvegardées");
 $menus[15] = new Param_Menu("_Extensions (conf.)", "Ad_ministration", "", "config_ext.png", "", 20 , 0, "Gestion des configurations des différentes modules.");
-$menus[16] = new Param_Menu("Configuration _générale", "Ad_ministration", "configuration", "config.png", "shift ctrl alt C", 5 , 1, "Visualisation et modification des paramètres généraux.");
+$menus[16] = new Param_Menu("Configuration _générale", "Ad_ministration", "configuration", "config.png", "shift ctrl alt C", 10 , 1, "Visualisation et modification des paramètres généraux.");
 $menus[17] = new Param_Menu("_Etiquettes", "_Rapport et Impression", "etiquettes_APAS_liste", "PrintReportLabel.png", "", 5 , 0, "Gestion des planches d'étiquettes");
-$menus[18] = new Param_Menu("Ar_chivage", "Ad_ministration", "", "backup.png", "", 10 , 0, "Outils de sauvegarde et de restoration des données.");
+$menus[18] = new Param_Menu("Ar_chivage", "Ad_ministration", "", "backup.png", "", 15 , 0, "Outils de sauvegarde et de restoration des données.");
 $menus[19] = new Param_Menu("_Sauvegarder", "Ar_chivage", "selectNewArchive", "backup_save.png", "", 10 , 1, "Sauvegarde manuel des données du logiciel.");
 $menus[20] = new Param_Menu("_Restauration", "Ar_chivage", "selectRestor", "backup_restor.png", "", 20 , 1, "Restauration d'une archives.");
 
@@ -111,14 +111,16 @@ $actions[38] = new Param_Action("Restaurer les données", "selectRestor", 3);
 $actions[39] = new Param_Action("Tuer une session", "sessions_APAS_killsession", 8);
 $actions[40] = new Param_Action("Consultation des session", "sessions_APAS_list", 8);
 $actions[41] = new Param_Action("Résumé", "status", 0);
-$actions[42] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
-$actions[43] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
-$actions[44] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
-$actions[45] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
-$actions[46] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
-$actions[47] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
-$actions[48] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
-$actions[49] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
+$actions[42] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
+$actions[43] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
+$actions[44] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
+$actions[45] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
+$actions[46] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
+$actions[47] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
+$actions[48] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
+$actions[49] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
+$actions[50] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
+$actions[51] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
 
 $params=array();
 
