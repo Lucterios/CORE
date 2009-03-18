@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 07 February 2009 15:09:17 By  ---
+// --- Last modification: Date 18 March 2009 8:37:49 By  ---
 
 //@BEGIN@
 /**
