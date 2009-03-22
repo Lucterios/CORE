@@ -18,9 +18,11 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 March 2009 18:50:12 By  ---
+// --- Last modification: Date 21 March 2009 14:13:49 By  ---
 
 //@BEGIN@
+$G_REALNAME="";
+
 function mustAutentificate($mess) {
 	global $REPONSE;
 	$REPONSE .= "<REPONSE observer='CORE.Auth' source_extension='CORE' source_action='authentification'><![CDATA[$mess]]></REPONSE>";
@@ -30,9 +32,10 @@ function getConnectionInfo($login,$ses) {
 	global $REPONSE;
 	global $connect;
 	global $_SERVER;
+	global $G_REALNAME;
 
 	$q = "SELECT realName FROM CORE_users WHERE login='$login'";
-	list($realName) = $connect->getRow($connect->execute($q));
+	list($G_REALNAME) = $connect->getRow($connect->execute($q));
 	require_once('CORE/setup_param.inc.php');
 	require('CORE/setup.inc.php');
 	$CORE_version = $version_max.".".$version_min.".".$version_release.".".$version_build;
@@ -67,7 +70,7 @@ function getConnectionInfo($login,$ses) {
 					<COPYRIGHT>$CopyRight</COPYRIGHT>
 					<LOGONAME>$protocol://$server_name:$server_port$path/extensions/applis/images/logo.gif</LOGONAME>
 					<LOGIN>$login</LOGIN>
-					<REALNAME>$realName</REALNAME>
+					<REALNAME>$G_REALNAME</REALNAME>
 				</CONNECTION>
 				<PARAM name='ses' type='str'>$ses</PARAM>
 				<![CDATA[OK]]>

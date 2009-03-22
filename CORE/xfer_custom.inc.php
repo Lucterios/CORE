@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 08 December 2008 22:27:42 By  ---
+// --- Last modification: Date 20 March 2009 13:13:22 By  ---
 
 //@BEGIN@
 /**
@@ -97,38 +97,56 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 			$FieldNames = array($FieldNames);
 		}
 		foreach($FieldNames as $FieldName) {
-			$field_item = $field_desc[$FieldName];
-			$type_fld = $field_item['type'];
+			if (array_key_exists($FieldName,$field_desc)) {
+				$field_item = $field_desc[$FieldName];
+				$type_fld = $field_item['type'];
+				$field_val = $DBObjs->getField($FieldName);
+			}
+			else {
+				$first_letter=substr($FieldName,0,1);
+				if (in_array($first_letter,array('0','1','2','3','4','5','6','7','8'))) {
+					$FieldName=substr($FieldName,1);
+					$type_fld = (int)$first_letter;
+				}
+				else
+					$type_fld = 2;
+				$pos = strpos($FieldName, SEP_SHOW);
+				if($pos === false) {
+					$field_item['description']=$FieldName;
+					$formula=$FieldName;
+				}
+				else {
+					$field_item['description']=substr($FieldName,0,$pos);
+					$formula=substr($FieldName,$pos+strlen(SEP_SHOW));
+				}
+				$field_val = $DBObjs->evalByText($formula);
+			}
 			$comp = null;
 			if($ReadOnly) {
 				switch($type_fld) {
 				case 4:
 					//Date
 					$comp = new Xfer_Comp_Label($FieldName);
-					$field_val = $DBObjs->getField($FieldName);
 					$comp->setValue( convertDate($field_val, true));
 					break;
 				case 5:
 					//time
 					$comp = new Xfer_Comp_Label($FieldName);
-					$field_val = $DBObjs->getField($FieldName);
 					$comp->setValue( convertTime($field_val));
 					break;
 				case 6:
 					//Date & time
 					$comp = new Xfer_Comp_Label($FieldName);
-					$field_val = $DBObjs->getField($FieldName);
 					List($date_val,$time_val)=split(' ',$field_val);
 					$comp->setValue(convertDate($date_val, true)." ".convertTime($time_val));
 					break;
 				case 9:
 					//Child
 					$comp = new Xfer_Comp_Grid($FieldName);
-					$comp->setDBObject($DBObjs->getField($FieldName), null,$DBObjs->__table,$this->m_context);
+					$comp->setDBObject($field_val, null,$DBObjs->__table,$this->m_context);
 					break;
 				default :
 					$comp = new Xfer_Comp_Label($FieldName);
-					$field_val = $DBObjs->getField($FieldName);
 					if(is_object($field_val))
 						$comp->setValue($field_val->toText());
 					else
@@ -142,12 +160,12 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				case 0:
 					//int
 					$comp = new Xfer_Comp_Float($FieldName,$param_fld['Min'],$param_fld['Max'],0);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 1:
 					//float
 					$comp = new Xfer_Comp_Float($FieldName,$param_fld['Min'],$param_fld['Max'],$param_fld['Prec']);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 2:
 					//text
@@ -155,32 +173,32 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 						$comp = new Xfer_Comp_Memo($FieldName);
 					else
 						$comp = new Xfer_Comp_Edit($FieldName);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 3:
 					//bool
 					$comp = new Xfer_Comp_Check($FieldName);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 4:
 					//Date
 					$comp = new Xfer_Comp_Date($FieldName);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 5:
 					//time
 					$comp = new Xfer_Comp_Time($FieldName);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 6:
 					//Date & time
 					$comp = new Xfer_Comp_DateTime($FieldName);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 7:
 					// long text
 					$comp = new Xfer_Comp_Memo($FieldName);
-					$comp->setValue($DBObjs->getField($FieldName));
+					$comp->setValue($field_val);
 					break;
 				case 8:
 					// enum

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 March 2009 8:37:49 By  ---
+// --- Last modification: Date 20 March 2009 13:12:21 By  ---
 
 //@BEGIN@
 /**
@@ -1367,8 +1367,6 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 */
 	function setValue($value) {
 		$value = (double)$value;
-		$value = Max($this->m_min,$value);
-		$value = Min($this->m_max,$value);
 		$this->m_value = $value;
 	}
 	/**
@@ -1387,8 +1385,10 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 * @return string
 	 */
 	function _getContent() {
+		$value = Max($this->m_min,$this->m_value);
+		$value = Min($this->m_max,$value);
 		$xml_text = "";
-		$xml_text = $xml_text. sprintf("<![CDATA[".$this->_getFormat()."]]>",$this->m_value);
+		$xml_text = $xml_text. sprintf("<![CDATA[".$this->_getFormat()."]]>",$value);
 		$xml_text = $xml_text;
 		return $xml_text;
 	}
