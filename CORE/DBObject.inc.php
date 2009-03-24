@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 12 December 2008 17:09:02 By  ---
+// --- Last modification: Date 23 March 2009 12:03:20 By  ---
 
 //@BEGIN@
 /**
@@ -275,40 +275,36 @@ class DBObj_Basic extends DB_DataObject {
 	 * @return string
 	 */
 	public function evalByText($TextEvalable) {
-		if($this->id>0) {
-			$ret = $TextEvalable;
-			if($ret[0] == '#') {
-				$fct_name = substr($ret,1);
-				$ret = $this->$fct_name();
-			}
-			else foreach($this->getDBMetaDataField() as $field_names => $field_item) {
-				if( strpos($ret,'$'.$field_names) !== FALSE) {
-					$value = $this->$field_names;
-					if($field_item['type'] == 5) {
-						require_once'xfer.inc.php';
-						$value = convertTime($value);
-					}
-					elseif ($field_item['type'] == 4) {
-						require_once'xfer.inc.php';
-						$value = convertDate($value);
-					}
-					elseif ($field_item['type'] == 8) {
-						$params = $field_item['params'];
-						$enum = $params['Enum'];
-						$value = $enum[(int)$value];
-					}
-					elseif (($field_item['type'] == 9) || ($field_item['type'] == 10)) {
-						$value = $this->getField($field_names);
-						if( is_object($value))$value = $value->toText();
-						else $value = "---";
-					}
-					$ret = str_replace('$'.$field_names,$value,$ret);
-				}
-			}
-			return $ret;
+		$ret = $TextEvalable;
+		if($ret[0] == '#') {
+			$fct_name = substr($ret,1);
+			$ret = $this->$fct_name();
 		}
-		else
-		return "---";
+		else foreach($this->getDBMetaDataField() as $field_names => $field_item) {
+			if( strpos($ret,'$'.$field_names) !== FALSE) {
+				$value = $this->$field_names;
+				if($field_item['type'] == 5) {
+					require_once'xfer.inc.php';
+					$value = convertTime($value);
+				}
+				elseif ($field_item['type'] == 4) {
+					require_once'xfer.inc.php';
+					$value = convertDate($value);
+				}
+				elseif ($field_item['type'] == 8) {
+					$params = $field_item['params'];
+					$enum = $params['Enum'];
+					$value = $enum[(int)$value];
+				}
+				elseif (($field_item['type'] == 9) || ($field_item['type'] == 10)) {
+					$value = $this->getField($field_names);
+					if( is_object($value))$value = $value->toText();
+					else $value = "---";
+				}
+				$ret = str_replace('$'.$field_names,$value,$ret);
+			}
+		}
+		return $ret;
 	}
 	/**
 	 * Description de l'enregistrement
@@ -358,7 +354,7 @@ class DBObj_Basic extends DB_DataObject {
 		$FieldNames = array();
 		$meta_data_field = $this->getDBMetaDataField();
 		foreach($meta_data_field as $field_names => $field_item) {
-			if(($field_item['type'] != 10) || ($field_item['params']['TableName'] != $RefTableName)) 
+			if(($field_item['type'] != 10) || ($field_item['params']['TableName'] != $RefTableName))
 				array_push($FieldNames,$field_names);
 		}
 		if($nbfield>-1)
@@ -389,7 +385,7 @@ class DBObj_Basic extends DB_DataObject {
 			if($son != null) {
 				return $son->setFrom($object);
 			}
-		} 
+		}
 		DB_DataObject:: setFrom($object);
 		if($this->Heritage != "")
 			$this->Super->setFrom($object);
@@ -832,7 +828,7 @@ class DBObj_Basic extends DB_DataObject {
 		if(!isset($rootPath)) $rootPath = "";
 		if($ByLeft)
 			$pos = strpos($tbl_select,$sep);
-		else 
+		else
 			$pos = strrpos($tbl_select,$sep);
 		if($pos === false) {
 			$extName = "";
@@ -844,9 +840,9 @@ class DBObj_Basic extends DB_DataObject {
 		}
 		if($extName != "CORE")
 			$table_file_name = "extensions/$extName/$tableName.tbl.php";
-		else 
+		else
 			$table_file_name = "$extName/$tableName.tbl.php";
-		if(! is_file($rootPath.$table_file_name)) 
+		if(! is_file($rootPath.$table_file_name))
 			$table_file_name = DBObj_Basic:: getTableName($tbl_select, true);
 		else
 			$table_file_name=$rootPath.$table_file_name;
@@ -899,12 +895,12 @@ class DBObj_Basic extends DB_DataObject {
 								$sub_object->whereadd($filter);
 							if($order != "")
 								$sub_object->orderby($order);
-							else 
+							else
 								$sub_object->orderby('id');
 							$sub_object->find();
 						}
 					}
-					else 
+					else
 						$sub_object = "???";
 					return $sub_object;
 				}
@@ -932,7 +928,7 @@ class DBObj_Basic extends DB_DataObject {
 			$pos = strpos($fieldname, SEP_SHOW);
 			if($pos === false)
 				$field_name = $fieldname;
-			else 
+			else
 				$field_name = substr($fieldname,$pos+3);
 			return $this->evalByText($field_name);
 		}
@@ -982,7 +978,7 @@ class DBObj_Basic extends DB_DataObject {
 		$fct_name = $this->tblname."_APAS_$method";
 		if($this->extname == "CORE")
 			$fct_file_name = $rootPath.$this->extname."/$fct_name.mth.php";
-		else 
+		else
 			$fct_file_name = $rootPath."extensions/".$this->extname."/$fct_name.mth.php";
 		return array($fct_file_name,$fct_name);
 	}
@@ -1021,7 +1017,7 @@ class DBObj_Basic extends DB_DataObject {
 					}
 					elseif ( is_null($val))
 						$param_arr .= ", null";
-					else 
+					else
 						$param_arr .= ",$val";
 				}
 				$cmd = "return ".$fct_name."($param_arr);";
@@ -1104,7 +1100,7 @@ class DBObj_Basic extends DB_DataObject {
 		$print_name = $this->tblname."_APAS_$Name";
 		if($this->extname == "CORE")
 			$print_file_name = $rootPath.$this->extname."/$print_name.prt.php";
-		else 
+		else
 			$print_file_name = $rootPath."extensions/".$this->extname."/$print_name.prt.php";
 		if( is_file($print_file_name))
 			$XferPrint->selectReport($print_name,0,$XferPrint->m_context,$Title,$writeMode,$printRef);
