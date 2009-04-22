@@ -1,19 +1,36 @@
 <?php
-// library file write by SDK tool
-// --- Last modification: Date 23 May 2008 21:41:19 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 21 April 2009 19:40:09 By  ---
 
 //@BEGIN@
-
 class ModelConverter {
 	var$_Model;
 	var$_Url;
-	
+
 	function ModelConverter($modelXml) {
 		$this->_Model = $modelXml;
 		$current_file = "http://".$_SERVER["SERVER_NAME"].$_SERVER["PHP_SELF"];
 		$this->_Url = substr($current_file,0,-1* strlen( strrchr($current_file,"/"))+1);
 	}
-	
+
 	function Run() {
 		$pos_body = strpos($this->_Model,'<body');
 		if($pos_body !== false) {
@@ -46,7 +63,7 @@ class ModelConverter {
 		}
 		return true;
 	}
-	
+
 	function TransformXsl($xmldata,$xsldata) {
 		if( version_compare( phpversion(),'5','>=')) {
 			if(! class_exists('XsltProcessor') || ! class_exists('DomDocument'))die('processeur XSLT non installe!');
@@ -68,14 +85,14 @@ class ModelConverter {
 		}
 		return $res;
 	}
-	
+
 	function toXap($xmldata,$xmlresultfile = '') {
 		$Xap = $this->TransformXsl($xmldata,$this->_Model);
 		$Xap = $this->convertApasFormat($Xap);
 		if($xmlresultfile != '')$this->Save($xmlresultfile,$Xap);
 		return $Xap;
 	}
-	
+
 	function convertApasFormat($xml_text) {
 		$xml_text = str_replace('<b>','<font Font-weight="bold">',$xml_text);
 		$xml_text = str_replace('<i>','<font Font-style="italic">',$xml_text);
@@ -94,7 +111,7 @@ class ModelConverter {
 		$xml_text = str_replace("]}",">",$xml_text);
 		return $xml_text;
 	}
-	
+
 	function Save($modelFile,$content = null) {
 		if($content == null)$content = $this->_Model;
 		require_once"XML/Beautifier.php";
@@ -106,11 +123,11 @@ class ModelConverter {
 			foreach( split("\n",$content) as $line) fwrite($wh,$line."\n");
 		} fclose($wh);
 	}
-	
+
 	function __GetTagPosition($tagName,$start) {
 		return $this->__GetItemPosition("<$tagName","</$tagName>",array('/','>'),$start);
 	}
-	
+
 	function __InsertInTag($tagName,$addBegin,$endBegin) {
 		$start = 0;
 		$len = 0;
@@ -123,7 +140,7 @@ class ModelConverter {
 			}
 		}
 	}
-	
+
 	function __GetItemPosition($itembegin,$itemend,$ending,$start) {
 		$posIn = strpos($this->_Model,$itembegin,$start);
 		$posOut = strpos($this->_Model,$itemend,$start);
@@ -137,7 +154,7 @@ class ModelConverter {
 		else
 		return array($posIn,$posOut-$posIn+1);
 	}
-	
+
 	function __ConvertImage() {
 		$start = 0;
 		$len = 0;
@@ -145,7 +162,7 @@ class ModelConverter {
 			list($pos,$len) = $this->__GetTagPosition('image',$start);
 			if($len != -1) {
 				$pos_begin = strpos($this->_Model,">",$pos);
-				$pos_end = strpos($this->_Model,'<',$pos_begin);
+				$pos_end = strpos($this->_Model,'</image',$pos);
 				if(($pos_begin >= 0) && ($pos_begin<($pos+$len-1)) && ($pos_end >= 0) && ($pos_end<($pos+$len-1))) {
 					$pos_begin++;
 					$file_name = substr($this->_Model,$pos_begin,$pos_end-$pos_begin);
@@ -164,7 +181,7 @@ class ModelConverter {
 			}
 		}
 	}
-	
+
 	function __ChangeSelect() {
 		$start = 0;
 		$len = 0;
@@ -189,7 +206,7 @@ class ModelConverter {
 			}
 		}
 	}
-	
+
 	function __InsertInTagWithDataLoop($tagName,$loopingBegin = '',$addbegin = '',$addend = '') {
 		$start = 0;
 		$len = 0;
@@ -327,6 +344,5 @@ function CheckOrBuildReport($extension,$printmodel,$modelRef,$params,$title,$pri
 	else $report = false;
 	return $report;
 }
-
 //@END@
 ?>
