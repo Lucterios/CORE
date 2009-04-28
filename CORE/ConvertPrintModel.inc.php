@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 21 April 2009 19:40:09 By  ---
+// --- Last modification: Date 27 April 2009 20:25:17 By  ---
 
 //@BEGIN@
 class ModelConverter {
@@ -168,14 +168,17 @@ class ModelConverter {
 					$file_name = substr($this->_Model,$pos_begin,$pos_end-$pos_begin);
 					$len_file_name = strlen($file_name);
 					$file_name = trim($file_name);
-					$file_size = filesize($file_name);
-					$handle = fopen($file_name,'r');
-					$encoder = fread($handle,$file_size);
-					$encoder = chunk_split( base64_encode($encoder));
-					$f = fclose($handle);
-					$base64_mime_image = "data:image/*;base64,$encoder";
-					$this->_Model = substr($this->_Model,0,$pos_begin)."\n$base64_mime_image\n". substr($this->_Model,$pos_end);
-					$start = $pos+$len+ strlen($base64_mime_image)-$len_file_name;
+					if (is_file($file_name)) {
+						$file_size = filesize($file_name);
+						$handle = fopen($file_name,'r');
+						$encoder = fread($handle,$file_size);
+						$encoder = chunk_split( base64_encode($encoder));
+						$f = fclose($handle);
+						$base64_mime_image = "data:image/*;base64,$encoder";
+						$this->_Model = substr($this->_Model,0,$pos_begin)."\n$base64_mime_image\n". substr($this->_Model,$pos_end);
+						$start = $pos+$len+ strlen($base64_mime_image)-$len_file_name;
+					}
+					else $start = $pos+$len;
 				}
 				else $start = $pos+$len;
 			}
