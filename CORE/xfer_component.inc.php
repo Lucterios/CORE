@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 20 March 2009 13:12:21 By  ---
+// --- Last modification: Date 30 April 2009 0:03:21 By  ---
 
 //@BEGIN@
 /**
@@ -604,18 +604,36 @@ class Xfer_Comp_Header extends Xfer_Object {
 	var $m_type = "";
 
 	/**
+	 * chaine à évaluer pour l'enregistrement
+	 *
+	 * @var string
+	 */
+	var $m_formula = "";
+
+	/**
+	 * Nom de la fonction
+	 *
+	 * @var string
+	 */
+	var $m_functionName = "";
+
+	/**
 	 * Constructeur
 	 *
 	 * @param string $name
 	 * @param string $descript
 	 * @param string $type
+	 * @param string $formula formula
+	 * @param string $functionName nom de la fonction
 	 * @return Xfer_Comp_Header
 	 */
-	function Xfer_Comp_Header($name,$descript,$type = "") {
+	function Xfer_Comp_Header($name,$descript,$type = "",$formula="",$functionName="") {
 		$this->PEAR('Observer_Error');
 		$this->m_name = $name;
 		$this->m_descript = $descript;
 		$this->m_type = $type;
+		$this->m_formula=$formula;
+		$this->m_functionName=$functionName;
 	}
 
 	/**
@@ -698,9 +716,11 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $name
 	 * @param array $descript
 	 * @param string $type int,float,bool,str
+	 * @param string $formula formula
+	 * @param string $functionName nom de la fonction
 	 */
-	function addHeader($name,$descript,$type = "") {
-		$new_obs = & new Xfer_Comp_Header($name,$descript,$type);
+	function addHeader($name,$descript,$type = "",$formula = "",$functionName="") {
+		$new_obs = & new Xfer_Comp_Header($name,$descript,$type,$formula,$functionName);
 		$this->m_headers[$name] = $new_obs;
 	}
 
@@ -720,8 +740,10 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $FieldName
 	 * @param array $desc_fld
 	 * @param integer $type_fld 0:entier - 1:réel - 3:booléen - autre:chaine
+	 * @param string $formula formula
+	 * @param string $functionName nom de la fonction
 	 */
-	function newHeader($FieldName,$desc_fld,$type_fld) {
+	function newHeader($FieldName,$desc_fld,$type_fld,$formula="",$functionName="") {
 		switch($type_fld) {
 		case 0:
 			$type_col = "int";
@@ -739,7 +761,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 			$type_col = "str";
 			break;
 		}
-		$this->addHeader($FieldName,$desc_fld,$type_col);
+		$this->addHeader($FieldName,$desc_fld,$type_col,$formula,$functionName);
 	}
 
 	/**
@@ -763,9 +785,25 @@ class Xfer_Comp_Grid extends Xfer_Component {
 				if($pos === false) {
 					$type_fld = 2;
 					$pos = strpos($FieldName, SEP_SHOW);
-					if($pos === false)$desc_fld = "";
-					else $desc_fld = substr($FieldName,0,$pos);
-					$this->newHeader($FieldName,$desc_fld,$type_fld);
+					if ($pos === false) {
+						$desc_fld = "";
+						$formula=$FieldName;
+					}
+					else {
+						$desc_fld = substr($FieldName,0,$pos);
+						$formula = substr($FieldName,$pos+strlen(SEP_SHOW));
+					}
+					if($formula[0] == '#') {
+						$fct_name = substr($formula,1);
+						list($fct_file_name,$fct_name)=$DBObjs->getMethodFileName($fct_name);
+						if (is_file($fct_file_name))
+							require_once($fct_file_name);
+						else
+							$fct_name='';
+					}
+					else
+						$fct_name='';
+					$this->newHeader($FieldName,$desc_fld,$type_fld,$formula,$fct_name);
 				}
 				else {
 					$new_field_name = substr($FieldName,0,$pos);
@@ -787,9 +825,19 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param array $field_desc
 	 */
 	function setDBObjectData($NewId,$DBObjs,$FieldName,$field_desc) {
-		$data = $DBObjs->getField($FieldName);
-		if( array_key_exists($FieldName,$field_desc))$type_fld = $field_desc[$FieldName]['type'];
-		else $type_fld = 2;
+		if( array_key_exists($FieldName,$field_desc)) {
+			$type_fld = $field_desc[$FieldName]['type'];
+			$data = $DBObjs->getField($FieldName);
+		}
+		else {
+			$type_fld = 2;
+			$header=$this->m_headers[$FieldName];
+			$fct_name=$header->m_functionName;
+			if (($fct_name!='') && function_exists($fct_name))
+				$data = $fct_name($DBObjs);
+			else
+				$data = $DBObjs->evalByText($header->m_formula);
+		}
 		switch($type_fld) {
 		case 3:
 			//Bool
