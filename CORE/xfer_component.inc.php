@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 30 April 2009 0:03:21 By  ---
+// --- Last modification: Date 05 May 2009 0:03:43 By  ---
 
 //@BEGIN@
 /**
@@ -729,8 +729,26 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function addAction($action) {
-		if($this->checkActionRigth($action)) { array_push($this->m_actions,$action);
+	function addAction($action,$posAct=-1) {
+		if($this->checkActionRigth($action)) { 
+			if ($posAct!=-1) {
+				$old_actions=$this->m_actions;
+				$this->m_actions=array();
+				$index=0;
+				foreach($old_actions as $action_item) {
+					if ($index==posAct) {
+						$this->m_actions[]=$action;
+						$index++;
+						$action=null;
+					}
+					$this->m_actions[]=$action_item;
+					$index++;
+				}
+				if ($action!=null)
+					$this->m_actions[]=$action;
+			}
+			else
+				$this->m_actions[]=$action;
 		}
 	}
 

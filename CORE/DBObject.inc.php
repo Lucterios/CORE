@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 23 March 2009 12:03:20 By  ---
+// --- Last modification: Date 04 May 2009 23:23:03 By  ---
 
 //@BEGIN@
 /**
@@ -1123,6 +1123,7 @@ class DBObj_Basic extends DB_DataObject {
 		$query = $search->Execute($Params,$OrderBy,$searchQuery,$searchTable);
 		if($query != "")
 			$this->query($query);
+		return $query;
 	}
 	/**
 	* debug

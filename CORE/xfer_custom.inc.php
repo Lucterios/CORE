@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 20 March 2009 13:13:22 By  ---
+// --- Last modification: Date 05 May 2009 0:01:44 By  ---
 
 //@BEGIN@
 /**
@@ -576,9 +576,26 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function addAction($action) {
+	function addAction($action,$posAct=-1) {
 		if($this->checkActionRigth($action)) {
-			array_push($this->m_actions,$action);
+			if ($posAct!=-1) {
+				$old_actions=$this->m_actions;
+				$this->m_actions=array();
+				$index=0;
+				foreach($old_actions as $action_item) {
+					if ($index==posAct) {
+						$this->m_actions[]=$action;
+						$index++;
+						$action=null;
+					}
+					$this->m_actions[]=$action_item;
+					$index++;
+				}
+				if ($action!=null)
+					$this->m_actions[]=$action;
+			}
+			else
+				$this->m_actions[]=$action;
 		}
 	}
 
