@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 21 March 2009 14:13:49 By  ---
+// --- Last modification: Date 11 May 2009 21:17:34 By  ---
 
 //@BEGIN@
 $G_REALNAME="";
@@ -43,12 +43,15 @@ function getConnectionInfo($login,$ses) {
 	$applis_version = $version_max.".".$version_min.".".$version_release.".".$version_build;
 	$application_subtitle = "";
 	$CopyRight = "";
+	$SupportEmail="support@lucterios.org";
 	if(is_file("extensions/applis/application.inc.php")) {
 		require"extensions/applis/application.inc.php";
 		if( function_exists('application_subtitle'))
 			$application_subtitle = application_subtitle();
 		if( function_exists('application_CopyRight'))
 			$CopyRight = application_CopyRight();
+		if( function_exists('application_SupportEmail'))
+			$SupportEmail = application_SupportEmail();
 	}
 	$path = split('/',$_SERVER["SCRIPT_NAME"]);
 	unset($path[ count($path)-1]);
@@ -56,10 +59,19 @@ function getConnectionInfo($login,$ses) {
 	if( strlen($path)>0)
 		$path = "/".$path;
 	$http_referer=$_SERVER["HTTP_REFERER"];
-	$protocol=substr($http_referer,0,strpos($http_referer,'://'));
-	$protocol=($protocol=='')?'http':$protocol;
 	$server_name=$_SERVER['SERVER_NAME'];
-	$server_port=$_SERVER['SERVER_PORT'];
+	$server_port=(int)$_SERVER['SERVER_PORT'];
+	$protocol=substr($http_referer,0,strpos($http_referer,'://'));
+	if ($protocol=='')
+		$protocol=($server_port==443)?'https':'http';
+	$InfoServer="";
+	$q="SELECT titre,versionMaj,versionMin,versionRev,versionBuild FROM CORE_extension ORDER BY id";
+	$q_id=$connect->execute($q);
+	while (($extensionDesc = $connect->getRow($q_id))) {
+		list($titre,$versionMaj,$versionMin,$versionRev,$versionBuild)=$extensionDesc;
+		$InfoServer.="$titre=$versionMaj.$versionMin.$versionRev.$versionBuild{[newline]}";
+	}
+	$InfoServer.="{[newline]}{[italic]}".$_SERVER['SERVER_SOFTWARE']."{[/italic]}";
 
 	$REPONSE .= "<REPONSE observer='CORE.Auth' source_extension='CORE' source_action='authentification'>
 				<CONNECTION>
@@ -71,6 +83,8 @@ function getConnectionInfo($login,$ses) {
 					<LOGONAME>$protocol://$server_name:$server_port$path/extensions/applis/images/logo.gif</LOGONAME>
 					<LOGIN>$login</LOGIN>
 					<REALNAME>$G_REALNAME</REALNAME>
+					<SUPPORT_EMAIL><![CDATA[$SupportEmail]]></SUPPORT_EMAIL>
+					<INFO_SERVER><![CDATA[$InfoServer]]></INFO_SERVER>
 				</CONNECTION>
 				<PARAM name='ses' type='str'>$ses</PARAM>
 				<![CDATA[OK]]>
