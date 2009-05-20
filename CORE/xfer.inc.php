@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 12 December 2008 8:31:37 By  ---
+// --- Last modification: Date 20 May 2009 19:49:13 By  ---
 
 //@BEGIN@
 /**
@@ -279,7 +279,10 @@ class Xfer_Action extends Xfer_Object {
 	 */
 	function getReponseXML() {
 		$xml_attrb = "";
-		if($this->m_icon != "")$xml_attrb = sprintf("%s icon='%s'",$xml_attrb,$this->m_icon);
+		if($this->m_icon != "") {
+			$size=filesize($this->m_icon);
+			$xml_attrb = sprintf("%s icon='%s' sizeicon='%d'",$xml_attrb,$this->m_icon,$size);
+		}
 		if($this->m_extension != "")$xml_attrb = sprintf("%s extension='%s'",$xml_attrb,$this->m_extension);
 		if($this->m_action != "")$xml_attrb = sprintf("%s action='%s'",$xml_attrb,$this->m_action);
 		if( is_int($this->m_close))$xml_attrb = sprintf("%s close='%d'",$xml_attrb,$this->m_close);
