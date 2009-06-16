@@ -65,6 +65,8 @@ if ($run) {
 				if(substr($file,-9)=='.test.php')
 					$fileList[]=substr($file,0,-9);
 			sort($fileList);
+			if (is_file("$extDir/includes.inc.php"))
+				require_once("$extDir/includes.inc.php");
 			foreach($fileList as $file_name) {
 				$item=new TestItem($ext_name,str_replace('_APAS_','::',$file_name));
 				$item->runTest($extDir,$ext_name,$file_name);
