@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 1:18:25 By  ---
+// --- Last modification: Date 17 June 2009 19:49:26 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -662,12 +662,12 @@ function sort_function($ext1,$ext2,$rootPath = '') {
 	return $res;
 }
 
-function createDataBase($DropDB = false) {
+function createDataBase($DropDB = false,$ThrowExcept = false) {
 	global $dbcnf;
 	global $connect;
 	$setupMsg = "";
 	if($connect->connected && $DropDB) {
-		$connect->execute('DROP DATABASE '.$dbcnf['dbname']);
+		$connect->execute('DROP DATABASE '.$dbcnf['dbname'],$ThrowExcept);
 		$setupMsg .= "Destruction de DB :".$dbcnf['dbname']." ".$connect->errorMsg."{[newline]}";
 		$connect->connected = false;
 		$connect->connect($dbcnf);
@@ -679,11 +679,25 @@ function createDataBase($DropDB = false) {
 		if(! DB:: isError($tmp_dbh)) {
 			$q = 'CREATE DATABASE '.$dbcnf['dbname'];
 			$r = &$tmp_dbh->query($q);
-			if( DB:: isError($r))$setupMsg .= "Echec de creation de DB :".$r->getMessage()."{[newline]}";
-			else $setupMsg .= "Creation de DB :".$dbcnf['dbname']."{[newline]}";
+			if( DB:: isError($r)) {
+				if ($ThrowExcept) {
+					require_once("CORE/Lucterios_Error.inc.php");
+					throw new LucteriosException(GRAVE,$r->getMessage());
+				}
+				$setupMsg .= "Echec de creation de DB :".$r->getMessage()."{[newline]}";
+			}
+			else {
+				$setupMsg .= "Creation de DB :".$dbcnf['dbname']."{[newline]}";
+			}
 			$connect->connect($dbcnf);
 		}
-		else $setupMsg .= "Echec de connection pour creation de DB :".$tmp_dbh->getMessage()."{[newline]}";
+		else {
+			if ($ThrowExcept) {
+				require_once("CORE/Lucterios_Error.inc.php");
+				throw new LucteriosException(GRAVE,$tmp_dbh->getMessage());
+			}
+			$setupMsg .= "Echec de connection pour creation de DB :".$tmp_dbh->getMessage()."{[newline]}";
+		}
 	}
 	else $setupMsg .= "Base de donnée existante.{[newline]}";
 	return $setupMsg;

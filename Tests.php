@@ -44,39 +44,45 @@ if ($run) {
 	global $login;
 	foreach($extensions as $ext_name) {
 		global $connect;
-		$create_result=createDataBase(true);
-		$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
-		$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
-		if ($connect->connected) {
-			$set_of_ext[]=$ext_obj;
-			$dep_names=split(" ",$ext_obj->getDepencies());
-			foreach($dep_names as $name)
-				if ($name!='')
-					$set_of_ext[]=new Extension($name,Extension::getFolder($name));
-			$set_of_ext = sortExtension($set_of_ext);
-			foreach($set_of_ext as $ext)
-				$ext->installComplete();
-			$item->success();
-			$GlobalTest->addTests($item);
-			$extDir=Extension::getFolder($ext_name);
-			$fileList=array();
-			$dh = opendir($extDir);
-			while(($file = readdir($dh)) != false)
-				if(substr($file,-9)=='.test.php')
-					$fileList[]=substr($file,0,-9);
-			sort($fileList);
-			if (is_file("$extDir/includes.inc.php"))
-				require_once("$extDir/includes.inc.php");
-			$inc=1;
-			foreach($fileList as $file_name) {
-				$item=new TestItem($ext_name,sprintf('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
-				$item->runTest($extDir,$ext_name,$file_name);
+		try {
+			$create_result=createDataBase(true,true);
+			$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
+			$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
+			if ($connect->connected) {
+				$set_of_ext[]=$ext_obj;
+				$dep_names=split(" ",$ext_obj->getDepencies());
+				foreach($dep_names as $name)
+					if ($name!='')
+						$set_of_ext[]=new Extension($name,Extension::getFolder($name));
+				$set_of_ext = sortExtension($set_of_ext);
+				foreach($set_of_ext as $ext)
+					$ext->installComplete();
+				$item->success();
 				$GlobalTest->addTests($item);
-			} 
-			closedir($dh);
-		}
-		else {
-			$item->error($create_result);
+				$extDir=Extension::getFolder($ext_name);
+				$fileList=array();
+				$dh = opendir($extDir);
+				while(($file = readdir($dh)) != false)
+					if(substr($file,-9)=='.test.php')
+						$fileList[]=substr($file,0,-9);
+				sort($fileList);
+				if (is_file("$extDir/includes.inc.php"))
+					require_once("$extDir/includes.inc.php");
+				$inc=1;
+				foreach($fileList as $file_name) {
+					$item=new TestItem($ext_name,sprintf('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
+					$item->runTest($extDir,$ext_name,$file_name);
+					$GlobalTest->addTests($item);
+				} 
+				closedir($dh);
+			}
+			else {
+				$item->error($create_result);
+				$GlobalTest->addTests($item);
+			}
+		} catch(Exception $e) {
+			$item=new TestItem($ext_name,"Echec");
+			$item->error($e->getMessage());
 			$GlobalTest->addTests($item);
 		}
 	}
