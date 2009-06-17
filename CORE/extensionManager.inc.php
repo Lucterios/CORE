@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 19:49:26 By  ---
+// --- Last modification: Date 17 June 2009 19:56:48 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -666,14 +666,19 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 	global $dbcnf;
 	global $connect;
 	$setupMsg = "";
+	$dsn = $dbcnf['dbtype']."://".$dbcnf['dbuser'].":".$dbcnf['dbpass']."@".$dbcnf['dbhost'];
 	if($connect->connected && $DropDB) {
-		$connect->execute('DROP DATABASE '.$dbcnf['dbname'],$ThrowExcept);
+		if (!$connect->execute('DROP DATABASE '.$dbcnf['dbname'])) {
+			if ($ThrowExcept) {
+				require_once("CORE/Lucterios_Error.inc.php");
+				throw new LucteriosException(GRAVE,$r->getMessage()." - DSN=$dsn");
+			}
+		}
 		$setupMsg .= "Destruction de DB :".$dbcnf['dbname']." ".$connect->errorMsg."{[newline]}";
 		$connect->connected = false;
 		$connect->connect($dbcnf);
 	}
 	if(!$connect->connected) {
-		$dsn = $dbcnf['dbtype']."://".$dbcnf['dbuser'].":".$dbcnf['dbpass']."@".$dbcnf['dbhost'];
 		$options = array('debug' => 2,'portability' => DB_PORTABILITY_ALL);
 		$tmp_dbh = & DB:: connect($dsn,$options);
 		if(! DB:: isError($tmp_dbh)) {
@@ -682,7 +687,7 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 			if( DB:: isError($r)) {
 				if ($ThrowExcept) {
 					require_once("CORE/Lucterios_Error.inc.php");
-					throw new LucteriosException(GRAVE,$r->getMessage());
+					throw new LucteriosException(GRAVE,$r->getMessage()." - DSN=$dsn");
 				}
 				$setupMsg .= "Echec de creation de DB :".$r->getMessage()."{[newline]}";
 			}
@@ -694,7 +699,7 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 		else {
 			if ($ThrowExcept) {
 				require_once("CORE/Lucterios_Error.inc.php");
-				throw new LucteriosException(GRAVE,$tmp_dbh->getMessage());
+				throw new LucteriosException(GRAVE,$tmp_dbh->getMessage()." - DSN=$dsn");
 			}
 			$setupMsg .= "Echec de connection pour creation de DB :".$tmp_dbh->getMessage()."{[newline]}";
 		}
