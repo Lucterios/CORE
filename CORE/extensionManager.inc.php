@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 19:56:48 By  ---
+// --- Last modification: Date 17 June 2009 20:07:45 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -671,7 +671,7 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 		if (!$connect->execute('DROP DATABASE '.$dbcnf['dbname'])) {
 			if ($ThrowExcept) {
 				require_once("CORE/Lucterios_Error.inc.php");
-				throw new LucteriosException(GRAVE,$r->getMessage()." - DSN=$dsn");
+				throw new LucteriosException(GRAVE,$connect->errorMsg." - DSN=$dsn");
 			}
 		}
 		$setupMsg .= "Destruction de DB :".$dbcnf['dbname']." ".$connect->errorMsg."{[newline]}";
