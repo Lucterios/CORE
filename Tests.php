@@ -40,12 +40,14 @@ if ($run) {
 		"dbname"=>$dbname
 	);
 	$login="admin";
+	global $connect;
 	global $dbcnf;
 	global $login;
+	$connect = new DBCNX();
+	$connect->connect($dbcnf);
 	foreach($extensions as $ext_name) {
-		global $connect;
 		try {
-			$create_result=createDataBase(true,true);
+			$create_result=createDataBase(true,false);
 			$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
 			$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
 			if ($connect->connected) {
