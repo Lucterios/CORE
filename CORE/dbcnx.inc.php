@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 13 November 2008 21:03:12 By  ---
+// --- Last modification: Date 17 June 2009 1:21:25 By  ---
 
 //@BEGIN@
 //
@@ -110,7 +110,7 @@ class DBCNX {
 		$r =& $this->dbh->query($query);
 		if (DB::isError($r)) {
 			$this->printDebug("DBCNX::execute : apres execution de la requette: ".$r->getMessage()."\n");
-			$this->errorMsg = $r->getMessage();
+			$this->errorMsg = $r->getMessage()."[$query]";
 			$this->errorCode = $r->getCode();
 			if ($throw) $this->throwError();
 			return false;

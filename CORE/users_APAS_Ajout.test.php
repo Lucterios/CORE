@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 14 November 2008 18:46:42 By  ---
+// --- Last modification: Date 17 June 2009 7:55:42 By  ---
 
 
 //@TABLES@
@@ -72,8 +72,9 @@ try {
 	$test->assertClass("Xfer_Comp_Select",$comp);
 	$test->assertEquals("groupId",$comp->m_name);
 	$test->assertEquals(null,$comp->m_value);
-	$test->assertEquals(2,count($comp->m_select));
+	$test->assertEquals(3,count($comp->m_select));
 	$test->assertEquals("Admin",$comp->m_select[1]);
+	$test->assertEquals("Visiteur",$comp->m_select[99]);
 	$test->assertEquals("Truc Muche",$comp->m_select[101]);
 	$comp=$rep->getComponents(8);
 	$test->assertClass("Xfer_Comp_Passwd",$comp);

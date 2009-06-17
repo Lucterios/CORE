@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 18 November 2008 18:25:35 By  ---
+// --- Last modification: Date 17 June 2009 0:34:55 By  ---
 
 
 //@TABLES@
@@ -54,12 +54,14 @@ $test->assertEquals(2,count($comp->m_headers));
 $headers=array_keys($comp->m_headers);
 $test->assertEquals("groupref",$headers[0]);
 $test->assertEquals("value",$headers[1]);
-$test->assertEquals(2,count($comp->m_records));
+$test->assertEquals(3,count($comp->m_records));
 $keys=array_keys($comp->m_records);
 $test->assertEquals("Admin",$comp->m_records[$keys[0]]['groupref']);
-$test->assertEquals("{[italc]}Tous les groupes{[/italc]}",$comp->m_records[$keys[1]]['groupref']);
+$test->assertEquals("Visiteur",$comp->m_records[$keys[1]]['groupref']);
+$test->assertEquals("{[italc]}Tous les groupes{[/italc]}",$comp->m_records[$keys[2]]['groupref']);
 $test->assertEquals("Oui",$comp->m_records[$keys[0]]['value'],"Admin");
-$test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"tous");
+$test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"Visiteur");
+$test->assertEquals("Non",$comp->m_records[$keys[2]]['value'],"tous");
 //@CODE_ACTION@
 }
 

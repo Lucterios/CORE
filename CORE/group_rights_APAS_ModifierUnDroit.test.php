@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 18 November 2008 18:26:45 By  ---
+// --- Last modification: Date 17 June 2009 1:07:54 By  ---
 
 
 //@TABLES@
@@ -31,22 +31,24 @@ require_once('CORE/group_rights.tbl.php');
 function CORE_group_rights_APAS_ModifierUnDroit(&$test)
 {
 //@CODE_ACTION@
-$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"105","groupright"=>"105"),"Xfer_Container_Acknowledge");
+$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"105","groupright"=>"110"),"Xfer_Container_Acknowledge");
 
 $rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"105"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
-$test->assertEquals(2,count($comp->m_records));
+$test->assertEquals(3,count($comp->m_records));
 $keys=array_keys($comp->m_records);
 $test->assertEquals("Non",$comp->m_records[$keys[0]]['value'],"Admin");
-$test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"tous");
+$test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"Visiteur");
+$test->assertEquals("Non",$comp->m_records[$keys[2]]['value'],"tous");
 
-$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"105","groupright"=>"105"),"Xfer_Container_Acknowledge");
+$rep=$test->CallAction("CORE","group_rights_APAS_modify",array("right"=>"105","groupright"=>"110"),"Xfer_Container_Acknowledge");
 $rep=$test->CallAction("CORE","extension_rights_APAS_editer",array("right"=>"105"),"Xfer_Container_Custom");
 $comp=$rep->getComponents(2);
-$test->assertEquals(2,count($comp->m_records));
+$test->assertEquals(3,count($comp->m_records));
 $keys=array_keys($comp->m_records);
 $test->assertEquals("Oui",$comp->m_records[$keys[0]]['value'],"Admin");
-$test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"tous");
+$test->assertEquals("Non",$comp->m_records[$keys[1]]['value'],"Visiteur");
+$test->assertEquals("Non",$comp->m_records[$keys[2]]['value'],"tous");
 //@CODE_ACTION@
 }
 

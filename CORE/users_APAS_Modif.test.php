@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 14 November 2008 18:48:38 By  ---
+// --- Last modification: Date 17 June 2009 0:49:52 By  ---
 
 
 //@TABLES@
@@ -48,7 +48,7 @@ try {
 
 	$user=new DBObj_CORE_users;
 	$user->get(101);
- 	$test->assertEquals('*39C549BDECFBA8AFC3CE6B948C9359A0ECE08DE2',$user->pass,'pass 1');
+ 	$test->assertEquals('d16fb36f0911f878998c136191af705e',$user->pass,'pass 1');
 
 	$rep=$test->CallAction("CORE","users_APAS_miseajour",array("user_actif"=>"101","login"=>"abc","realName"=>"abc","groupId"=>101,"newpass1"=>"","newpass2"=>""),"Xfer_Container_Acknowledge");
 	$rep=$test->CallAction("CORE","users_APAS_list",array(),"Xfer_Container_Custom");
@@ -72,7 +72,7 @@ try {
 
 	$user=new DBObj_CORE_users;
 	$user->get(101);
- 	$test->assertEquals('*39C549BDECFBA8AFC3CE6B948C9359A0ECE08DE2',$user->pass,'pass 2');
+ 	$test->assertEquals('d16fb36f0911f878998c136191af705e',$user->pass,'pass 2');
 
 	$connect->execute("DELETE FROM CORE_groups WHERE id=101");
 	$connect->execute("DELETE FROM CORE_users WHERE id=101");

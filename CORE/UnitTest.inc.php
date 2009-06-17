@@ -54,23 +54,8 @@ class TestItem {
 	{
 		require_once("CORE/Lucterios_Error.inc.php");
 		try {
-			$xfer_result=null;
-			if (strtoupper($extension)=="CORE")
-				$EXT_FOLDER="CORE";
-			else
-				$EXT_FOLDER="extensions/$extension";
-			$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
-			if (!is_dir($EXT_FOLDER))
-				throw new LucteriosException(CRITIC,"Extension '$extension' inconnue !");
-			else if (!is_file($ACTION_FILE_NAME))
-				throw new LucteriosException(CRITIC,"Action '$action' inconnue !");
-			else {
-				require_once $ACTION_FILE_NAME;
-				if (!function_exists($action))
-					throw new LucteriosException(CRITIC,"Function '$action' inconnue !");
-				else
-					$xfer_result=call_user_func($action,$params);
-			}
+			require_once("CORE/BoucleReponse.inc.php");
+			$xfer_result=callAction($extension,$action,$params,true);
 			if ($class_name!='') {
 				$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
 				if (substr($class_name,0,4)!='Xfer')

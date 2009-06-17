@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 12 December 2008 18:31:38 By  ---
+// --- Last modification: Date 17 June 2009 0:20:51 By  ---
 
 //@BEGIN@
 function studyReponse($current_reponse)
@@ -54,7 +54,7 @@ function studyReponse($current_reponse)
 		return null;
 }
 
-function callAction($extension,$action,$params) {
+function callAction($extension,$action,$params,$internal) {
 	global $login,$dbcnf;
 	global $rootPath;
 	if(!isset($rootPath)) $rootPath = "";
@@ -65,30 +65,24 @@ function callAction($extension,$action,$params) {
 	else
 		$EXT_FOLDER=$rootPath."extensions/$extension";
 	$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
-	if (!is_dir($EXT_FOLDER)) {
-		// l'extension n'existe pas
-		$current_reponse= xfer_returnError($extension, $action, $params, new Xfer_Error("Extension '$extension' inconnue !",10001));
-	}
-	else if (!is_file($ACTION_FILE_NAME)) {
-		// le fichier n'existe pas dans l'extension
-		$current_reponse=  xfer_returnError($extension, $action, $params, new Xfer_Error("Action '$action' inconnue !",10002));
-	}
+	if (!is_dir($EXT_FOLDER))
+		throw new LucteriosException(CRITIC,"Extension '$extension' inconnue !");
+	else if (!is_file($ACTION_FILE_NAME))
+		throw new LucteriosException(CRITIC,"Action '$action' inconnue !");
 	else if($internal or checkRight($login, $extension, $action)){
 		 // verif des droits d'executions
 		require_once $ACTION_FILE_NAME;
-		if (!function_exists($action)) {
-			// la fonction n'existe pas dans le fichier
-			$current_reponse=xfer_returnError($extension,$action,$params,new Xfer_Error("Function inconnue !",10003));
-		}
+		if (!function_exists($action))
+			throw new LucteriosException(CRITIC,"Function '$action' inconnue !");
 		else {
 			if (is_file("$EXT_FOLDER/includes.inc.php"))
 				require_once("$EXT_FOLDER/includes.inc.php");
-				// l'action existe, on la lance:
-				$current_reponse=call_user_func($action,$params);
-			}
+			// l'action existe, on la lance:
+			$current_reponse=call_user_func($action,$params);
 		}
-		else
-			throw new LucteriosException(CRITIC,'Mauvais droit');
+	}
+	else
+		throw new LucteriosException(CRITIC,'Mauvais droit');
 	return $current_reponse;
 }
 
@@ -121,7 +115,7 @@ function BoucleReponse($lesRequettes,$internal=false)
 			}
 
 			// on sait maintenant qu'on ?es droits d'executer l'action voulue
-			$current_reponse=callAction($extension,$action,$params);
+			$current_reponse=callAction($extension,$action,$params,$internal);
 
 			if (is_string($current_reponse)){
 				if ($current_reponse!="")

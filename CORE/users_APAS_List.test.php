@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 14 November 2008 17:54:26 By  ---
+// --- Last modification: Date 17 June 2009 0:50:29 By  ---
 
 
 //@TABLES@
@@ -85,7 +85,10 @@ try {
 	$test->assertEquals("login",$headers[0]);
 	$test->assertEquals("realName",$headers[1]);
 	$test->assertEquals("groupId",$headers[2]);
-	$test->assertEquals(0,count($comp->m_records));
+	$test->assertEquals(1,count($comp->m_records));
+	$test->assertEquals("",$comp->m_records["99"]["login"]);
+	$test->assertEquals("Visiteur",$comp->m_records["99"]["realName"]);
+	$test->assertEquals("Visiteur",$comp->m_records["99"]["groupId"]);
 
 	$connect->execute("DELETE FROM CORE_users WHERE id=101");
 } catch(Exception $e) {

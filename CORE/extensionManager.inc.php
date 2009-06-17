@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 13 January 2009 19:12:48 By  ---
+// --- Last modification: Date 17 June 2009 1:18:25 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -35,7 +35,7 @@ function getExtensions($rootPath = '',$WithClient = false) {
 		while(($file = readdir($dh)) != false) {
 			if(($file[0] != '.') && is_dir($extDir.$file))
 				$exts[$file] = $extDir.$file.'/';
-		} 
+		}
 		closedir($dh);
 	}
 	if($WithClient) {
@@ -563,7 +563,7 @@ class Extension {
 			$message .= postInstallation($ExtensionDescription);
 		else if( function_exists('application_postInstallation'))
 			$message .= application_postInstallation($ExtensionDescription);
-		else 
+		else
 			$message .= 'Pas de post-installation{[newline]}';
 		return $message;
 	}
@@ -739,7 +739,7 @@ function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$i
 	return $ret;
 }
 
-function getReferenceTablesList($tableName) {
+function getReferenceTablesList($tableName,$rootPath="") {
 	$ret = array();
 	$ext_list = getExtensions($rootPath);
 	foreach($ext_list as $current_name => $current_dir) {

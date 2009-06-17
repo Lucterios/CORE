@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 May 2009 23:23:03 By  ---
+// --- Last modification: Date 17 June 2009 7:55:08 By  ---
 
 //@BEGIN@
 /**
@@ -558,6 +558,8 @@ class DBObj_Basic extends DB_DataObject {
 	 * @return int (0: Oui ; 1: reference existe ; 2: blocage via methode canDelete()
 	 */
 	public function canBeDelete() {
+		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
 		try {
 			if (!$this->canDelete())
 				return 2;
@@ -566,7 +568,7 @@ class DBObj_Basic extends DB_DataObject {
 		global $connect;
 		$res=0;
 		require_once('CORE/extensionManager.inc.php');
-		$class_list = getReferenceTablesList($this->__table);
+		$class_list = getReferenceTablesList($this->__table,$rootPath);
 		foreach($class_list as $table=>$fieldname) {
 			$search=true;
 			foreach($this->__DBMetaDataField as $values)
@@ -576,10 +578,14 @@ class DBObj_Basic extends DB_DataObject {
 						$search=false;
 				}
 			if ($search) {
-				$q="SELECT id FROM $table WHERE $fieldname=$this->id";
-				$row_id=$connect->execute($q,true);
-				if ($connect->getRow($row_id)!=false)
-					$res=1;
+				try {
+					$q="SELECT id FROM $table WHERE $fieldname=$this->id";
+					$row_id=$connect->execute($q,true);
+					if ($connect->getRow($row_id)!=false)
+						$res=1;
+				}
+				catch (LucteriosException $e) {
+				}			
 			}
 		}
 		if(($res==0) && !$this->is_super) {

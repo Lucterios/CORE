@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 14 November 2008 17:57:45 By  ---
+// --- Last modification: Date 17 June 2009 1:01:42 By  ---
 
 
 //@TABLES@
@@ -43,8 +43,9 @@ try {
 	$test->assertEquals("admin",$comp->m_records["100"]["login"]);
 
 	$comp=$rep->getComponents(6);
-	$test->assertEquals(1,count($comp->m_records));
+	$test->assertEquals(2,count($comp->m_records));
 	$test->assertEquals("abc",$comp->m_records["101"]["login"]);
+	$test->assertEquals("",$comp->m_records["99"]["login"]);
 
 	$rep=$test->CallAction("CORE","users_APAS_reactiver",array("user_desactif"=>"101"),"Xfer_Container_Acknowledge");
 
@@ -55,7 +56,8 @@ try {
 	$test->assertEquals("abc",$comp->m_records["101"]["login"]);
 
 	$comp=$rep->getComponents(6);
-	$test->assertEquals(0,count($comp->m_records));
+	$test->assertEquals(1,count($comp->m_records));
+	$test->assertEquals("",$comp->m_records["99"]["login"]);
 
 	$connect->execute("DELETE FROM CORE_users WHERE id=101");
 } catch(Exception $e) {
