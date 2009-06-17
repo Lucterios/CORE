@@ -69,7 +69,7 @@ if ($run) {
 				require_once("$extDir/includes.inc.php");
 			$inc=1;
 			foreach($fileList as $file_name) {
-				$item=new TestItem($ext_name,sformat('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
+				$item=new TestItem($ext_name,sprintf('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
 				$item->runTest($extDir,$ext_name,$file_name);
 				$GlobalTest->addTests($item);
 			} 
