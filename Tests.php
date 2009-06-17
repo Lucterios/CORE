@@ -46,7 +46,7 @@ if ($run) {
 		global $connect;
 		$create_result=createDataBase(true);
 		$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
-		$item=new TestItem($ext_name,"Version ".$ext_obj->getPHPVersion());
+		$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
 		if ($connect->connected) {
 			$set_of_ext[]=$ext_obj;
 			$dep_names=split(" ",$ext_obj->getDepencies());
@@ -67,8 +67,9 @@ if ($run) {
 			sort($fileList);
 			if (is_file("$extDir/includes.inc.php"))
 				require_once("$extDir/includes.inc.php");
+			$inc=1;
 			foreach($fileList as $file_name) {
-				$item=new TestItem($ext_name,str_replace('_APAS_','::',$file_name));
+				$item=new TestItem($ext_name,sformat('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
 				$item->runTest($extDir,$ext_name,$file_name);
 				$GlobalTest->addTests($item);
 			} 
