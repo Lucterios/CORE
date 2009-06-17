@@ -84,7 +84,7 @@ if ($run) {
 			}
 		} catch(Exception $e) {
 			$item=new TestItem($ext_name,"Echec");
-			$item->error($e->getMessage());
+			$item->error($e);
 			$GlobalTest->addTests($item);
 		}
 	}
