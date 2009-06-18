@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 14 November 2008 23:13:30 By  ---
+// --- Last modification: Date 18 June 2009 23:40:32 By  ---
 
 //@BEGIN@
 function microtime_float()
@@ -60,6 +60,9 @@ class TestItem {
 				$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
 				if (substr($class_name,0,4)!='Xfer')
 					$this->assertEquals($class_name,null,"Exception attendue");
+			}
+			if ('Xfer_Container_Custom'==get_class($xfer_result)) {
+				$xfer_result->m_components=array_values($xfer_result->getSortComponents());
 			}
 			return $xfer_result;
 		} catch (Exception $e) {
