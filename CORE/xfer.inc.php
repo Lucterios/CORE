@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 20 May 2009 19:49:13 By  ---
+// --- Last modification: Date 14 July 2009 18:11:41 By  ---
 
 //@BEGIN@
 /**
@@ -412,22 +412,37 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 * Titre de confirmation
 	 *
 	 * @var string
-	 */var$Title = "";
+	 */
+	var $Title = "";
+
 	/**
 	 * Message
 	 *
 	 * @var string
-	 */var$Msg = "";
+	 */
+	var $Msg = "";
+
+	/**
+	 * traitment
+	 *
+	 * @var array
+	 */
+	var $traitment=null;
+
 	/**
 	* Type de message
 	*
 	* @var integer
-	*/var$Type = 1;
+	*/
+	var $Type = 1;
+
 	/**
 	 * Action de redirection
 	 *
 	 * @var Xfer_Action
-	 */var$Redirect = null;
+	 */
+      var $Redirect = null;
+
 	/**
 	 * Constructeur
 	 *
@@ -440,6 +455,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 		$this->Xfer_Container_Abstract($extension,$action,$context);
 		$this->m_observer_name = "Core.Acknowledge";
 	}
+
 	/**
 	 * Demande une confirmation avant une action irrémédiable (ex:suppression)
 	 *
@@ -457,6 +473,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 		else
 		return true;
 	}
+
 	/**
 	 * Assigne un message de resultat
 	 *
@@ -466,6 +483,22 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 		$this->Msg = $title;
 		$this->Type = $type;
 	}
+
+	/**
+	 * Gestion d'un traitement long
+	 *
+	 * @param string $icon
+	 * @param string $waitingMessage
+	 * @param string $finishMessage
+	 */
+	function traitment($icon,$waitingMessage,$finishMessage) {
+		$this->traitment=array($icon,$waitingMessage,$finishMessage);
+		if( array_key_exists("RELOAD",$this->m_context))
+			return ($this->m_context["RELOAD"] != "");
+		else
+			return false;
+	}
+
 	/**
 	 * Demande au client de rediriger cette action.
 	 *
@@ -474,6 +507,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	function redirectAction($action) {
 		if($this->checkActionRigth($action))$this->Redirect = $action;
 	}
+
 	/**
 	 * _ReponseXML
 	 *
@@ -486,6 +520,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 		else
 		return $this->Redirect->getReponseXML();
 	}
+
 	/**
 	 * Retourne la chaine XML à transferer
 	 *
@@ -498,7 +533,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 			$dlg = new Xfer_Container_DialogBox($this->m_extension,$this->m_action,$this->m_context);
 			$dlg->Caption = "Confirmation";
 			$dlg->setTypeAndText($this->Title, XFER_DBOX_CONFIRMATION);
-			$dlg->addAction( new Xfer_Action("Oui","ok.png",$this->m_extension,$this->m_action));
+			$dlg->addAction( new Xfer_Action("Oui","ok.png",$this->m_extension,$this->m_action,FORMTYPE_MODAL,CLOSE_YES));
 			$dlg->addAction( new Xfer_Action("Non","cancel.png"));
 			$dlg->m_closeaction = $this->m_closeaction;
 			return $dlg->getReponseXML();
@@ -510,6 +545,38 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 			$dlg->setTypeAndText($this->Msg,$this->Type);
 			$dlg->addAction( new Xfer_Action("_Ok","ok.png"));
 			$dlg->m_closeaction = $this->m_closeaction;
+			return $dlg->getReponseXML();
+		}
+		else if($this->traitment!=null) {
+			require_once'xfer_custom.inc.php';
+			$dlg = new Xfer_Container_Custom($this->m_extension,$this->m_action,$this->m_context);
+			$dlg->Caption = $this->Caption;
+			$dlg->m_context = $this->m_context;
+			$img_title = new Xfer_Comp_Image('img_title');
+			$img_title->setLocation(0,0,1,2);
+			$img_title->setValue($this->traitment[0]);
+			$dlg->addComponent($img_title);
+
+			$lbl = new Xfer_Comp_LabelForm("info");
+			$lbl->setLocation(1,0);
+			$dlg->addComponent($lbl);
+			if (array_key_exists('RELOAD',$this->m_context)) {
+				$lbl->setValue("{[newline]}".$this->traitment[2]);
+				$dlg->addAction( new Xfer_Action('_Fermer','close.png','','', FORMTYPE_MODAL, CLOSE_YES));
+			}
+			else {
+				$lbl->setValue("{[newline]}{[center]}".$this->traitment[1]."{[/center]}");
+				$dlg->m_context["RELOAD"] = "YES";
+				$btn = new Xfer_Comp_Button("Next");
+				$btn->setLocation(1,1);
+				$btn->setSize(50,300);
+				$btn->setAction( new Xfer_Action('Traitement...','',$this->m_extension,$this->m_action, FORMTYPE_REFRESH, CLOSE_NO));
+				$btn->JavaScript = "
+					parent.refresh();
+				";
+				$dlg->addComponent($btn);
+				$dlg->addAction( new Xfer_Action('_Annuler','cancel.png','','', FORMTYPE_MODAL, CLOSE_YES));
+			}
 			return $dlg->getReponseXML();
 		}
 		else

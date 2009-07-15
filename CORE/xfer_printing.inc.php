@@ -18,10 +18,9 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 January 2008 18:46:02 By Laurent GAY ---
+// --- Last modification: Date 14 July 2009 18:25:13 By  ---
 
 //@BEGIN@
-
 /**
  * fichier gï¿½rant le classe de d'impression de transfert
  *
@@ -56,6 +55,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @var string
 	 */
 	var $ReportContent;
+
 	/**
 	 * Type d'impression
 	 *
@@ -64,16 +64,26 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @var integer
 	 */
 	var $ReportType;
+
 	/**
 	 * Mode d'impression
 	 *
 	 * 1: Imprimante
 	 * 2: Previsualisation
 	 * 3: PDF
+	 * 4: CVS
 	 * Autre : Selectionneur
 	 * @var integer
 	 */
 	var $ReportMode=0;
+
+	/**
+	 * Export text autorisé
+	 *
+	 * @var integer
+	 */
+	var $withTextExport=0;
+
 	/**
 	 * Constructeur
 	 *
@@ -143,7 +153,10 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 		$lbl->setLocation(0,0);
 		$xfer_result->addComponent($lbl);
 		$print_mode=new Xfer_Comp_Select('PRINT_MODE');
-		$print_mode->setSelect(array(1=>'Imprimante',2=>'Prévisualisation',3=>'Fichier PDF'));
+		$selector=array(1=>'Imprimante',2=>'Prévisualisation',3=>'Fichier PDF');
+		if ($this->withTextExport!=0)
+			$selector[4]='Fichier CSV';
+		$print_mode->setSelect($selector);
 		$print_mode->setValue(1);
 		$print_mode->setLocation(1,0);
 		$xfer_result->addComponent($print_mode);
@@ -221,8 +234,10 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 			$model_converter=new ModelConverter("");
 			$this->ReportContent=$model_converter->TransformXsl($aData,implode("",file('CORE/LucteriosPrintStyleForFo.xsl')));
 		}
-		else
+		else {
 			$this->ReportContent=$aData;
+			$this->withTextExport=1;
+		}
 		return ($this->ReportContent!="");
 	}
 
@@ -289,7 +304,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 */
 	function _ReponseXML()
 	{
-		$xml_text=sprintf("<PRINT title='%s' type='%d' mode='%d'><![CDATA[%s]]></PRINT>",$this->ReportTitle,$this->ReportType,$this->ReportMode,$this->ReportContent);
+		$xml_text=sprintf("<PRINT title='%s' type='%d' mode='%d' withTextExport='%d'><![CDATA[%s]]></PRINT>",$this->ReportTitle,$this->ReportType,$this->ReportMode,$this->withTextExport,$this->ReportContent);
 		return $xml_text;
 	}
 }
@@ -407,16 +422,5 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 		return $xml_text;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
 //@END@
 ?>

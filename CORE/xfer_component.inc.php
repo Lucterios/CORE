@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 May 2009 0:03:43 By  ---
+// --- Last modification: Date 14 July 2009 17:16:44 By  ---
 
 //@BEGIN@
 /**
@@ -35,6 +35,21 @@ require_once'xfer.inc.php';
 
 define('MAX_GRID_RECORD',50);
 define('GRID_PAGE','GRID_PAGE%');
+
+/**
+* Configuration du lien mail
+*
+* 1=cc
+* 2=bcc
+* autre=to
+**/
+$MAILTO_TYPE=0;
+/**
+* Gestionnaire de Link label
+*
+**/
+$LINK_LABEL_MANAGER="";
+
 
 /**
  * Classe abtraite de composant
@@ -471,6 +486,9 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	function Xfer_Comp_LinkLabel($name) {
 		$this->Xfer_Component($name);
 		$this->_component = "LINK";
+		global $LINK_LABEL_MANAGER;
+		if ($LINK_LABEL_MANAGER!="")
+			require_once($LINK_LABEL_MANAGER);
 	}
 
 	/**
@@ -497,7 +515,17 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 				else $mails .= ','.$rec[$FieldName];
 			}
 		}
-		$this->setLink('mailto:'.$mails);
+		global $MAILTO_TYPE;
+		switch ($MAILTO_TYPE) {
+			case 1: // CC
+				$this->setLink('mailto:?cc='.$mails);
+				break;
+			case 2: //BCC
+				$this->setLink('mailto:?bcc='.$mails);
+				break;
+			default: //TO
+				$this->setLink('mailto:'.$mails);
+		}
 	}
 
 	/**
@@ -730,7 +758,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param Xfer_Action $action
 	 */
 	function addAction($action,$posAct=-1) {
-		if($this->checkActionRigth($action)) { 
+		if($this->checkActionRigth($action)) {
 			if ($posAct!=-1) {
 				$old_actions=$this->m_actions;
 				$this->m_actions=array();
