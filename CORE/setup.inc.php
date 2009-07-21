@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // setup file write by SDK tool
-// --- Last modification: Date 14 July 2009 18:25:13 By  ---
+// --- Last modification: Date 20 July 2009 20:34:36 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.";
@@ -29,8 +29,8 @@ $extension_libre=true;
 
 $version_max=0;
 $version_min=91;
-$version_release=8;
-$version_build=109;
+$version_release=9;
+$version_build=110;
 
 $depencies=array();
 

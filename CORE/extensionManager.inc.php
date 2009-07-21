@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 20:07:45 By  ---
+// --- Last modification: Date 20 July 2009 20:26:38 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -73,6 +73,8 @@ class Extension {
 	private $version_release = 0;
 
 	private $version_build = 0;
+
+	private $init_DB_version = "0.0.0.0";
 
 	private $description = "";
 
@@ -129,6 +131,7 @@ class Extension {
 			$this->params = $params;
 			$this->extend_tables = $extend_tables;
 			$this->Appli = $extention_appli;
+			$this->init_DB_version=$this->getDBVersion();
 		}
 	}
 
@@ -191,8 +194,11 @@ class Extension {
 		return version_compare($this->getPHPVersion(),$this->getDBVersion());
 	}
 
-	public function getVersions() {
-		return array($this->getDBVersion(),$this->getPHPVersion());
+	public function getVersions($current=true) {
+		if ($current)
+			return array($this->getDBVersion(),$this->getPHPVersion());
+		else
+			return array($this->init_DB_version,$this->getPHPVersion());
 	}
 
 	public function isVersionsInRange($versMax,$versMin) {
@@ -544,7 +550,7 @@ class Extension {
 			$func = "install_".$this->Name;
 			if( function_exists($func)) {
 				$this->message .= "appel de la propre fonction d'install de l'extension{[newline]}";
-				$this->message .= $func($this->getVersions());
+				$this->message .= $func($this->getVersions(false));
 				$this->message .= "fin d'appel de la propre fonction d'install de l'extension{[newline]}";
 			}
 			return true;
