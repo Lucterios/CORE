@@ -18,6 +18,15 @@
 //
 //	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //
+if (is_dir("./cms")) {
+	header('Location: ./cms');
+	exit;
+}
+if (is_dir("./joomla")) {
+	header('Location: ./joomla');
+	exit;
+}
+
 header('Content-Type: text/html; charset=ISO-8859-1');
 
 $appli_dir="./applis";
