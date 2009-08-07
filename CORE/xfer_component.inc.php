@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 14 July 2009 17:16:44 By  ---
+// --- Last modification: Date 06 August 2009 23:21:38 By  ---
 
 //@BEGIN@
 /**
@@ -33,7 +33,7 @@
 
 require_once'xfer.inc.php';
 
-define('MAX_GRID_RECORD',50);
+define('MAX_GRID_RECORD',25);
 define('GRID_PAGE','GRID_PAGE%');
 
 /**
