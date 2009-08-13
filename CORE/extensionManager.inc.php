@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 20 July 2009 20:26:38 By  ---
+// --- Last modification: Date 12 August 2009 19:43:50 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -727,7 +727,10 @@ function refreshDataBase($noVersionControl = false) {
 			$ExtensionDescription[$ext->Name] = $ext->getVersions();
 			$ext->installComplete();
 		}
-		else $install .= "Module à jours{[newline]}";
+		else {
+			$install .= "Module à jours{[newline]}";
+			$ext->postInstall();
+		}
 		$install .= $ext->message;
 		$install .= "{[newline]}";
 	}
