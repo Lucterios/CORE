@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 03 September 2007 18:25:57 By Laurent GAY ---
+// --- Last modification: Date 19 August 2009 19:42:45 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -42,7 +42,7 @@ function extension_params_APAS_modifier($Params)
 $self=new DBObj_CORE_extension_params();
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","extension_params_APAS_modifier",$Params);
-$xfer_result->Caption='Modifier un paramètre';
+$xfer_result->Caption="Modifier un paramètre";
 //@CODE_ACTION@
 $paramid=0;
 foreach($Params as $param_name=>$param_value)
@@ -52,8 +52,7 @@ $self->get($paramid);
 $xfer_result->m_context=array('paramid'=>$paramid);
 $xfer_result->setDBObject($self,"description",true);
 require_once 'CORE/setup_param.inc.php';
-eval('$params=array('.$self->param.');');
-$cmp=$self->call('getParamComponent');
+$cmp=$self->getParamComponent("value");
 if ($cmp!=null)
 {
 	$lbl=new Xfer_Comp_Label("lblvalue");
