@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 13 January 2009 19:14:19 By  ---
+// --- Last modification: Date 24 August 2009 20:53:07 By  ---
 
 //@BEGIN@
 require_once("setup_param.inc.php");
@@ -28,23 +28,21 @@ require_once"HelpTools.inc.php";
 $num_page = 0;
 
 function showPied($includeAll = false) {
-	global $extention_description;
-	global $extention_titre;
-	$pied_text = "<tr class='pied'>
+	if(!$includeAll) {
+		global $extention_description;
+		global $extention_titre;
+		$pied_text = "<tr class='pied'>
 		<td colspan=2 class='pied'>
 			<table border=0 cellspacing=0 cellpadding=0 width='100%'>
 				<tr>
-					<td class='pied'>$extention_titre- Guide d'utilisation";
-	if($includeAll) {
-		global $num_page;
-		$num_page++;
-		$pied_text .= "- Page$num_page-";
-	}
-	$pied_text .= "</td>
+					<td class='pied'>$extention_titre- Guide d'utilisation</td>
 				</tr>
             		</table>
         		</td>
     	</tr>";
+	}
+	else
+		$pied_text = "";
 	return $pied_text;
 }
 
@@ -91,7 +89,7 @@ function showHelpPage($extension,$helpname,$title = '',$includeAll = false) {
 		if($includeAll)$HtmlText .= "<br><br><br><br>";
 		if( is_file('../extensions/applis/images/image.jpg'))
 			$HtmlText .= "<img src='../extensions/applis/images/image.jpg'/><br>";
-		else 
+		else
 			$HtmlText .= "<img src='../extensions/applis/images/logo.gif'/><br>";
 		$HtmlText .= "<br><br><br><font size='-1'>Version ".$version_appli."</font></div>";
 	}
@@ -134,8 +132,8 @@ if( array_key_exists('mode',$_GET) && ($_GET['mode'] == 'manual')) {
 	$num_page = $summary_page;
 	foreach($MenuList as $menu_item) {
 		list($extension,$main_title,$list_menu) = $menu_item;
-		echo"\t<li><table width='100%'><tr><td><a href='#$extension'>".$main_title."</a></td><td align='right'>".$chapiter_pages[$extension]."&nbsp;&nbsp;&nbsp;</td></tr></table>\n\t\t<ul>\n";
-		if( count($list_menu)>0)foreach($list_menu as $desc)echo"\t\t\t<li><table width='100%'><tr><td><a href='#".$extension."_APAS_".$desc[0]."'>".$desc[1]."</a></td><td align='right'>".$chapiter_pages[$extension."@".$desc[0]]."&nbsp;&nbsp;&nbsp;</td></tr></table></li>\n";
+		echo"\t<li><table width='100%'><tr><td><a href='#$extension'>".$main_title."</a></td></tr></table>\n\t\t<ul>\n";
+		if( count($list_menu)>0)foreach($list_menu as $desc)echo"\t\t\t<li><table width='100%'><tr><td><a href='#".$extension."_APAS_".$desc[0]."'>".$desc[1]."</a></td></tr></table></li>\n";
 		echo"\t\t</ul>\n\t</li>\n";
 	}
 	echo"</ul>\n";
