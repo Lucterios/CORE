@@ -1,25 +1,24 @@
 <?php
-//
-//  This file is part of Lucterios.
-//
-//  Lucterios is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-//
-//  Lucterios is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with Lucterios; if not, write to the Free Software
-//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-//
-//	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//
-// Test file write by SDK tool
-// --- Last modification: Date 06 November 2008 20:33:13 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // Test file write by SDK tool
+// --- Last modification: Date 18 October 2009 15:15:16 By  ---
 
 
 //@TABLES@
@@ -64,7 +63,7 @@ $test->assertEquals("Ar_chivage",$menu_item->m_id);
 $test->assertEquals("Ar_chivage",$menu_item->m_title);
 $test->assertEquals("CORE",$menu_item->m_extension);
 $test->assertEquals("",$menu_item->m_action);
-$test->assertEquals(2,count($menu_item->m_sub_menus));
+$test->assertEquals(3,count($menu_item->m_sub_menus));
 
 $menu_sub_item=$menu_item->m_sub_menus[0];
 $test->assertEquals("_Sauvegarder",$menu_sub_item->m_id);
@@ -78,6 +77,13 @@ $test->assertEquals("_Restauration",$menu_sub_item->m_id);
 $test->assertEquals("_Restauration",$menu_sub_item->m_title);
 $test->assertEquals("CORE",$menu_sub_item->m_extension);
 $test->assertEquals("selectRestor",$menu_sub_item->m_action);
+$test->assertEquals(0,count($menu_sub_item->m_sub_menus));
+
+$menu_sub_item=$menu_item->m_sub_menus[2];
+$test->assertEquals("_Gestiondesarchives",$menu_sub_item->m_id);
+$test->assertEquals("_Gestion des archives",$menu_sub_item->m_title);
+$test->assertEquals("CORE",$menu_sub_item->m_extension);
+$test->assertEquals("toolBackup",$menu_sub_item->m_action);
 $test->assertEquals(0,count($menu_sub_item->m_sub_menus));
 
 //Impression

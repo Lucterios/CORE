@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 15 October 2009 23:00:07 By  ---
+// --- Last modification: Date 18 October 2009 15:22:54 By  ---
 
 //@BEGIN@
 function return_bytes($val) {
@@ -38,8 +38,10 @@ function return_bytes($val) {
 
 function getRemainingStorageSize() {
 	$file_remaining="conf/Remaining.Size";
-	if (is_file($file_remaining))
-		return 0+implode('', file($file_remaining));
+	if (is_file($file_remaining)) {
+		$file_size=file($file_remaining);
+		return array(0+$file_size[0],0+$file_size[1]);
+	}
 	else
 		return -1;
 }
@@ -77,8 +79,8 @@ function taille_max_dl_fichier() {
       $taille_max_dl = $upload_max_filesize;
 
     $remaining_size=getRemainingStorageSize();
-    if (($remaining_size>=0) && ($remaining_size<$taille_max_dl))
-    		return $remaining_size;
+    if (is_array($remaining_size) && ($remaining_size[0]<$taille_max_dl))
+    		return $remaining_size[0];
     else
     		return $taille_max_dl;
 }

@@ -17,33 +17,47 @@
 //     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // Method file write by SDK tool
-// --- Last modification: Date 18 October 2009 16:10:10 By  ---
+//  // Action file write by SDK tool
+// --- Last modification: Date 18 October 2009 15:28:42 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
-require_once('CORE/users.tbl.php');
 //@TABLES@
+//@XFER:acknowledge
+require_once('CORE/xfer.inc.php');
+//@XFER:acknowledge@
 
-//@DESC@Editer un utilisateur
-//@PARAM@ posX
-//@PARAM@ posY
-//@PARAM@ xfer_result
 
-function users_APAS_edit(&$self,$posX,$posY,$xfer_result)
+//@DESC@Suppression d'un archive
+//@PARAM@ path
+//@PARAM@ filename
+
+
+//@LOCK:0
+
+function archiveDelete($Params)
 {
+if (($ret=checkParams("CORE", "archiveDelete",$Params ,"path","filename"))!=null)
+	return $ret;
+$path=getParams($Params,"path",0);
+$filename=getParams($Params,"filename",0);
+try {
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","archiveDelete",$Params);
+$xfer_result->Caption="Suppression d'un archive";
 //@CODE_ACTION@
-$img=new  Xfer_Comp_Image('img');
-$img->setValue('user.png');
-$img->setLocation($posX,$posY++,1,4);
-$xfer_result->addComponent($img);
-
-$xfer_result->setDBObject($self,"login",($self->id==100),$posY++,$posX+1);
-$xfer_result->setDBObject($self,"realName",false,$posY++,$posX+1);
+$file_path = $path.$filename;
+if (!is_file($file_path))
+	$xfer_result->message('Fichier non trouvé.', XFER_DBOX_WARNING);
+else if($xfer_result->confirme("Voulez-vous suprimer l'archive '$file_path'?")) {
+	unlink($file_path);
+}
+//@CODE_ACTION@
+}catch(Exception $e) {
+	throw $e;
+}
 return $xfer_result;
-//@CODE_ACTION@
 }
 
 ?>

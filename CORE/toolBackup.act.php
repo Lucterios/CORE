@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 15 October 2009 21:55:29 By  ---
+// --- Last modification: Date 18 October 2009 15:41:29 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -67,6 +67,7 @@ $xfer_result->addComponent($up);
 //
 $xfer_result->addAction( new Xfer_Action("_Insérer","add.png",'CORE','archiveUpload',FORMTYPE_MODAL,CLOSE_NO));
 $xfer_result->addAction( new Xfer_Action("_Extraire","edit.png",'CORE','archiveDownload',FORMTYPE_MODAL,CLOSE_NO));
+$xfer_result->addAction( new Xfer_Action("_Supprimer","suppr.png",'CORE','archiveDelete',FORMTYPE_MODAL,CLOSE_NO));
 $xfer_result->addAction( new Xfer_Action("A_nnuler","cancel.png"));
 //@CODE_ACTION@
 }catch(Exception $e) {

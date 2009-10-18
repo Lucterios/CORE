@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 15 October 2009 20:09:17 By  ---
+// --- Last modification: Date 18 October 2009 15:40:09 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -50,8 +50,12 @@ closedir($handle);
 sort($file_list);
 $temp = $file_list;
 $file_list = array('');
-foreach($temp as $item)
-	$file_list[$item] = date("[d F Y H:i:s] ", filectime($path.$item)).$item;
+require_once('CORE/fichierFonctions.inc.php');
+foreach($temp as $item) {
+	$size=convert_taille(filesize($path.$item));
+	$size=str_pad($size, 10, " ", STR_PAD_LEFT);
+	$file_list[$item] = date("[d F Y H:i:s] ", filectime($path.$item)).$size." ".$item;
+}
 
 $lb_name = new Xfer_Comp_LabelForm('lblfiles');
 $lb_name->setValue('{[bold]}Fichiers{[/bold]}');
