@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 December 2008 21:49:46 By  ---
+// --- Last modification: Date 15 October 2009 23:43:09 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -49,7 +49,10 @@ while ($DBParam->fetch()) {
 		    	$cmp=$DBParam->getParamComponentReadOnly($name_comp);
 		else
 		    	$cmp=$DBParam->getParamComponent($name_comp);
-		$cmp->setLocation($ParamsDesc[$name_comp][0]+1, $ParamsDesc[$name_comp][1]);
+		if (isset($ParamsDesc[$name_comp][2]))
+			$cmp->setLocation($ParamsDesc[$name_comp][0]+1, $ParamsDesc[$name_comp][1],$ParamsDesc[$name_comp][2]);
+		else
+			$cmp->setLocation($ParamsDesc[$name_comp][0]+1, $ParamsDesc[$name_comp][1]);
 		$xfer_result->addComponent($cmp);
 	}
 }

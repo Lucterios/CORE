@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 15 October 2009 21:53:53 By  ---
+// --- Last modification: Date 15 October 2009 21:54:24 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -30,22 +30,22 @@ require_once('CORE/xfer.inc.php');
 //@XFER:acknowledge@
 
 
-//@DESC@Sauvegarder les données
+//@DESC@Gestion des sauvegardes
 //@PARAM@ path
 //@PARAM@ filename
 
 
 //@LOCK:0
 
-function archive($Params)
+function archiveUpload($Params)
 {
-if (($ret=checkParams("CORE", "archive",$Params ,"path","filename"))!=null)
+if (($ret=checkParams("CORE", "archiveUpload",$Params ,"path","filename"))!=null)
 	return $ret;
 $path=getParams($Params,"path",0);
 $filename=getParams($Params,"filename",0);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","archive",$Params);
-$xfer_result->Caption="Sauvegarder les données";
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","archiveUpload",$Params);
+$xfer_result->Caption="Gestion des sauvegardes";
 //@CODE_ACTION@
 $file_path = $path.$filename;
 $path_parts = pathinfo($file_path);
@@ -54,9 +54,25 @@ if(isset($path_parts['extension']))
 else
 	$file_path .= '.bkf';
 
-if($xfer_result->confirme("Voulez-vous réaliser une sauvegarde vers le fichier '$file_path'?")) {
-	$xfer_result->m_context['file_path'] = $file_path;
-	$xfer_result->redirectAction( new Xfer_Action('_Archiver','','CORE','archiveForm', FORMTYPE_MODAL, CLOSE_YES));
+if (!array_key_exists('UpFile',$Params)) {
+	require_once "CORE/Lucterios_Error.inc.php";
+	require_once "CORE/fichierFonctions.inc.php";
+	throw new LucteriosException(IMPORTANT,"Pas de fichier défini!");
+}
+if ($_FILES['UpFile']['tmp_name']=='') {
+	require_once "CORE/Lucterios_Error.inc.php";
+	require_once "CORE/fichierFonctions.inc.php";
+	throw new LucteriosException(IMPORTANT,"fichier non téléchargé!{[newline]}Taille maximum ".convert_taille(taille_max_dl_fichier()));
+}
+if(!is_dir($path))
+	@mkdir($path,0777);
+if (is_file($file_path))
+	@unlink($file_path);
+require_once("CORE/saveFileDownloaded.mth.php");
+$ret = saveFileDownloaded($xfer_result,$Params,'UpFile',$file_path,true);
+if (!is_file($file_path)) {
+	require_once "CORE/Lucterios_Error.inc.php";
+	throw new LucteriosException(IMPORTANT,"fichier '$file_path' non sauvé!");
 }
 //@CODE_ACTION@
 }catch(Exception $e) {

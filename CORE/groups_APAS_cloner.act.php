@@ -18,48 +18,60 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 15 October 2009 21:53:53 By  ---
+// --- Last modification: Date 14 October 2009 22:04:19 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
+require_once('CORE/extension.tbl.php');
+require_once('CORE/extension_actions.tbl.php');
+require_once('CORE/extension_rights.tbl.php');
+require_once('CORE/group_rights.tbl.php');
+require_once('CORE/groups.tbl.php');
 //@TABLES@
 //@XFER:acknowledge
 require_once('CORE/xfer.inc.php');
 //@XFER:acknowledge@
 
 
-//@DESC@Sauvegarder les données
-//@PARAM@ path
-//@PARAM@ filename
+//@DESC@Cloner un groupe
+//@PARAM@ 
+//@INDEX:group
 
+//@TRANSACTION:
 
 //@LOCK:0
 
-function archive($Params)
+function groups_APAS_cloner($Params)
 {
-if (($ret=checkParams("CORE", "archive",$Params ,"path","filename"))!=null)
-	return $ret;
-$path=getParams($Params,"path",0);
-$filename=getParams($Params,"filename",0);
-try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","archive",$Params);
-$xfer_result->Caption="Sauvegarder les données";
-//@CODE_ACTION@
-$file_path = $path.$filename;
-$path_parts = pathinfo($file_path);
-if(isset($path_parts['extension']))
-	$file_path = substr($file_path,0,-1* strlen($path_parts['extension'])).'bkf';
-else
-	$file_path .= '.bkf';
+$self=new DBObj_CORE_groups();
+$group=getParams($Params,"group",-1);
+if ($group>=0) $self->get($group);
 
-if($xfer_result->confirme("Voulez-vous réaliser une sauvegarde vers le fichier '$file_path'?")) {
-	$xfer_result->m_context['file_path'] = $file_path;
-	$xfer_result->redirectAction( new Xfer_Action('_Archiver','','CORE','archiveForm', FORMTYPE_MODAL, CLOSE_YES));
+global $connect;
+$connect->begin();
+try {
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_cloner",$Params);
+$xfer_result->Caption="Cloner un groupe";
+//@CODE_ACTION@
+$new_group=new DBObj_CORE_groups;
+$new_group->groupName='Copie de '.$self->groupName;
+$new_group->weigth=$self->weigth;
+$new_group->insert();
+
+$group_rights=$self->getField('GroupRights');
+while($group_rights->fetch()) {
+	$new_group_right=new DBObj_CORE_group_rights;
+	$new_group_right->groupref=$new_group->id;
+	$new_group_right->rightref=$group_rights->rightref;
+	$new_group_right->value=$group_rights->value;
+	$new_group_right->insert();
 }
 //@CODE_ACTION@
+	$connect->commit();
 }catch(Exception $e) {
+	$connect->rollback();
 	throw $e;
 }
 return $xfer_result;

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 07 February 2009 14:32:04 By  ---
+// --- Last modification: Date 15 October 2009 23:00:07 By  ---
 
 //@BEGIN@
 function return_bytes($val) {
@@ -34,6 +34,14 @@ function return_bytes($val) {
 		$val *= 1024;
 	}
 	return $val;
+}
+
+function getRemainingStorageSize() {
+	$file_remaining="conf/Remaining.Size";
+	if (is_file($file_remaining))
+		return 0+implode('', file($file_remaining));
+	else
+		return -1;
 }
 
 function taille_max_dl_fichier() {
@@ -68,7 +76,11 @@ function taille_max_dl_fichier() {
     if($taille_max_dl > $upload_max_filesize)
       $taille_max_dl = $upload_max_filesize;
 
-    return $taille_max_dl;
+    $remaining_size=getRemainingStorageSize();
+    if (($remaining_size>=0) && ($remaining_size<$taille_max_dl))
+    		return $remaining_size;
+    else
+    		return $taille_max_dl;
 }
 
 function convert_taille($taille_octet) {
@@ -78,8 +90,10 @@ function convert_taille($taille_octet) {
 		return round($taille_octet/1024,2).' Ko.';
 	elseif($taille_octet >= 1048576 && $taille_octet < 1073741824)
 		return round(($taille_octet/1024)/1024,2).' Mo.';
-	elseif($taille_octet >= 1073741824)
+	elseif($taille_octet >= 1073741824 && $taille_octet < 1099511627776)
 		return round((($taille_octet/1024)/1024)/1024,2).' Go.';
+	else
+		return round(((($taille_octet/1024)/1024)/1024)/1024,2).' To.';
 }
 //@END@
 ?>

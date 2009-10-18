@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 22 January 2009 19:26:27 By  ---
+// --- Last modification: Date 15 October 2009 21:54:16 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -91,18 +91,15 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	}
 	//
 	if( is_file($file_path)) {
-		$tar = new Archive_Tar($file_path);
-		__log($tar->listContent(),'archiveForm');
 		$lbl->setValue("{[center]}{[bold]}Archivage Terminer.{[/bold]}{[/center]}");
-		$path = getcwd();
-		if (substr($file_path,0,strlen($path))==$path) $path=substr($file_path,strlen($path)+1);
 		$lbl = new Xfer_Comp_LinkLabel("archive");
 		$lbl->setLocation(0,2,2);
-		$lbl->setFileToLoad($path);
+		$lbl->setFileToLoad($file_path);
 		$lbl->setValue('Telecharger');
 		$xfer_result->addComponent($lbl);
 	}
-	else $lbl->setValue("{[center]}{[bold]}Sauvegarde échouer!!{[/bold]}{[/center]}");
+	else
+		$lbl->setValue("{[center]}{[bold]}Sauvegarde échouer!!{[/bold]}{[/center]}");
 	PEAR::setErrorHandling(PEAR_ERROR_RETURN);
 }
 else {

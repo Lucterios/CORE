@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 26 January 2009 22:58:44 By  ---
+// --- Last modification: Date 14 October 2009 22:00:22 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -59,8 +59,10 @@ $self->find();
 
 $comp8= &new Xfer_Comp_Grid('group','Grille des paramètres');
 $comp8->setDBObject($self,array('groupName','weigth'));
+$comp8->addAction($self->NewAction("_Editer",'extensions.png','editer', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $comp8->addAction($self->NewAction("_Modifier",'edit.png','modifier', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $comp8->addAction($self->NewAction("_Supprimer",'suppr.png','supprimer', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
+$comp8->addAction($self->NewAction("_Cloner",'add.png','cloner', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $comp8->addAction($self->NewAction("_Ajouter",'add.png','modifier',FORMTYPE_MODAL,CLOSE_NO,SELECT_NONE));
 $comp8->setLocation(0, 1, 2, 1);
 $xfer_result->addComponent($comp8);

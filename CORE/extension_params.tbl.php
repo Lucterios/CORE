@@ -18,18 +18,21 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 07 March 2008 12:10:50 By  ---
+// --- Last modification: Date 15 October 2009 23:42:10 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
 class DBObj_CORE_extension_params extends DBObj_Basic
 {
+	var $Title="";
 	var $tblname="extension_params";
 	var $extname="CORE";
 	var $__table="CORE_extension_params";
 
 	var $DefaultFields=array();
 	var $NbFieldsCheck=1;
+	var $Heritage="";
+	var $PosChild=-1;
 
 	var $extensionId;
 	var $paramName;
@@ -37,7 +40,7 @@ class DBObj_CORE_extension_params extends DBObj_Basic
 	var $value;
 	var $type;
 	var $param;
-	var $__DBMetaDataField=array('extensionId'=>array('description'=>'Extension', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>50, 'Multi'=>false)), 'paramName'=>array('description'=>'Nom', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>20, 'Multi'=>false)), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'value'=>array('description'=>'Valeur', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>100, 'Multi'=>false)), 'type'=>array('description'=>'Type', 'type'=>8, 'notnull'=>false, 'params'=>array('Enum'=>array('Chaine', 'Entier', 'Réel'))), 'param'=>array('description'=>'Parametre de type', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>80, 'Multi'=>false)));
+	var $__DBMetaDataField=array('extensionId'=>array('description'=>'Extension', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>50, 'Multi'=>false)), 'paramName'=>array('description'=>'Nom', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>25, 'Multi'=>false)), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'value'=>array('description'=>'Valeur', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>250, 'Multi'=>false)), 'type'=>array('description'=>'Type', 'type'=>8, 'notnull'=>false, 'params'=>array('Enum'=>array('Chaine', 'Entier', 'Réel'))), 'param'=>array('description'=>'Parametre de type', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>80, 'Multi'=>false)));
 
 	var $__toText='$paramName';
 }
