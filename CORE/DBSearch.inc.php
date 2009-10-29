@@ -18,17 +18,20 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 December 2008 18:41:42 By  ---
+// --- Last modification: Date 29 October 2009 1:51:38 By  ---
 
 //@BEGIN@
 /**
  * fichier gérant le DBSearch
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
- * @version 0.10
+ * @version 1.0
  * @package Lucterios
  * @subpackage DBObject
- */require_once("DBObject.inc.php");
+ */
+
+require_once("DBObject.inc.php");
+
 /**
 * Classe de recherche au DBObject Luctèrios
 *
@@ -41,6 +44,16 @@
 class DB_Search {
 
 	private $DBObject;
+
+	private $dataField;
+
+	private $paramSearch=array();
+	private $tables=array();
+	private $conditions=array();
+
+	private $special_selection=1;
+	private $special_nb=0;
+
 	/**
 	 * Constructeur DB_Search
 	 *
@@ -48,222 +61,280 @@ class DB_Search {
 	 */
 	public function __construct($aDBObj) {
 		$this->DBObject = $aDBObj;
+		$this->dataField= $aDBObj->getDBMetaDataField();
+		$this->tables=array();
+		$this->conditions=array();
 	}
-	/**
-	 * Retourne un sous champ
-	 *
-	 * @access private
-	 * @param string $field_name
-	 * @param string $subname
-	 * @return array
-	 */
-	private function getSubField($field_name,$subname = "") {
-		$FieldName = $field_name;
-		if(($subname != "") && ( substr($FieldName,0, strlen($subname)+1) == ($subname. SEP_SEARCH)))$FieldName = substr($FieldName, strlen($subname)+1);
-		if(($pos_sep = strpos($FieldName, SEP_SEARCH)) !== false)
-		return Array( substr($FieldName,$pos_sep+1), substr($FieldName,0,$pos_sep));
-		else
-		return Array('',$FieldName);
+
+	private function returnType($fieldName,$obj) {
+		$desc=null;
+		if( array_key_exists($fieldName,$obj->__DBMetaDataField)) {
+			$desc=array();
+			$desc['TYPE']=$obj->__DBMetaDataField[$fieldName]['type'];
+			$desc['PARAM']=$obj->__DBMetaDataField[$fieldName]['params'];
+			$desc['TABLES']=array($obj->__table);
+			$desc['FIELD']=$fieldName;
+			$desc['SUB']=null;
+		}
+		else {
+			if($obj->Super != null) {
+				$desc=$this->returnType($fieldName,$obj->Super);
+				if ($desc!=null) {
+					$desc['TABLES'][]=$obj->__table;
+				}
+			}
+		}
+		return $desc;
 	}
-	/**
-	* SearchByField
-	* @access private
-	*/
-	private function SearchByField($Params,$field_name,$tbref = '',$subname = "") {
-		$search_tbl = array($this->DBObject->__table);
-		$search_query = "";
-		if($tbref == '')$tbref = $this->DBObject->__table;
-		list($sub_fields,$FieldName) = $this->getSubField($field_name,$subname);
-		if( array_key_exists($FieldName,$this->DBObject->__DBMetaDataField)) {
-			$field_item = $this->DBObject->__DBMetaDataField[$FieldName];
-			$type_fld = $field_item['type'];
-			$select_id = (int)$Params[$field_name."_select"];
-			$value1 = $Params[$field_name."_value1"];
-			switch($type_fld) {
-			case 0:
-				//int
-			case 1:
-				//float
-				// "ignorer","=","<",">"
-				switch($select_id) {
-				case 1:
-					$search_query = "$tbref.$FieldName=$value1";
-					break;
-				case 2:
-					$search_query = "$tbref.$FieldName<$value1";
-					break;
-				case 3:
-					$search_query = "$tbref.$FieldName>$value1";
-					break;
-				}
-				break;
-			case 2:
-				//text
-			case 7:
-				//long text
-				// "ignorer","contiens"
-				if(( trim($value1) != "") && ($select_id == 1))
-					$search_query = "$tbref.$FieldName like '%$value1%'";
-				break;
-			case 3:
-				//bool
-				// " ignorer"," = "
-				if($select_id== 1)
-					$search_query="$tbref.$FieldName = $value1";
-				break;
-			case 4:
-				//Date
-			case 5:
-				//time
-			case 6:
-				//Date & time
-				/// " ignorer"," = ","<",">"
-				//
-				switch($select_id) {
-				case 1:
-					$search_query = "$tbref.$FieldName= '$value1'";
-					break;
-				case 2:
-					$search_query = "$tbref.$FieldName<'$value1'";
-					break;
-				case 3:
-					$search_query = "$tbref.$FieldName>'$value1'";
-					break;
-				}
-				break;
-			case 8:
-				// enum
-			case 10:
-				// ref
-				// " ignorer"," ou"," et"
-				//
-				if($sub_fields != "") {
-					$param_fld = $field_item['params'];
-					$TableName = $param_fld["TableName"];
-					$val = new DB_Search($this->DBObject->getField($FieldName));
-					if ($subname == "")
-						$new_sub_field = $FieldName;
-					else
-						$new_sub_field = $subname.SEP_SEARCH.$FieldName;
-					$search = $val->SearchByField($Params,$field_name,$TableName,$new_sub_field);
-					if($search[1] != "") {
-						$search_tbl[] = $TableName;
-						$search_tbl = array_merge($search_tbl,$search[0]);
-						$search_query = $search[1];
-						$search_query .= " AND $TableName.id =$tbref.$FieldName";
-					}
-				}
-				else if( trim($value1) != "") {
-					$list = split(';',$value1);
-					switch($select_id) {
-					case 1:
-						$or_item = "";
-						foreach($list as $item) {
-							if($or_item != "")
-								$or_item .= " OR ";
-							$or_item .= "($tbref.$FieldName=$item)";
-						}
-						if($or_item != "")
-							$search_query = "($or_item)";
-						break;
-					case 2:
-						$search_query = "";
-						foreach($list as $item) {
-							if($search_query != "")
-								$search_query .= " AND ";
-							$search_query .= "$tbref.$FieldName=$item";
-						}
-						break;
-					}
-				}
-				break;
-			case 9:
-				// child
-				$param_fld=$field_item['params'];
-				$TableName=$param_fld["TableName"];
-				$RefField=$param_fld["RefField"];
-				$val= new DB_Search($this->DBObject->getField($FieldName));
-				if($subname == "")
-					$new_sub_field = $FieldName;
-				else
-					$new_sub_field = $subname.SEP_SEARCH.$FieldName;
-				$search = $val->SearchByField($Params,$field_name,$TableName,$new_sub_field);
-				if($search[1] != "") {
-					$search_tbl[] = $TableName;
-					$search_tbl = array_merge($search_tbl,$search[0]);
-					$search_query = $search[1];
-					$search_query .= " AND $TableName.$RefField = $tbref.id";
-				}
-				break;
+
+	private function addTypeDescription($fieldName,$comp,$value) {
+		$desc=null;
+		$sep_pos=strpos($fieldName,SEP_SEARCH);
+		if ($sep_pos===false) {
+			// champ simple	
+			echo "<!-- champ simple	$fieldName -->\n";
+			$field_type=$this->returnType($fieldName,$this->DBObject);
+			if ($field_type!=null) {
+				$this->paramSearch[$fieldName]=array($comp,$value,$field_type);
 			}
 		}
 		else {
-			if($this->DBObject->Super != null) {
-				$super_setup = new DB_Search($this->DBObject->Super);
-				list($super_search_tbl,$super_search_query) = $super_setup->SearchByField($Params,$field_name,'',$subname);
-				if($super_search_query != '') {
-					$search_tbl = $super_search_tbl;
-					if (!in_array($this->DBObject->__table,$search_tbl))
-						$search_tbl[]=$this->DBObject->__table;
-					$search_query = $super_search_query." AND ".$this->DBObject->__table.".superId=".$this->DBObject->Super->__table.".id";
+			// champ complex
+			$main_field_name=substr($fieldName,0,$sep_pos);
+			$sub_field_name=substr($fieldName,$sep_pos+1);
+			if (!array_key_exists($main_field_name,$this->paramSearch)) {
+				$this->addTypeDescription($main_field_name,null,null);
+				if (array_key_exists($main_field_name,$this->paramSearch)) {
+					$type=$this->paramSearch[$main_field_name][2]['TYPE'];
+					if (($type==9) || ($type==10)) {
+						$table_link=$this->paramSearch[$main_field_name][2]['PARAM']['TableName'];
+						$file_link= $this->DBObject->getTableName($table_link);
+						require_once($file_link);
+						$class_link='DBObj_'.$table_link;
+						$this->paramSearch[$main_field_name][2]['SUB']=new DB_Search(new $class_link());
+					}
+					else
+						unset($this->paramSearch[$main_field_name]);
 				}
 			}
+			if (array_key_exists($main_field_name,$this->paramSearch)) {
+				$sub_search=$this->paramSearch[$main_field_name][2]['SUB'];
+				$sub_search->addTypeDescription($sub_field_name,$comp,$value);
+			}
 		}
-		return array($search_tbl,$search_query);
 	}
+
+	private function initParamSearch($Params) {
+		$this->paramSearch=array();
+		foreach($Params as $name=>$comp) {
+			if ((substr($name,-7)=='_select') && ($comp!=0)) {
+				$ident_field=substr($name,0,-7);
+				$value=trim($Params[$ident_field.'_value1']);
+				$this->addTypeDescription($ident_field,$comp,$value);
+			}
+		}
+		logAutre("PARAM=".print_r($this->paramSearch,true));
+	}
+
+	private function getConditionsHeritage($params) {
+		$conditions=array();
+		$table_list=$params[2]['TABLES'];
+		for($idx=1;$idx<count($table_list);$idx++){
+			$conditions[]=$table_list[$idx-1].".id=".$table_list[$idx].".superId";
+		}
+		return $conditions;
+	}
+
+	private function getConditions($params) {
+		$conditions=array();
+		$table_list=$params[2]['TABLES'];
+		$current_table=$table_list[0];
+		$current_field=$params[2]['FIELD'];
+		$select_id=$params[0];
+		$value1=$params[1];
+
+		switch($params[2]['TYPE']) {
+		case 0:
+			//int
+		case 1:
+			//float
+			// "ignorer","=","<",">"
+			switch($select_id) {
+			case 1:
+				$conditions[]="$current_table.$current_field=$value1";
+				break;
+			case 2:
+				$conditions[]="$current_table.$current_field<$value1";
+				break;
+			case 3:
+				$conditions[]="$current_table.$current_field>$value1";
+				break;
+			}
+			break;
+		case 4:
+			//Date
+		case 5:
+			//time
+		case 6:
+			//Date & time
+
+			// "ignorer","=","<",">"
+			switch($select_id) {
+			case 1:
+				$conditions[]="$current_table.$current_field='$value1'";
+				break;
+			case 2:
+				$conditions[]="$current_table.$current_field<'$value1'";
+				break;
+			case 3:
+				$conditions[]="$current_table.$current_field>'$value1'";
+				break;
+			}
+			break;
+		case 2:
+			//text
+		case 7:
+			//long text
+
+			// "ignorer","contiens"
+			if(( trim($value1) != "") && ($select_id == 1)) {
+				$conditions[]="$current_table.$current_field like '%$value1%'";
+			}
+			break;
+		case 3:
+			//bool
+
+			// " ignorer"," = "
+			if($select_id== 1) {
+				$conditions[]="$current_table.$current_field=$value1";
+			}
+			break;
+		case 8:
+			// enum
+			// " ignorer"," ou"
+			if(( trim($value1) != "") && ($select_id == 1)) {
+				$value1=str_replace(array(';'),array(','),$value1);
+				$conditions[]="$current_table.$current_field in ($value1)";
+			}
+			break;
+		case 10:
+			// ref
+
+			// " ignorer"," ou", "et"
+			$sub_search=$params[2]['SUB'];
+			if ($sub_search==null) {
+				if(( trim($value1) != "") && (($select_id == 1) || ($select_id == 2))) {
+					$this->special_selection=max($this->special_selection,$select_id);
+					$this->special_nb=max($this->special_nb,count(split(';',$value1)));
+					$value1=str_replace(array(';'),array(','),$value1);
+					$conditions[]="$current_table.$current_field IN ($value1)";
+					
+				}
+			}
+			else {
+				$sub_search->process();
+				$sub_Q=$sub_search->queryCreator('id');
+				$this->special_selection=$sub_search->special_selection;
+				if ($sub_Q!='') {
+					$conditions[]="$current_table.$current_field IN ($sub_Q)";
+				}
+			}
+			break;
+		case 9:
+			// child
+
+			// " ignorer"," ou"," et"
+			$sub_search=$params[2]['SUB'];
+			if ($sub_search==null) {
+				if(trim($value1) != "") {
+					$this->special_selection=max($this->special_selection,$select_id);
+					$this->special_nb=max($this->special_nb,count(split(';',$value1)));
+					$value1=str_replace(array(';'),array(','),$value1);
+					$sub_table=$params[2]['PARAM']['TableName'];
+					$sub_field=$params[2]['PARAM']['RefField'];
+					$sub_Q="SELECT $sub_field FROM $sub_table WHERE id IN ($value1)";
+					if($select_id== 1) {
+						$conditions[]="$current_table.id IN ($sub_Q)";
+					}
+					if($select_id== 2) {
+						$conditions[]="$current_table.id =ANY ($sub_Q)";
+					}
+				}
+			}
+			else {
+				$sub_field=$params[2]['PARAM']['RefField'];
+				$sub_search->process();
+				if($sub_search->special_selection== 1) {
+					$sub_Q=$sub_search->queryCreator($sub_field);
+					if ($sub_Q!='') {
+						$conditions[]="$current_table.id IN ($sub_Q)";
+					}
+				}
+				if($sub_search->special_selection== 2) {
+					$sub_search->conditions[]=$sub_search->DBObject->__table.".$sub_field=$current_table.id";
+					$sub_Q=$sub_search->queryCreator(null);
+					if ($sub_Q!='') {
+						$conditions[]=$sub_search->special_nb."=($sub_Q)";
+					}
+				}
+			}
+			break;
+		}
+		return $conditions;
+	}
+
+	private function process() {
+		foreach($this->paramSearch as $param_name=>$param_item) {
+			$this->tables=array_merge($this->tables,$param_item[2]['TABLES']);
+			$this->conditions=array_merge($this->conditions,$this->getConditions($param_item));
+			$this->conditions=array_merge($this->conditions,$this->getConditionsHeritage($param_item));
+		}
+		$this->tables=array_unique($this->tables);
+		$this->conditions=array_unique($this->conditions);
+		$id=array_search('',$this->conditions);
+		if ($id!==false) {
+			unset($this->conditions[$id]);
+		}
+		logAutre("tables=".print_r($this->tables,true));
+		logAutre("conditions=".print_r($this->conditions,true));
+	}
+
+	private function queryCreator($select_item,$OrderBy="") {
+		if ($select_item==null)
+			$ret_col="count(*)";
+		else
+			$ret_col=$this->DBObject->__table.".$select_item";
+		if (count($this->conditions)>=count($this->tables)) {
+			$query="SELECT $ret_col FROM ".implode(',',$this->tables)." WHERE ".implode(' AND ',$this->conditions);
+			if ($OrderBy!='') {
+				$query." ORDER BY ".$OrderBy;
+			}
+			logAutre("query:$query");
+			return $query;
+		}
+		return "";
+	}
+
+
 	/**
 	 * Lance une recherche d'enregistrement
 	 *
 	 * Permet de rechercher des enregistrements.
 	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencé dans$Params* _select: référence l'operateur de comparaison
 	 * _value1: valeur à comparer
-	 * @param array$Params* @param string$OrderBy*/
+	 * @param array $Params
+	 * @param string $OrderBy
+	*/
 	function Execute($Params,$OrderBy = '',$searchQuery = "",$searchTable=array()) {
-		$search_tbl = $searchTable;
-		$search_tbl[]= $this->DBObject->__table;
-		$search_query = $searchQuery;
-		$FieldNames = $this->DBObject->getFieldEditable();
-		foreach($Params as $key => $val)
-			if(( substr($key,-7) == "_select") && ($Params[$key] != "0")) {
-				list($tbls,$q) = $this->SearchByField($Params, substr($key,0,-7));
-				if($q != "") {
-					$search_tbl = array_merge($search_tbl,$tbls);
-					if($search_query != "")
-						$search_query .= " AND ";
-					$search_query .= $q;
-				}
-			}
-		$order_by = "";
-		if($OrderBy != '') {
-			list($sub_field_name,$field_name) = $this->getSubField($OrderBy);
-			if($sub_field_name != '') {
-				$field_item = $this->DBObject->__DBMetaDataField[$field_name];
-				if($field_item['type'] == 10) {
-					$param_fld = $field_item['params'];
-					$TableName = $param_fld["TableName"];
-					$order_by = "$TableName.$sub_field_name";
-					if( count( array_keys($search_tbl,$TableName)) == 0) {
-						$search_tbl[] = $TableName;
-						$search_query .= " AND $field_name=$TableName.id";
-					}
-				}
-			}
-			else $order_by = "$field_name";
-		}
-		$table_list = '';
-		$search_tbl = array_unique($search_tbl);
-		foreach($search_tbl as $tbl)$table_list .= "$tbl,";
-		$query = "";
-		if($search_query != "") {
-			$query = " SELECT DISTINCT ".$this->DBObject->__table.".* FROM ".$table_list;
-			$query = substr($query,0,-1);
-			$query .= " WHERE ".$search_query;
-			if($order_by != '')
-				$query.=" ORDER BY ".$order_by;
-			logAutre("Recherche:$query");
-		}
-		else logAutre("Pas de recherche:$search_query-$table_list");
-		return $query;
+		$this->tables=$searchTable;
+		$searchQuery=trim($searchQuery);
+		$searchQuery=str_replace(array('and'),array('AND'),$searchQuery);
+		$this->conditions=split('AND',$searchQuery);
+
+		$this->initParamSearch($Params);	
+
+		$this->process();
+		return $this->queryCreator('*',$OrderBy);
 	}
 }
 //@END@
