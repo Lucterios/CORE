@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 29 October 2009 1:51:38 By  ---
+// --- Last modification: Date 29 October 2009 22:38:11 By  ---
 
 //@BEGIN@
 /**
@@ -48,8 +48,8 @@ class DB_Search {
 	private $dataField;
 
 	private $paramSearch=array();
-	private $tables=array();
-	private $conditions=array();
+	public $tables=array();
+	public $conditions=array();
 
 	private $special_selection=1;
 	private $special_nb=0;
@@ -91,7 +91,7 @@ class DB_Search {
 		$desc=null;
 		$sep_pos=strpos($fieldName,SEP_SEARCH);
 		if ($sep_pos===false) {
-			// champ simple	
+			// champ simple
 			echo "<!-- champ simple	$fieldName -->\n";
 			$field_type=$this->returnType($fieldName,$this->DBObject);
 			if ($field_type!=null) {
@@ -228,7 +228,7 @@ class DB_Search {
 					$this->special_nb=max($this->special_nb,count(split(';',$value1)));
 					$value1=str_replace(array(';'),array(','),$value1);
 					$conditions[]="$current_table.$current_field IN ($value1)";
-					
+
 				}
 			}
 			else {
@@ -299,7 +299,13 @@ class DB_Search {
 		logAutre("conditions=".print_r($this->conditions,true));
 	}
 
-	private function queryCreator($select_item,$OrderBy="") {
+	/**
+	 * Generation de la requette
+	 *
+	 * @param string $select_item
+	 * @param string $OrderBy
+	 */
+	public function queryCreator($select_item,$OrderBy="") {
 		if ($select_item==null)
 			$ret_col="count(*)";
 		else
@@ -320,18 +326,19 @@ class DB_Search {
 	 * Lance une recherche d'enregistrement
 	 *
 	 * Permet de rechercher des enregistrements.
-	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencé dans$Params* _select: référence l'operateur de comparaison
+	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencé dans $Params
+      * _select: référence l'operateur de comparaison
 	 * _value1: valeur à comparer
 	 * @param array $Params
 	 * @param string $OrderBy
 	*/
-	function Execute($Params,$OrderBy = '',$searchQuery = "",$searchTable=array()) {
+	public function Execute($Params,$OrderBy = '',$searchQuery = "",$searchTable=array()) {
 		$this->tables=$searchTable;
 		$searchQuery=trim($searchQuery);
 		$searchQuery=str_replace(array('and'),array('AND'),$searchQuery);
 		$this->conditions=split('AND',$searchQuery);
 
-		$this->initParamSearch($Params);	
+		$this->initParamSearch($Params);
 
 		$this->process();
 		return $this->queryCreator('*',$OrderBy);

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 15 October 2009 21:54:16 By  ---
+// --- Last modification: Date 29 October 2009 22:43:54 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -56,7 +56,7 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png'));
 	//
 	PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);
-	$temp_path = getcwd()."/tmp/";
+	$temp_path = "./tmp/";
 	$r = unlink($file_path);
 	$ListToArchive = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
 	require_once("Archive/Tar.php");
