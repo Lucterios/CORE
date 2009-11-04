@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 7:55:08 By  ---
+// --- Last modification: Date 03 November 2009 23:40:33 By  ---
 
 //@BEGIN@
 /**
@@ -548,6 +548,7 @@ class DBObj_Basic extends DB_DataObject {
 		if($res && ($this->Super != null)) {
 			$class_name = get_class($this->Super);
 			$this->__super = new $class_name( true);
+			$this->__super->__son = $this;
 			$this->__super->get($this->superId);
 		}
 		return $res;
@@ -585,7 +586,7 @@ class DBObj_Basic extends DB_DataObject {
 						$res=1;
 				}
 				catch (LucteriosException $e) {
-				}			
+				}
 			}
 		}
 		if(($res==0) && !$this->is_super) {
@@ -966,6 +967,7 @@ class DBObj_Basic extends DB_DataObject {
 						throw new Exception("class $class_name notfound!");
 				}
 				$this->__super = new $class_name( true);
+				$this->__super->__son=$this;
 			}
 			return $this->__super;
 		}

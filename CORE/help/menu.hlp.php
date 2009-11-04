@@ -18,16 +18,16 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // help file write by SDK tool
-// --- Last modification: Date 14 August 2008 23:23:39 By  ---
+// --- Last modification: Date 04 November 2009 0:37:58 By  ---
 
 $HelpTitle='Administration';
 $HelpPosition=1000;
 
 $HelpDescriptions=array();
 $HelpDescriptions[0]=array('password','Mot de passe',1);
-$HelpDescriptions[1]=array('groupes','Les groupes',1);
+$HelpDescriptions[1]=array('groupes','Les groupes et les droits',1);
 $HelpDescriptions[2]=array('utilisateurs','Les utilisateurs',1);
-$HelpDescriptions[3]=array('droits','Modification des droits',1);
+$HelpDescriptions[3]=array('droits','Les extensions',1);
 $HelpDescriptions[4]=array('backup','Sauvegarde/restauration',1);
 $HelpDescriptions[5]=array('Impression','Impression',1);
 $HelpDescriptions[6]=array('Avance','Avancé',1);
