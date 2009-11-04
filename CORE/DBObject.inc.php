@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 November 2009 23:40:33 By  ---
+// --- Last modification: Date 04 November 2009 19:10:27 By  ---
 
 //@BEGIN@
 /**
@@ -947,7 +947,8 @@ class DBObj_Basic extends DB_DataObject {
 	 * @param string $value
 	 */
 	public function __set($key,$value) {
-		if($this->Heritage != "")$this->Super->$key = $value;
+		if ($this->Heritage != "")
+			$this->Super->$key = $value;
 	}
 	/**
 	 * Surcharge de __get
@@ -1002,34 +1003,44 @@ class DBObj_Basic extends DB_DataObject {
 		if( is_file($fct_file_name)) {
 			require_once($fct_file_name);
 			if( function_exists($fct_name)) {
-				$param_arr = "\$this";
-				foreach($params as $val) {
-					if( is_string($val))$param_arr .= ", '$val'";
-					elseif ( is_bool($val)) {
-						if($val)$param_arr .= ", true";
-						else $param_arr .= ", false";
-					}
-					elseif (( is_object($val)) || ( is_array($val))) {
-						if(!isset($obj1)) {
-							$obj1 = &$val;
-							$param_arr .= ", \$obj1";
-						}
-						elseif (!isset($obj2)) {
-							$obj2 = &$val;
-							$param_arr .= ", \$obj2";
-						}
-						elseif (!isset($obj3)) {
-							$obj3 = &$val;
-							$param_arr .= ", \$obj3";
-						}
-					}
-					elseif ( is_null($val))
-						$param_arr .= ", null";
-					else
-						$param_arr .= ",$val";
+				if (function_exists('call_user_func_array')) {
+					$param_arr=array(&$this);
+					foreach($params as $val)
+						$param_arr[]=$val;
+					return call_user_func_array($fct_name,$param_arr);
 				}
-				$cmd = "return ".$fct_name."($param_arr);";
-				return eval($cmd);
+				else {
+					$param_arr = "\$this";
+					foreach($params as $val) {
+						if( is_string($val)) {
+							$param_arr .= ", '$val'";
+						}
+						elseif ( is_bool($val)) {
+							if($val)$param_arr .= ", true";
+							else $param_arr .= ", false";
+						}
+						elseif (( is_object($val)) || ( is_array($val))) {
+							if(!isset($obj1)) {
+								$obj1 = &$val;
+								$param_arr .= ", \$obj1";
+							}
+							elseif (!isset($obj2)) {
+								$obj2 = &$val;
+								$param_arr .= ", \$obj2";
+							}
+							elseif (!isset($obj3)) {
+								$obj3 = &$val;
+								$param_arr .= ", \$obj3";
+							}
+						}
+						elseif ( is_null($val))
+							$param_arr .= ", null";
+						else
+							$param_arr .= ",$val";
+					}
+					$cmd = "return ".$fct_name."($param_arr);";
+					return eval($cmd);
+				}
 			}
 			else {
 				require_once"Lucterios_Error.inc.php";
