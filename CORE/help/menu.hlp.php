@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // help file write by SDK tool
-// --- Last modification: Date 04 November 2009 0:37:58 By  ---
+// --- Last modification: Date 05 November 2009 23:17:47 By  ---
 
 $HelpTitle='Administration';
 $HelpPosition=1000;
