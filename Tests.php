@@ -20,6 +20,59 @@
 //
 header('Content-Type: text/xml; charset=UTF-8');
 
+function extractData($ext_name){
+	require_once("CORE/DBSetup.inc.php");
+	require_once("CORE/extensionManager.inc.php");
+	$q = "";
+	$ext_path=Extension::getFolder($ext_name);
+	$ext = new Extension($ext_name,$ext_path);
+	foreach($ext->extend_tables as $table => $desc) {
+		require_once($ext_path.$table.'.tbl.php');
+		$class_name = 'DBObj_'.$ext_name.'_'.$table;
+		$tbl = new $class_name;
+		$setup = new DBObj_Setup($tbl);
+		$line=$setup->extractSQLData();
+		if(substr( trim($line),0,2) != '--') {
+			$q .= "TRUNCATE TABLE ".$ext_name."_".$table.";\n";
+			if ( trim($line) != '') {
+				$q .= $line;
+			}
+			$q .= "ALTER TABLE ".$ext_name."_".$table." AUTO_INCREMENT=100;\n";
+		}
+	}
+	if ($ext_name!='CORE') {		
+		require_once('CORE/extension_params.tbl.php');
+		$tbl = new DBObj_CORE_extension_params;
+		$setup = new DBObj_Setup($tbl);
+		$line=$setup->extractSQLData();
+		if(substr( trim($line),0,2) != '--') {
+			$q .= "TRUNCATE TABLE CORE_extension_params;\n";
+			if ( trim($line) != '') {
+				$q .= $line;
+			}
+			$q .= "ALTER TABLE CORE_extension_params AUTO_INCREMENT=100;\n";
+		}
+	}
+	return split("\n",$q);
+}
+
+function importData($queries){
+	global $connect;
+	$connect->begin();
+	try {
+		foreach($queries as $query_txt) {
+			$query_txt=trim($query_txt);
+			if((substr($query_txt,-1) == ';') && ($query_txt != '')) {
+				$connect->execute($query_txt,true);
+			}
+		}
+		$connect->commit();
+ 	} catch(Exception $e) {
+		$connect->rollback();
+		throw $e;
+	}
+}
+
 $run=false;
 if (isset($_GET['extensions']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
 	$run=true;
@@ -65,6 +118,10 @@ if ($run) {
 	$connect = new DBCNX();
 	$connect->connect($dbcnf);
 	foreach($extensions as $ext_name) {
+		$testtag_file='conf/testtag.file';
+		$handle = @fopen($testtag_file, "w+");
+		@fwrite($handle,"RUNNING");
+		@fclose($handle);
 		try {
 			$create_result=createDataBase(true,false);
 			$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
@@ -78,20 +135,34 @@ if ($run) {
 				$set_of_ext = sortExtension($set_of_ext);
 				foreach($set_of_ext as $ext)
 					$ext->installComplete();
+				$queries=extractData($ext_name);
+
 				$item->success();
 				$GlobalTest->addTests($item);
 				$extDir=Extension::getFolder($ext_name);
 				$fileList=array();
 				$dh = opendir($extDir);
+				$setup_item=null;
 				while(($file = readdir($dh)) != false)
-					if(substr($file,-9)=='.test.php')
-						$fileList[]=substr($file,0,-9);
+					if(substr($file,-9)=='.test.php') {
+						$file_name=substr($file,0,-9);
+						if ($file_name!='setup')
+							$fileList[]=$file_name;
+						else
+							$setup_item=new TestItem($ext_name,"SETUP");
+					}
 				sort($fileList);
 				if (is_file("$extDir/includes.inc.php"))
 					require_once("$extDir/includes.inc.php");
 				$inc=1;
 				foreach($fileList as $file_name) {
 					$item=new TestItem($ext_name,sprintf('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
+
+					importData($queries);
+					if (!is_null($setup_item)) {						
+						$setup_item->runTest($extDir,$ext_name,'setup');
+					}
+
 					$item->runTest($extDir,$ext_name,$file_name);
 					$GlobalTest->addTests($item);
 				} 
@@ -106,6 +177,7 @@ if ($run) {
 			$item->error($e);
 			$GlobalTest->addTests($item);
 		}
+		unlink($testtag_file);
 	}
 }
 else {

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 29 October 2009 22:38:11 By  ---
+// --- Last modification: Date 18 November 2009 15:36:40 By  ---
 
 //@BEGIN@
 /**
@@ -92,7 +92,6 @@ class DB_Search {
 		$sep_pos=strpos($fieldName,SEP_SEARCH);
 		if ($sep_pos===false) {
 			// champ simple
-			echo "<!-- champ simple	$fieldName -->\n";
 			$field_type=$this->returnType($fieldName,$this->DBObject);
 			if ($field_type!=null) {
 				$this->paramSearch[$fieldName]=array($comp,$value,$field_type);
@@ -310,7 +309,7 @@ class DB_Search {
 			$ret_col="count(*)";
 		else
 			$ret_col=$this->DBObject->__table.".$select_item";
-		if (count($this->conditions)>=count($this->tables)) {
+		if ((count($this->tables)>0) && (count($this->conditions)>=count($this->tables))) {
 			$query="SELECT $ret_col FROM ".implode(',',$this->tables)." WHERE ".implode(' AND ',$this->conditions);
 			if ($OrderBy!='') {
 				$query." ORDER BY ".$OrderBy;
