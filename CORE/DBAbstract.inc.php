@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 November 2009 19:10:27 By  ---
+// --- Last modification: Date 05 January 2010 8:38:34 By  ---
 
 //@BEGIN@
 /**
@@ -33,17 +33,17 @@
 /**
 * DBOBJ_INT
 * @access private
-*/ 
+*/
 define('DBOBJ_INT',1);
 /**
 * DBOBJ_STR
 * @access private
-*/ 
+*/
 define('DBOBJ_STR',2);
 /**
 * DBOBJ_CHILD
 * @access private
-*/ 
+*/
 define('DBOBJ_CHILD',3);
 
 /**
@@ -426,7 +426,7 @@ class DBObj_Abstract {
 				$son->setFrom($object);
 			}
 		}
-		if (is_object($object)) 
+		if (is_object($object))
 			$object=get_object_vars($object);
 		if (is_array($object)) {
 			$fields = $this->table();
@@ -479,20 +479,24 @@ class DBObj_Abstract {
 	 */
 	public function get($id) {
 		$this->__son = null;
-		list($fields,$tables,$wheres)=$this->_prepQuery();
-		$wheres[]=$this->__table.".id=".$id;
-		$q="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables)." WHERE ".implode(' AND ',$wheres);
-		global $connect;
-		$qId= $connect->execute($q,true);
-		if ($connect->getNumRows($qId)!=1) {
-			__log($q,'Query get failure (nb)='.$connect->getNumRows($qId));
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( IMPORTANT,"Selection impossible{[newline]}Veuillez rafraichir votre application. [Q=$q] (nb)=".$connect->getNumRows($qId));
+		if ($id>0) {
+			list($fields,$tables,$wheres)=$this->_prepQuery();
+			$wheres[]=$this->__table.".id=".$id;
+			$q="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables)." WHERE ".implode(' AND ',$wheres);
+			global $connect;
+			$qId= $connect->execute($q,true);
+			if ($connect->getNumRows($qId)!=1) {
+				__log($q,'Query get failure (nb)='.$connect->getNumRows($qId));
+				require_once"Lucterios_Error.inc.php";
+				throw new LucteriosException( IMPORTANT,"Selection impossible{[newline]}Veuillez rafraichir votre application. [Q=$q] (nb)=".$connect->getNumRows($qId));
+			}
+			$this->debug("get($id):Q=$q",2);
+			$row=$connect->getRowByName($qId);
+			$result = $this->setFrom($row);
+			return $result;
 		}
-		$this->debug("get($id):Q=$q",2);
-		$row=$connect->getRowByName($qId);
-		$result = $this->setFrom($row);
-		return $result;
+		else
+			return false;
 	}
 
 	private $lastQuery=null;
