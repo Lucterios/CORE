@@ -283,10 +283,15 @@ class Extension {
 		$DBextension->versionRev = $this->version_release;
 		$DBextension->versionBuild = $this->version_build;
 		$DBextension->validite = 'n';
-		if($nb != 0)$DBextension->update();
-		else $DBextension->insert();
-		if( PEAR:: isError($DBextension->_lastError))$this->message .= $DBextension->_lastError."{[newline]}";
-		else $this->message .= $act."de l'extension N°".$DBextension->id."{[newline]}";
+		if($nb != 0)
+			$DBextension->update();
+		else 
+			$DBextension->insert();
+		global $connect;
+		if( $connect->isFailed())
+			$this->message .= $connect->errorMsg."{[newline]}";
+		else 
+			$this->message .= $act."de l'extension N°".$DBextension->id."{[newline]}";
 		$this->ID = $DBextension->id;
 		return $DBextension->id>0? true: false;
 	}
@@ -343,9 +348,9 @@ class Extension {
 
 	public function updateRights() {
 		if(! is_dir($this->Dir))
-		return 0;
+			return 0;
 		if($this->ID == 0)
-		return 0;
+			return 0;
 		$success = true;
 		global $dbcnf;
 		require_once"CORE/extension_rights.tbl.php";
@@ -362,10 +367,13 @@ class Extension {
 			}
 			$DBrights->description = $r->description;
 			$DBrights->weigth = $r->weigth;
-			if($nb != 0)$DBrights->update();
-			else $DBrights->insert();
-			if( PEAR:: isError($DBrights->_lastError)) {
-				$this->message .= $act." du droit:".$r->description.$DBrights->_lastError."{[newline]}";
+			if($nb != 0)
+				$DBrights->update();
+			else 
+				$DBrights->insert();
+			global $connect;
+			if( $connect->isFailed()) {
+				$this->message .= $act." du droit:".$r->description.$connect->errorMsg."{[newline]}";
 				$success = false;
 			}
 			else {
@@ -412,8 +420,9 @@ class Extension {
 				$DBparams->value = $val->defaultvalue;
 				$DBparams->insert();
 			}
-			if( PEAR:: isError($DBparams->_lastError)) {
-				$this->message .= "$act du paramètre:".$key." ".$DBparams->_lastError."{[newline]}";
+			global $connect;
+			if( $connect->isFailed()) {
+				$this->message .= "$act du paramètre:".$key." ".$connect->errorMsg."{[newline]}";
 				$success = false;
 			}
 			else $this->message .= $act." du paramètre:".$key."{[newline]}";
@@ -475,10 +484,13 @@ class Extension {
 			$DBaction->action = $act->action;
 			$DBaction->description = str_replace("'","`",$act->description);
 			$DBaction->rights = $DBext_rights->id;
-			if($nb != 0)$DBaction->update();
-			else $DBaction->insert();
-			if( PEAR:: isError($DBaction->_lastError)) {
-				$this->message .= $ret." de l'action:".$act->action." [".$DBaction->_lastError."-$q]{[newline]}";
+			if($nb != 0)
+				$DBaction->update();
+			else 
+				$DBaction->insert();
+			global $connect;
+			if( $connect->isFailed()) {
+				$this->message .= $ret." de l'action:".$act->action." [".$connect->errorMsg."-$q]{[newline]}";
 				$success = false;
 			}
 			else $this->message .= $ret." de l'action:".$act->action."{[newline]}";
@@ -685,29 +697,17 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 		$connect->connect($dbcnf);
 	}
 	if(!$connect->connected) {
-		$options = array('debug' => 2,'portability' => DB_PORTABILITY_ALL);
-		$tmp_dbh = & DB:: connect($dsn,$options);
-		if(! DB:: isError($tmp_dbh)) {
-			$q = 'CREATE DATABASE '.$dbcnf['dbname'];
-			$r = &$tmp_dbh->query($q);
-			if( DB:: isError($r)) {
-				if ($ThrowExcept) {
-					require_once("CORE/Lucterios_Error.inc.php");
-					throw new LucteriosException(GRAVE,$r->getMessage()." - DSN=$dsn");
-				}
-				$setupMsg .= "Echec de creation de DB :".$r->getMessage()."{[newline]}";
-			}
-			else {
-				$setupMsg .= "Creation de DB :".$dbcnf['dbname']."{[newline]}";
-			}
-			$connect->connect($dbcnf);
-		}
-		else {
+		$ret=DBCNX::createDataBase($dbcnf);
+		if (is_string($ret)) {
 			if ($ThrowExcept) {
 				require_once("CORE/Lucterios_Error.inc.php");
-				throw new LucteriosException(GRAVE,$tmp_dbh->getMessage()." - DSN=$dsn");
+				throw new LucteriosException(GRAVE,$ret." - DSN=$dsn");
 			}
-			$setupMsg .= "Echec de connection pour creation de DB :".$tmp_dbh->getMessage()."{[newline]}";
+			$setupMsg .= "Echec de creation de DB :".$ret."{[newline]}";
+		}
+		else {
+			$setupMsg .= "Creation de DB :".$dbcnf['dbname']."{[newline]}";
+			$connect->connect($dbcnf);
 		}
 	}
 	else $setupMsg .= "Base de donnée existante.{[newline]}";

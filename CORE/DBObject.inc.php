@@ -28,63 +28,22 @@
  * @version 0.10
  * @package Lucterios
  * @subpackage DBObject
- */require_once("DB/DataObject.php");
-/**
-* DB_DATAOBJECT_NO_OVERLOAD
-* @access private
-*/ define('DB_DATAOBJECT_NO_OVERLOAD', true);
-/**
-* DBOBJ_CHILD
-* @access private
-*/ define('DBOBJ_CHILD',513);
-/**
-* field_dico
-* @access private
-*/
-global $field_dico;
-$field_dico = array();
-$field_dico[0] = array( DB_DATAOBJECT_INT+ DB_DATAOBJECT_NOTNULL,"Entier","int(%d)");
-$field_dico[1] = array( DB_DATAOBJECT_INT+ DB_DATAOBJECT_NOTNULL,"Réel","decimal(%d,%d)");
-$field_dico[2] = array( DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL,"Chaîne","varchar(%d)");
-$field_dico[3] = array( DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL,"Booléen","enum('n','o')");
-$field_dico[4] = array( DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL,"Date","date");
-$field_dico[5] = array( DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL,"Heure","time");
-$field_dico[6] = array( DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL,"Date/Heure","datetime");
-$field_dico[7] = array( DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL,"Text long","longtext");
-$field_dico[8] = array( DB_DATAOBJECT_INT,"Enumèration","tinyint(3)");
-$field_dico[9] = array( DBOBJ_CHILD,"Enfants","");
-$field_dico[10] = array( DB_DATAOBJECT_INT,"Rèfèrent","int(10) unsigned");
-require_once"dbcnx.inc.php";
-global $connect;
-/**
-* DSN
-* @access private
-*/ define('DSN',$connect->dsn);
-/**
-* options
-* @access private
-*/$options = & PEAR:: getStaticProperty('DB_DataObject','options');
-$options = array('database' => $connect->dsn,'schema_location' => './DBObj','class_location' => './DBObj','require_prefix' => 'DBObj/','class_prefix' => 'DBObj_','debug' => 0,);
-/**
-* LOCKRECORD_NO
-* @access private
-*/ define('LOCKRECORD_NO',0);
-/**
-* LOCKRECORD_THIS
-* @access private
-*/ define('LOCKRECORD_THIS',1);
-/**
-* LOCKRECORD_OTHER
-* @access private
-*/ define('LOCKRECORD_OTHER',2);
+ */
+
+require_once("CORE/DBAbstract.inc.php");
+
 /**
 * SEP_SEARCH
 * @access private
-*/ define('SEP_SEARCH','%');
+*/ 
+define('SEP_SEARCH','%');
+
 /**
 * SEP_SHOW
 * @access private
-*/ define('SEP_SHOW','#|#');
+*/ 
+define('SEP_SHOW','#|#');
+
 /**
 * Classe mère au DBObject Luctèrios
 *
@@ -99,269 +58,8 @@ $options = array('database' => $connect->dsn,'schema_location' => './DBObj','cla
 * @subpackage DBObject
 * @author Pierre-Oliver Vershoore/Laurent Gay
 */
-class DBObj_Basic extends DB_DataObject {
-	/**
-	 * Nom de la table MySQL
-	 *
-	 * @var string
-	 */
-	public $tblname = '';
-	/**
-	 * Titre de la table MySQL
-	 *
-	 * @var string
-	 */
-	public $Title = '';
-	/**
-	 * Nom de l'extension qui possède cette table
-	 *
-	 * @var string
-	 */
-	public $extname = '';
-	/**
-	 * Clef primaire de l'enregistrement
-	 *
-	 * @var integer
-	 */
-	public $id;
-	/**
-	 * Champ de vérou
-	 *
-	 * @var string
-	 */
-	public $lockRecord;
-	/**
-	 * Chaine descriptif de l'enregistrement
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $__toText = '';
-	/**
-	 * Description de chaques champs de la table
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $__DBMetaDataField = array();
-	/**
-	 * Liste des indexes personnalisées
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public $__DBCustomIndexes = array();
-	/**
-	 * Liste d'enregistrement par défaut.
-	 *
-	 * @var array
-	 */
-	public $DefaultFields = array();
-	/**
-	 * Nombre de champs utilisés pour determiner si les enregistrements par defaut existes déjà .
-	 *
-	 * @var integer
-	 */
-	public $NbFieldsCheck = 1;
-	/**
-	 * Nom de la classe d'héritage
-	 *
-	 * @access public
-	 * @var string
-	 */
-	public $Heritage = "";
-	/**
-	 * Clef lié de l'enregistrement mère
-	 *
-	 * @var integer
-	 */
-	public $superId = -1;
-	/**
-	 * Object mère
-	 *
-	 * @var DBObj_Basic
-	 * @access public
-	 */
-	public $__super = null;
-	/**
-	 * DNS
-	 * @access private
-	 */
-	public $_database_dsn = DSN;
-	/**
-	* staticGet
-	* @access private
-	*/
-	public function staticGet($k,$v = NULL) {
-		return DB_DataObject:: staticGet('DBObj_'.$this->tblname,$k,$v);
-	}
+class DBObj_Basic extends DBObj_Abstract {
 
-	private $is_super = false;
-	/**
-	 * Constructeur DBObj_Basic
-	 *
-	 * @return DBObj_Basic
-	 */
-	public function __construct($is_super = false) {
-		$this->is_super = $is_super;
-		$this->sequenceKey('id', true);
-		$this->__super = null;
-	}
-
-	private $__son = null;
-
-	public function getSon() {
-		if(($this->__son == null) && ($this->id>0)) {
-			require_once('CORE/extensionManager.inc.php');
-			$class_list = getDaughterClassesList($this->extname.'/'.$this->tblname);
-			$file_class_name = '';
-			$class_name = '';
-			$son_id = 0;
-			foreach($class_list as $key => $item) {
-				global $connect;
-				$q = 'SELECT id FROM '. str_replace('/','_',$key).' WHERE superId='.$this->id;
-				$res = $connect->execute($q);
-				if($first_row = $connect->getRow($res)) {
-					list($file_class_name,$class_name) = $this->getTableAndClass($key);
-					$son_id = $first_row[0];
-				}
-			}
-			if($class_name != '') {
-				require_once($file_class_name);
-				$this->__son = new $class_name();
-				$this->__son->get($son_id);
-			}
-		}
-		return $this->__son;
-	}
-
-	public function getMotherId($ClassMother) {
-		if( get_class($this) == $ClassMother)
-		return $this->id;
-		if($this->Heritage != "")
-		return $this->Super->getMotherId($ClassMother);
-		return 0;
-	}
-	/**
-	 * Retourne un tableau donnant le type de chaque champs persistants.
-	 *
-	 * @return array
-	 */
-	public function table() {
-		global $field_dico;
-		$tbl_fld = array('id' => DB_DATAOBJECT_INT,'lockRecord' => DB_DATAOBJECT_STR+ DB_DATAOBJECT_NOTNULL);
-		foreach($this->__DBMetaDataField as $col_name => $item) {
-			$dbt = $field_dico[$item['type']][0];
-			if($dbt != DBOBJ_CHILD)$tbl_fld[$col_name] = $dbt;
-		}
-		return $tbl_fld;
-	}
-	/**
-	 * keys
-	 *
-	 * @return string
-	 * @access private
-	 */
-	public function keys() {
-		return array('id');
-	}
-	/**
-	 * Evaluateur de chaine
-	 *
-	 * Evalue le parametre $TextEvalable en remplacant.
-	 * Chaque identifiant de champs, précédé par un dollard, est remplacé par sa valeur DB
-	 * Si le champ n'est pas persistant (reference ou fils), il est remplacé par sont toText()
-	 * @param string $TextEvalable
-	 * @return string
-	 */
-	public function evalByText($TextEvalable) {
-		$ret = $TextEvalable;
-		if($ret[0] == '#') {
-			$fct_name = substr($ret,1);
-			$ret = $this->$fct_name();
-		}
-		else foreach($this->getDBMetaDataField() as $field_names => $field_item) {
-			if( strpos($ret,'$'.$field_names) !== FALSE) {
-				$value = $this->$field_names;
-				if($field_item['type'] == 5) {
-					require_once'xfer.inc.php';
-					$value = convertTime($value);
-				}
-				elseif ($field_item['type'] == 4) {
-					require_once'xfer.inc.php';
-					$value = convertDate($value);
-				}
-				elseif ($field_item['type'] == 8) {
-					$params = $field_item['params'];
-					$enum = $params['Enum'];
-					$value = $enum[(int)$value];
-				}
-				elseif (($field_item['type'] == 9) || ($field_item['type'] == 10)) {
-					$value = $this->getField($field_names);
-					if( is_object($value))$value = $value->toText();
-					else $value = "---";
-				}
-				$ret = str_replace('$'.$field_names,$value,$ret);
-			}
-		}
-		return $ret;
-	}
-	/**
-	 * Description de l'enregistrement
-	 *
-	 * Correspond à $this->evalByText($this->__toText) ou à $this->id
-	 * @return string
-	 */
-	public function toText() {
-		$son = $this->getSon();
-		if($son != null) {
-			return $son->toText();
-		}
-		elseif (!isset($this->__toText) || ($this->__toText == "")) {
-			return "".$this->id;
-		}
-		else {
-			return $this->evalByText($this->__toText);
-		}
-	}
-	/**
-	 * List de description de chaques champs de la table
-	 *
-	 * @access public
-	 * @var array
-	 */
-	public function getDBMetaDataField() {
-		if($this->Heritage != "") {
-			$part1 = array_slice($this->__DBMetaDataField,0,$this->PosChild);
-			$part2 = array_slice($this->__DBMetaDataField,$this->PosChild);
-			$fields = array();
-			foreach($part1 as $key => $field) $fields[$key] = $field;
-			$cur_super = $this->Super;
-			$part_sup = $cur_super->getDBMetaDataField();
-			foreach($part_sup as $key => $field)$fields[$key] = $field;
-			foreach($part2 as $key => $field)$fields[$key] = $field;
-		}
-		else $fields = $this->__DBMetaDataField;
-		return $fields;
-	}
-	/**
-	 * Retourne l'ensemble des champs references ou liés à la table $RefTableName
-	 *
-	 * @param string $RefTableName
-	 * @return array
-	 */
-	public function getFieldEditable($RefTableName = "",$nbfield = -1) {
-		$FieldNames = array();
-		$meta_data_field = $this->getDBMetaDataField();
-		foreach($meta_data_field as $field_names => $field_item) {
-			if(($field_item['type'] != 10) || ($field_item['params']['TableName'] != $RefTableName))
-				array_push($FieldNames,$field_names);
-		}
-		if($nbfield>-1)
-		return array_slice($FieldNames,0,$nbfield);
-		else
-		return $FieldNames;
-	}
 	/**
 	 * Controle et modifie la structure d'une table DB
 	 *
@@ -374,22 +72,7 @@ class DBObj_Basic extends DB_DataObject {
 		$result = $install->Return;
 		return array($success,$result);
 	}
-	/**
-	 * assigne chaque champs référencés dans le tableau $object
-	 *
-	 * @param array $object
-	 */
-	public function setFrom($object) {
-		if(!$this->is_super) {
-			$son = $this->getSon();
-			if($son != null) {
-				return $son->setFrom($object);
-			}
-		}
-		DB_DataObject:: setFrom($object);
-		if($this->Heritage != "")
-			$this->Super->setFrom($object);
-	}
+
 	/**
 	 * Verifier le vérouillage
 	 *
@@ -413,6 +96,7 @@ class DBObj_Basic extends DB_DataObject {
 		if($this->Heritage != "")
 			$this->Super->checkLockRecord();
 	}
+
 	/**
 	 * Retourne l'état de vérouillage
 	 *
@@ -443,6 +127,7 @@ class DBObj_Basic extends DB_DataObject {
 			return LOCKRECORD_OTHER;
 		}
 	}
+
 	/**
 	 * Verouille l'enregistrement
 	 *
@@ -470,6 +155,7 @@ class DBObj_Basic extends DB_DataObject {
 		}
 		return true;
 	}
+
 	/**
 	 * Déverouille l'enregistrement
 	 *
@@ -500,58 +186,6 @@ class DBObj_Basic extends DB_DataObject {
 			throw new LucteriosException( GRAVE,"Déverrouillage impossible.$lock_session=$session");
 		}
 		return true;
-	}
-	/**
-	 * selectionne 1 enregistrement
-	 *
-	 * @param int $id
-	 */
-	public function get($id) {
-		$this->__son = null;
-		$result = DB_DataObject:: get($id);
-		if( PEAR:: isError($this->_lastError)) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( GRAVE,"GET:".$this->_lastError->getMessage());
-		}
-		if(($id>0) && ($result == 0)) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( GRAVE,"Selection impossible (".$this->tblname."-$id){[newline]}Veuillez rafraichir votre application.");
-		}
-		$this->checkLockRecord();
-		if($this->Heritage != "") {
-			$class_name = get_class($this->Super);
-			$this->__super = new $class_name( true);
-			$this->__super->get($this->superId);
-		}
-		return $result;
-	}
-	/**
-	 * find
-	 *
-	 *
-	 */
-	public function find($autoFetch = false) {
-		if($this->Heritage != "") {
-			//$this->_join = ','.$this->Super->__table.' '.$this->_join;
-			//$this->whereAdd($this->__table.'.superId='.$this->Super->__table.'.id');
-		}
-		return DB_DataObject:: find($autoFetch);
-	}
-	/**
-	 * fetch
-	 *
-	 *
-	 */
-	public function fetch() {
-		$this->__son = null;
-		$res = DB_DataObject:: fetch();
-		if($res && ($this->Super != null)) {
-			$class_name = get_class($this->Super);
-			$this->__super = new $class_name( true);
-			$this->__super->__son = $this;
-			$this->__super->get($this->superId);
-		}
-		return $res;
 	}
 
 	/**
@@ -637,110 +271,6 @@ class DBObj_Basic extends DB_DataObject {
 	}
 
 	/**
-	 * supprime l'enregistrement
-	 *
-	 */
-	public function delete() {
-		if(!$this->is_super) {
-			$son = $this->getSon();
-			if($son != null) {
-				return $son->delete();
-			}
-		}
-		if($this->Heritage != "")
-			$this->Super->delete();
-		//$result = DB_DataObject:: delete($useWhere);
-		$q = "DELETE FROM ".$this->__table." WHERE id=".$this->id;
-		global $connect;
-		$result = $connect->execute($q);
-		if($result == false) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( IMPORTANT,"Suppression impossible{[newline]}Veuillez rafraichir votre application.");
-		}
-		return $result;
-	}
-	/**
-	 * ajoute 1 enregistrement
-	 *
-	 */
-	public function insert() {
-		$this->__son = null;
-		if($this->Heritage != "") {
-			$sup_id = $this->Super->insert();
-			$this->superId = $sup_id;
-		}
-		$result = DB_DataObject:: insert();
-		if( PEAR:: isError($this->_lastError)) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( GRAVE,"INSERT:".$this->_lastError->getMessage());
-		}
-		if($this->Heritage != "") {
-			$q = "UPDATE ".$this->__table." SET superId=".$sup_id." WHERE id=".$this->id;
-			$rep = $this->query($q);
-		}
-		return $result;
-	}
-	/**
-	 * modifie l'enregistrement
-	 *
-	 */
-	public function update() {
-		if(!$this->is_super) {
-			$son = $this->getSon();
-			if($son != null) {
-				return $son->update();
-			}
-		}
-		//$result = DB_DataObject:: update();
-		$q = "UPDATE ".$this->__table." SET ";
-		$fields = $this->table();
-		$fields['superId'] = DB_DATAOBJECT_INT;
-		foreach($fields as $field_name => $field_item)if(! is_null($this->$field_name)) {
-			if(substr($q,-4) != "SET ")
-				$q .= ",";
-			$value = $this->$field_name;
-			$value = str_replace("'","''",$value);
-			$q .= "$field_name='$value' ";
-		}
-		$q .= " WHERE id=".$this->id;
-		global $connect;
-		$result = $connect->execute($q);
-		if($result === false) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( IMPORTANT,"Modification impossible{[newline]}Veuillez rafraichir votre application.[$q]");
-		}
-		if($this->Heritage != "")
-			$this->Super->update();
-		return $result;
-	}
-	/**
-	 * selectionne des enregistrements
-	 *
-	 * @param string $string
-	 */
-	public function query($string) {
-		$this->__son = null;
-		$result = DB_DataObject:: query($string);
-		if( PEAR:: isError($this->_lastError)) {
-			require_once"Lucterios_Error.inc.php";
-			throw new LucteriosException( GRAVE,"QUERY [$string]:".$this->_lastError->getMessage());
-		}
-		return $result;
-	}
-
-	/**
-	 * Recherche le super objet d'une classe donnee.
-	 *
-	 * @param string $className
-	 */
-	public function getSuperObject($tableName) {
-		$obj=$this;
-		while (($obj!=null) && ($obj->__table!=$tableName))
-			$obj=$obj->Super;
-		return $obj;
-	}
-
-	/**
 	 * Remplace les references de l'objet externe.
 	 *
 	 * @param DBObj_Basic $DBObject
@@ -817,56 +347,6 @@ class DBObj_Basic extends DB_DataObject {
 	}
 
 	/**
-	 * retourne le nom de la classe DBObject correspondant
-	 *
-	 * @return string
-	 */
-	public function GetClassName() {
-		return "DBObj_".$this->extname."_".$this->tblname;
-	}
-	/**
-	 * retourne le nom du fichier PHP decrivant la table/classe
-	 *
-	 * @param string $tbl_select
-	 * @return string
-	 */
-	public function getTableName($tbl_select,$ByLeft = false,$sep = '_') {
-		global $rootPath;
-		if(!isset($rootPath)) $rootPath = "";
-		if($ByLeft)
-			$pos = strpos($tbl_select,$sep);
-		else
-			$pos = strrpos($tbl_select,$sep);
-		if($pos === false) {
-			$extName = "";
-			$tableName = $tbl_select;
-		}
-		else {
-			$extName = substr($tbl_select,0,$pos);
-			$tableName = substr($tbl_select,$pos+1);
-		}
-		if($extName != "CORE")
-			$table_file_name = "extensions/$extName/$tableName.tbl.php";
-		else
-			$table_file_name = "$extName/$tableName.tbl.php";
-		if(! is_file($rootPath.$table_file_name))
-			$table_file_name = DBObj_Basic:: getTableName($tbl_select, true);
-		else
-			$table_file_name=$rootPath.$table_file_name;
-		return $table_file_name;
-	}
-	/**
-	 * retourne le nom du fichier PHP decrivant la table/classe + la classe
-	 *
-	 * @param string $Heritage
-	 * @return array(string,string)
-	 */
-	public function getTableAndClass($Heritage) {
-		$file_class_name = $this->getTableName($Heritage, true,'/');
-		$class_name = 'DBObj_'. str_replace('/','_',$Heritage);
-		return array($rootPath.$file_class_name,$class_name);
-	}
-	/**
 	 * retourne la valeur d'un champs
 	 *
 	 * Si le champ est persistant, retourne la valeur DB
@@ -940,41 +420,7 @@ class DBObj_Basic extends DB_DataObject {
 			return $this->evalByText($field_name);
 		}
 	}
-	/**
-	 * Surcharge de __set
-	 *
-	 * @param string $key
-	 * @param string $value
-	 */
-	public function __set($key,$value) {
-		if ($this->Heritage != "")
-			$this->Super->$key = $value;
-	}
-	/**
-	 * Surcharge de __get
-	 *
-	 * @param string $key
-	 * @return unknown
-	 */
-	public function __get($key) {
-		if($key == 'Super') {
-			if(($this->Heritage != "") && ($this->__super == null)) {
-				list($file_class_name,$class_name) = $this->getTableAndClass($this->Heritage);
-				if(! class_exists($class_name)) {
-					if(! is_file($file_class_name))
-						throw new Exception("file $file_class_name notfound!");
-					require_once($file_class_name);
-					if(! class_exists($class_name))
-						throw new Exception("class $class_name notfound!");
-				}
-				$this->__super = new $class_name( true);
-				$this->__super->__son=$this;
-			}
-			return $this->__super;
-		}
-		if($this->__super != null)
-		return $this->__super->$key;
-	}
+
 	/**
 	 * getMethodFileName
 	 *
@@ -991,6 +437,7 @@ class DBObj_Basic extends DB_DataObject {
 			$fct_file_name = $rootPath."extensions/".$this->extname."/$fct_name.mth.php";
 		return array($fct_file_name,$fct_name);
 	}
+
 	/**
 	 * call Method
 	 *
@@ -1052,6 +499,7 @@ class DBObj_Basic extends DB_DataObject {
 			throw new LucteriosException( CRITIC,"File ".$fct_file_name." not found!");
 		}
 	}
+
 	/**
 	 * Surcharge de méthodes
 	 *
@@ -1074,6 +522,7 @@ class DBObj_Basic extends DB_DataObject {
 			return $this->Super-> __call($method,$params);
 		return $this->callMethod($fct_file_name,$fct_name,$params);
 	}
+
 	/**
 	 * Appele une methode lucterios associée a cette classe/table
 	 *
@@ -1086,6 +535,7 @@ class DBObj_Basic extends DB_DataObject {
 			$params[] = func_get_arg($i);
 		return $this-> __call($MethodName,$params);
 	}
+
 	/**
 	 * Creer une action associée à cette classe/table
 	 *
@@ -1104,6 +554,7 @@ class DBObj_Basic extends DB_DataObject {
 		else
 			return new Xfer_Action($title,$icon,$this->extname,$this->tblname."_APAS_$action",$modal,$close,$select);
 	}
+
 	/**
 	 * Rempli un retour d'impression
 	 *
@@ -1126,6 +577,7 @@ class DBObj_Basic extends DB_DataObject {
 		else
 			return trigger_error("File $print_file_name not found!");
 	}
+
 	/**
 	 * Lance une recherche d'enregistrement
 	 *
@@ -1143,27 +595,6 @@ class DBObj_Basic extends DB_DataObject {
 		if($query != "")
 			$this->query($query);
 		return $query;
-	}
-	/**
-	* debug
-	* @access private
-	*/
-	public function debug($message,$logtype = 0,$level = 1) {
-		global $_DB_DATAOBJECT;
-		if(($logtype == 'QUERY') || ($logtype == 'Query Error')) {
-			$log_query = "$class=$logtype-$message"; __log($log_query,"QUERY DEBUG");
-		}
-		if(empty($_DB_DATAOBJECT['CONFIG']['debug']) || ( is_numeric($_DB_DATAOBJECT['CONFIG']['debug']) && $_DB_DATAOBJECT['CONFIG']['debug']<$level)) {
-			return ;
-		}
-		require_once'debug_tools.php';
-		// this is a bit flaky due to php's wonderfull class passing around crap..
-		// but it's about as good as it gets..
-		$class = (isset($this) && is_a($this,'DB_DataObject'))? get_class($this):
-		'DB_DataObject';
-		if(! is_string($message)) {
-			$message = Array_To_String($message);
-		}
 	}
 }
 //@END@

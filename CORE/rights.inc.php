@@ -23,34 +23,37 @@
 //@BEGIN@
 
 function checkRight($login,$extension,$action) {
-	global $connect;
-	list($usec,$sec) = split(" ", microtime());
-	$q = "SELECT cgr.value
-FROM
-	CORE_extension ce
-		JOIN CORE_extension_actions cea
-			ON(ce.id=cea.extension)
-		JOIN CORE_extension_rights cer
-			ON(cea.rights=cer.id)
-		JOIN CORE_group_rights cgr
-			ON(cer.id=cgr.rightref)
-		JOIN CORE_groups cg
-			ON(cgr.groupref=cg.id)
-		JOIN CORE_users cu
-			ON(cg.id=cu.groupId)
-WHERE
-	cu.login='$login' AND
-	ce.extensionId='$extension' AND
-	cea.action='$action'";
-	$r = $connect->execute($q);
-	while(list($droit) = $connect->getRow($r)) {
-		if($droit == 'o') {
-			break;
+	if (!is_null($login)) {
+		global $connect;
+		list($usec,$sec) = split(" ", microtime());
+		$q = "SELECT cgr.value
+	FROM
+		CORE_extension ce
+			JOIN CORE_extension_actions cea
+				ON(ce.id=cea.extension)
+			JOIN CORE_extension_rights cer
+				ON(cea.rights=cer.id)
+			JOIN CORE_group_rights cgr
+				ON(cer.id=cgr.rightref)
+			JOIN CORE_groups cg
+				ON(cgr.groupref=cg.id)
+			JOIN CORE_users cu
+				ON(cg.id=cu.groupId)
+	WHERE
+		cu.login='$login' AND
+		ce.extensionId='$extension' AND
+		cea.action='$action'";
+		$r = $connect->execute($q);
+		while(list($droit) = $connect->getRow($r)) {
+			if($droit == 'o') {
+				break;
+			}
 		}
+		list($usec2,$sec2) = split(" ", microtime());
+		$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$actionreponse:$droittemps:$t");
+		return ($droit == 'o');
 	}
-	list($usec2,$sec2) = split(" ", microtime());
-	$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$actionreponse:$droittemps:$t");
-	return ($droit == 'o');
+	return true;
 }
 
 //@END@

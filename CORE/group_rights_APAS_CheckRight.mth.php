@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 08 August 2008 22:53:58 By  ---
+// --- Last modification: Date 05 January 2010 0:04:24 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -36,6 +36,7 @@ function group_rights_APAS_CheckRight(&$self,$right,$weigth)
 {
 //@CODE_ACTION@
 $return="";
+
 $self->rightref=$right;
 $self->find();
 $groups=array();
@@ -45,10 +46,12 @@ while ($self->fetch())
 $notgroups=array();
 $DBObjgroups=new DBObj_CORE_groups;
 $nb=$DBObjgroups->find();
-while ($DBObjgroups->fetch())
+while ($DBObjgroups->fetch()) {
   if (!in_array($DBObjgroups->id,$groups))
-    $notgroups[$DBObjgroups->id]=$DBObjgroups->weigth;
+	$notgroups[$DBObjgroups->id]=$DBObjgroups->weigth;
+}
 $return.="Nb nouveau Groupe/Rights=".count($notgroups);
+
 foreach($notgroups as $grp=>$wgt)
 {
    $gr=new DBObj_CORE_group_rights;
@@ -57,6 +60,7 @@ foreach($notgroups as $grp=>$wgt)
    $gr->value=$wgt>=$weigth?'o':'n';
    $gr->insert();
 }
+
 return $return;
 //@CODE_ACTION@
 }

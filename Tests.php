@@ -84,6 +84,10 @@ if (isset($_GET['extensions']) && isset($_GET['dbuser']) && isset($_GET['dbpass'
 		$title=$_GET['title'];
 	else
 		$title="LucteriosTest";
+	if (isset($_GET['num']))
+		$num_test=$_GET['num'];
+	else
+		$num_test=-1;
 }
 elseif ((count($argv)==5) || (count($argv)==6)) {
 	$run=true;
@@ -111,10 +115,10 @@ if ($run) {
 		"dbpass"=>$dbpass,
 		"dbname"=>$dbname
 	);
-	$login="admin";
 	global $connect;
 	global $dbcnf;
 	global $login;
+	$login='admin';
 	$connect = new DBCNX();
 	$connect->connect($dbcnf);
 	foreach($extensions as $ext_name) {
@@ -156,15 +160,18 @@ if ($run) {
 					require_once("$extDir/includes.inc.php");
 				$inc=1;
 				foreach($fileList as $file_name) {
-					$item=new TestItem($ext_name,sprintf('%02d ',$inc++).str_replace('_APAS_','::',$file_name));
-
-					importData($queries);
-					if (!is_null($setup_item)) {						
-						$setup_item->runTest($extDir,$ext_name,'setup');
+					if (($num_test==-1) || ($num_test==$inc)) {
+						$item=new TestItem($ext_name,sprintf('%02d ',$inc).str_replace('_APAS_','::',$file_name));
+	
+						importData($queries);
+						if (!is_null($setup_item)) {						
+							$setup_item->runTest($extDir,$ext_name,'setup');
+						}
+	
+						$item->runTest($extDir,$ext_name,$file_name);
+						$GlobalTest->addTests($item);
 					}
-
-					$item->runTest($extDir,$ext_name,$file_name);
-					$GlobalTest->addTests($item);
+					$inc++;
 				} 
 				closedir($dh);
 			}
