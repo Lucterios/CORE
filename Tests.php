@@ -99,6 +99,7 @@ elseif ((count($argv)==5) || (count($argv)==6)) {
 		$title=$argv[5];
 	else
 		$title="LucteriosTest";
+	$num_test=-1;
 }
 
 include_once('CORE/UnitTest.inc.php');

@@ -206,10 +206,16 @@ class DBCNX {
 				$new_row=array();
 				foreach($row as $index=>$value){
 					$finfo = $fields[$index];
-					if ($finfo->table!='')
-						$new_row[$finfo->table.'.'.$finfo->name]=$value;
-					else
-						$new_row[$finfo->name]=$value;
+					$table_name="";
+					if (!empty($finfo->orgtable))
+						$table_name=$finfo->orgtable.'.';
+					else if (!empty($finfo->table))
+						$table_name=$finfo->table.'.';
+					/*if (!empty($finfo->orgname))
+						$field_name=$finfo->orgname;
+					else */
+						$field_name=$finfo->name;
+					$new_row[$table_name.$field_name]=$value;
 				}
 				return $new_row;
 			}
