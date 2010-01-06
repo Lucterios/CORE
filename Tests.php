@@ -26,14 +26,23 @@ function extractData($ext_name){
 	$q = "";
 	$ext_path=Extension::getFolder($ext_name);
 	$ext = new Extension($ext_name,$ext_path);
-	foreach($ext->extend_tables as $table => $desc) {
-		require_once($ext_path.$table.'.tbl.php');
+	$table_list=$ext->getTableList();
+
+ 	$table_list=array_reverse($table_list);
+	foreach($table_list as $table) {
+		$q .= "TRUNCATE TABLE ".$ext_name."_".$table.";\n";
+		if ($ext_name!='CORE') {		
+			$q .= "TRUNCATE TABLE CORE_extension_params;\n";
+		}
+	}
+
+ 	$table_list=array_reverse($table_list);
+	foreach($table_list as $table) {
 		$class_name = 'DBObj_'.$ext_name.'_'.$table;
 		$tbl = new $class_name;
 		$setup = new DBObj_Setup($tbl);
 		$line=$setup->extractSQLData();
 		if(substr( trim($line),0,2) != '--') {
-			$q .= "TRUNCATE TABLE ".$ext_name."_".$table.";\n";
 			if ( trim($line) != '') {
 				$q .= $line;
 			}
@@ -46,7 +55,6 @@ function extractData($ext_name){
 		$setup = new DBObj_Setup($tbl);
 		$line=$setup->extractSQLData();
 		if(substr( trim($line),0,2) != '--') {
-			$q .= "TRUNCATE TABLE CORE_extension_params;\n";
 			if ( trim($line) != '') {
 				$q .= $line;
 			}
@@ -167,7 +175,9 @@ if ($run) {
 						importData($queries);
 						if (!is_null($setup_item)) {						
 							$setup_item->runTest($extDir,$ext_name,'setup');
-						}
+							if (!is_null($setup_item->errorObj))
+								$GlobalTest->addTests($setup_item);
+							}
 	
 						$item->runTest($extDir,$ext_name,$file_name);
 						$GlobalTest->addTests($item);

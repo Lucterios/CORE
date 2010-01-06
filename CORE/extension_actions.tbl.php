@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 10 September 2008 20:05:45 By  ---
+// --- Last modification: Date 06 January 2010 23:53:19 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -40,7 +40,7 @@ class DBObj_CORE_extension_actions extends DBObj_Basic
 	var $rights;
 	var $extensionId;
 	var $rightId;
-	var $__DBMetaDataField=array('action'=>array('description'=>'Action', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>100, 'Multi'=>false)), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'extension'=>array('description'=>'Extension', 'type'=>10, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_extension')), 'rights'=>array('description'=>'Droit', 'type'=>10, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_extension_rights')), 'extensionId'=>array('description'=>'extensionId OBSELETE', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>50, 'Multi'=>false)), 'rightId'=>array('description'=>'rightId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>99)));
+	var $__DBMetaDataField=array('action'=>array('description'=>'Action', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>100, 'Multi'=>false)), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'extension'=>array('description'=>'Extension', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>'CORE_extension')), 'rights'=>array('description'=>'Droit', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>'CORE_extension_rights')), 'extensionId'=>array('description'=>'extensionId OBSELETE', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>50, 'Multi'=>false)), 'rightId'=>array('description'=>'rightId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>99)));
 
 	var $__toText='$description';
 }

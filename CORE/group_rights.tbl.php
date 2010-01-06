@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 10 September 2008 20:00:58 By  ---
+// --- Last modification: Date 06 January 2010 23:54:49 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -37,10 +37,7 @@ class DBObj_CORE_group_rights extends DBObj_Basic
 	var $rightref;
 	var $groupref;
 	var $value;
-	var $rightId;
-	var $extensionId;
-	var $groupId;
-	var $__DBMetaDataField=array('rightref'=>array('description'=>'Droit', 'type'=>10, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_extension_rights')), 'groupref'=>array('description'=>'Groupe', 'type'=>10, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_groups')), 'value'=>array('description'=>'Valeur', 'type'=>3, 'notnull'=>true, 'params'=>array()), 'rightId'=>array('description'=>'rightId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>99)), 'extensionId'=>array('description'=>'extensionId OBSELETE', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>50, 'Multi'=>false)), 'groupId'=>array('description'=>'groupId OBSELETE', 'type'=>0, 'notnull'=>false, 'params'=>array('Min'=>0, 'Max'=>99)));
+	var $__DBMetaDataField=array('rightref'=>array('description'=>'Droit', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>'CORE_extension_rights')), 'groupref'=>array('description'=>'Groupe', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>'CORE_groups')), 'value'=>array('description'=>'Valeur', 'type'=>3, 'notnull'=>true, 'params'=>array()));
 
 }
 

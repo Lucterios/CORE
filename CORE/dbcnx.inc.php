@@ -132,6 +132,8 @@ class DBCNX {
 				return $ret;
 			}
 			else {				
+				$ret=$this->mysql->affected_rows;
+				$this->printDebug("DBCNX::execute : nombre enregistrement modifiés=$ret\n");
 				return true;
 			}
 		}

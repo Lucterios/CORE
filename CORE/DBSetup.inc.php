@@ -54,6 +54,14 @@ class DBObj_Setup {
 	const ID_KEY_TYPE = "int(10) unsigned NOT NULL";
 
 	/**
+	 * SUPERID_KEY_TYPE
+	 *
+	 * @var string
+	 * @access private
+	 */
+	const SUPERID_KEY_TYPE = "int(10) unsigned NULL";
+
+	/**
 	 * LOCK_TYPE
 	 *
 	 * @var string
@@ -107,6 +115,14 @@ class DBObj_Setup {
 	 */
 	public function refreshDefaultValue($fieldValues,$fieldId = -1,$refreshData = false) {
 		$fields = array_keys($this->DBObject->__DBMetaDataField);
+
+		$field_Values=$fieldValues;
+		foreach($field_Values as $field_name=>$field_value) {
+			$type=$this->DBObject->__DBMetaDataField[$field_name]['type'];
+			if (($type==10) && (empty($field_value)))
+				unset($fieldValues[$field_name]);
+		}
+
 		$DBObjClass = $this->DBObject->GetClassName();
 		$DBObj = new $DBObjClass;
 		$nb_find = 0;
@@ -195,7 +211,26 @@ class DBObj_Setup {
 	* @access private
 	*/
 	private function __createTableQuery() {
-		return "create table ".$this->DBObject->__table."(\n\tid ". DBObj_Setup:: ID_KEY_TYPE." auto_increment, PRIMARY KEY  (id),\n\tlockRecord ". DBObj_Setup:: LOCK_TYPE.",\n\tsuperId ". DBObj_Setup:: ID_KEY_TYPE."\n) TYPE=InnoDB AUTO_INCREMENT=100 ;\n";
+		return "create table ".$this->DBObject->__table."(\n\tid ". DBObj_Setup:: ID_KEY_TYPE." auto_increment, PRIMARY KEY  (id),\n\tlockRecord ". DBObj_Setup:: LOCK_TYPE.",\n\tsuperId ". DBObj_Setup:: SUPERID_KEY_TYPE."\n) TYPE=InnoDB AUTO_INCREMENT=100 ;\n";
+	}
+
+	/**
+	* __showCreateTable
+	* @access private
+	*/
+	private function __showCreateTable() {
+		$resValue="";
+		global $connect;
+		if (method_exists($connect,'getRowByName')) {
+			$rep = $connect->execute("SHOW CREATE TABLE ".$this->DBObject->__table.";");
+			if (($rep!=false) && ($connect->getNumRows($rep)==1)) {
+				$row = $connect->getRowByName($rep);
+				$resValue=$row['Create Table'];
+			}
+			else
+				$this->RetMsg .= "Erreur SHOW CREATE TABLE : ".$connect->errorMsg;
+		}
+		return $resValue;
 	}
 
 	/**
@@ -445,14 +480,14 @@ class DBObj_Setup {
 			case 10:
 				//reference
 				$type_txt = $col_type[2];
-				$default="0";
+				$default="";
 				break;
 			}
 			$field_str = $col_name." ".$type_txt;
 			if( array_key_exists('notnull',$item) && ($item['notnull']))
 				$field_str .= " NOT NULL";
 			else 
-				$field_str .= " NULL DEFAULT $default";
+				$field_str .= " NULL";
 			return $field_str;
 		}
 		return '';
@@ -475,7 +510,7 @@ class DBObj_Setup {
 			else $this->RetMsg .= "Champ id ajoutè ou modifier ('".$currentFields['id']."'->'id ". DBObj_Setup:: ID_KEY_TYPE."'). {[newline]}";
 		}
 		$success = $this->alterTableByField($currentFields,'lockRecord','lockRecord '. DBObj_Setup:: LOCK_TYPE);
-		$success = $this->alterTableByField($currentFields,'superId','superId '. DBObj_Setup:: ID_KEY_TYPE);
+		$success = $this->alterTableByField($currentFields,'superId','superId '. DBObj_Setup:: SUPERID_KEY_TYPE);
 		foreach($this->DBObject->__DBMetaDataField as $col_name => $item) {
 			$field_str = $this->__getFieldSQL($col_name,$item);
 			if($field_str != '')$success = $this->alterTableByField($currentFields,$col_name,$field_str);
@@ -528,7 +563,7 @@ class DBObj_Setup {
 	}
 
 	/**
-	* modifIndexQuery
+	* __old_current_indexes
 	* @access private
 	*/
 	private function __old_current_indexes($qId){
@@ -568,7 +603,7 @@ class DBObj_Setup {
 	}
 
 	/**
-	* modifIndexQuery
+	* __createIndexQuery
 	* @access private
 	*/
 	private function __createIndexQuery($index_name,$Indexfields = array()) {
@@ -585,10 +620,10 @@ class DBObj_Setup {
 	}
 
 	/**
-	* modifIndexQuery
+	* ModifIndexQuery
 	* @access private
 	*/
-	private function modifIndexQuery($index_name,$current_indexes,$Indexfields = array()) {
+	private function ModifIndexQuery($index_name,$current_indexes,$Indexfields = array()) {
 		$create_index = $this->__createIndexQuery($index_name,$Indexfields);
 		if( array_key_exists($index_name,$current_indexes)) {
 			$old_index = $current_indexes[$index_name];
@@ -639,7 +674,7 @@ class DBObj_Setup {
 		if($this->DBObject->Heritage != '') {
 			$col_name="superId";
 			$index_name = "R_".$col_name;
-			$q = $this->modifIndexQuery($index_name,$current_indexes,array($col_name));
+			$q = $this->ModifIndexQuery($index_name,$current_indexes,array($col_name));
 			if(!$this->RunIndexQuery($index_name,$q,$current_indexes))
 				return false;
 		}
@@ -652,12 +687,12 @@ class DBObj_Setup {
 			case 8:
 				// enumeration
 				$index_name = "E_".$col_name;
-				$q = $this->modifIndexQuery($index_name,$current_indexes,array($col_name));
+				$q = $this->ModifIndexQuery($index_name,$current_indexes,array($col_name));
 				break;
 			case 10:
 				// reference
 				$index_name = "R_".$col_name;
-				$q = $this->modifIndexQuery($index_name,$current_indexes,array($col_name));
+				$q = $this->ModifIndexQuery($index_name,$current_indexes,array($col_name));
 				break;
 			}
 			if(!$this->RunIndexQuery($index_name,$q,$current_indexes))
@@ -665,7 +700,7 @@ class DBObj_Setup {
 		}
 		foreach($this->DBObject->__DBCustomIndexes as $index_name => $item) {
 			$index_name = "C_".$index_name;
-			$q = $this->modifIndexQuery($index_name,$current_indexes,$item);
+			$q = $this->ModifIndexQuery($index_name,$current_indexes,$item);
 			if(!$this->RunIndexQuery($index_name,$q,$current_indexes))
 				return false;
 		}
@@ -681,6 +716,136 @@ class DBObj_Setup {
 				$this->RetMsg .= "Index '$Key_name' supprimè.{[newline]}";
 		}
 		return true;
+	}
+
+
+	/**
+	* CurrentContraintes
+	* @access private
+	*/
+	public function CurrentContraints() {
+		$current_contraints = array();
+		$lines=split("\n",$this->__showCreateTable());
+		foreach($lines as $line) {
+			$line=trim($line);
+			if (substr($line,0,11)=="CONSTRAINT ") {
+				if (substr($line,-1)==',')
+					$current_contraints[]=substr($line,0,-1);
+				else
+					$current_contraints[]=$line;
+			}
+		}
+		return $current_contraints;
+	}
+
+	/**
+	* __createContraintQuery
+	* @access private
+	*/
+	private function __createContraintQuery($contraintName,$fieldName,$referenceParams) {
+		$ref_table=$referenceParams['params']['TableName'];
+ 		$create_contraint = "CONSTRAINT `$contraintName` FOREIGN KEY (`".$fieldName."`) REFERENCES `".$ref_table."` (`id`) ON DELETE ";
+		if ($referenceParams['notnull']) {
+			$has_child_in_ref=false;
+			require_once($this->DBObject->getTableName($ref_table));
+			$ref_class="DBObj_".$ref_table;
+			$ref_obj=new $ref_class;
+			foreach($ref_obj->__DBMetaDataField as $col_name => $item) {
+				$type = $item['type'];
+				if (($type==9) && ($item['params']['TableName']==$this->DBObject->__table) && ($item['params']['RefField']==$fieldName))
+					$has_child_in_ref=true;
+			}			
+			if (($has_child_in_ref) || ($fieldName=='superId'))
+				$create_contraint.= "CASCADE";
+			else
+				$create_contraint.= "NO ACTION";
+			$correct="DELETE FROM ".$this->DBObject->__table." WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
+		}
+		else {
+			$create_contraint.= "SET NULL";
+			$correct="UPDATE ".$this->DBObject->__table." SET $fieldName=NULL WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
+		}
+		return array($create_contraint,$correct);
+	}
+
+	/**
+	* ModifContraintQuery
+	* @access private
+	*/
+	private function ModifContraintQuery($contraintName,$currentcontraints,$fieldName,$referenceParams) {
+		list($create_contraint,$correct) = $this->__createContraintQuery($contraintName,$fieldName,$referenceParams);
+		if( array_key_exists($contraintName,$currentcontraints)) {
+			$old_contraint = $currentcontraints[$contraintName];
+			if($old_contraint != $create_contraint) {
+				$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
+				$q.=$correct;
+				$q.="ALTER TABLE `".$this->DBObject->__table."` ADD ".$create_contraint.';';
+				return $q;
+			}
+			else
+				return "";
+		}
+		else {
+			$q =$correct;
+			$q.="ALTER TABLE `".$this->DBObject->__table."` ADD ".$create_contraint.';';
+			return $q;
+		}
+	}
+
+	/**
+	* RunContraintQuery
+	* @access private
+	*/
+	private function RunContraintQuery($contraintName,$q,&$currentcontraints) {
+		if($contraintName != "") {
+			if( array_key_exists($contraintName,$currentcontraints)) {
+				$currentcontraints[$contraintName] = "";
+			}
+			global $connect;
+			$q_list = split(';',$q);
+			foreach($q_list as $item)
+				if( trim($item) != "") {
+					$rep=$connect->execute($item);
+					if (!$rep) {
+						$this->RetMsg .= "DB::query - modification contrainte : '".$connect->errorMsg."' dans '$item'{[newline]}";
+						return false;
+					}
+					else 
+						$this->RetMsg .= "Contrainte '$contraintName' modifiè.{[newline]}";
+				}
+		}
+		return true;
+	}
+
+	/**
+	* checkIndexes
+	* @access private
+	*/
+	public function CheckContraints() {
+		$current_contraints = $this->CurrentContraints();
+		if(! is_array($current_contraints))
+			return "Contrainte non controlable!!{[newline]}";
+
+		if($this->DBObject->Heritage != '') {
+			$col_name="superId";
+			$contraint_name = $this->DBObject->__table."_".$col_name;
+			$q = $this->ModifContraintQuery($contraint_name,$current_contraints,$col_name,array('description'=>'superId', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>$this->DBObject->Super->__table)));
+			$this->RunContraintQuery($contraint_name,$q,$current_contraints);
+		}
+
+		foreach($this->DBObject->__DBMetaDataField as $col_name => $item) {
+			$type = $item['type'];
+			if($type==10) {
+				// reference
+				$contraint_name = $this->DBObject->__table."_".$col_name;
+				$q = $this->ModifContraintQuery($contraint_name,$current_contraints,$col_name,$item);
+				if(!$this->RunContraintQuery($contraint_name,$q,$current_contraints))
+					break;
+			}
+		}
+		global $connect;
+		$connect->printDebug("Contrainte Msg:".$this->RetMsg);
+		return $this->RetMsg;
 	}
 
 	/**
@@ -712,32 +877,9 @@ class DBObj_Setup {
 	public function describeSQLTable($addDrop = false) {
 		$currentFields = array();
 		$q = "";
-		if($addDrop)$q .= "DROP TABLE IF EXISTS ".$this->DBObject->__table.";\n";
-		$q .= $this->__createTableQuery();
-		foreach($this->DBObject->__DBMetaDataField as $col_name => $item) {
-			$type_txt = $this->__getFieldSQL($col_name,$item);
-			if($type_txt != '')$q .= $this->__alterTableQueryByField($currentFields,$col_name,$type_txt);
-		}
-		foreach($this->DBObject->__DBMetaDataField as $col_name => $item) {
-			$type = $item['type'];
-			$index_name = "";
-			switch($type) {
-			case 8:
-				// enumeration
-				$index_name = "E_".$col_name;
-				$q .= $this->__createIndexQuery($index_name,array($col_name));
-				break;
-			case 10:
-				// reference
-				$index_name = "R_".$col_name;
-				$q .= $this->__createIndexQuery($index_name,array($col_name));
-				break;
-			}
-		}
-		foreach($this->DBObject->__DBCustomIndexes as $index_name => $item) {
-			$index_name = "C_".$index_name;
-			$q .= $this->__createIndexQuery($index_name,$item);
-		}
+		if($addDrop)
+			$q .= "DROP TABLE IF EXISTS ".$this->DBObject->__table.";\n";
+		$q .= $this->__showCreateTable();
 		return $q;
 	}
 
@@ -753,13 +895,22 @@ class DBObj_Setup {
 		if (!$rep)
 			return "-- ".$connect->errorMsg."--$query--\n";
 		$q = "";
+		$MetaDataField=$this->DBObject->__DBMetaDataField;
+		$MetaDataField['superId']['type']=10;
+		global $field_dico;
 		$fetched=$connect->getRecord($rep);
 		while($row = $fetched->fetch_assoc()) {
 			$names = "";
 			$values = "";
 			foreach($row as $nom=>$val) {
-				$names .= $nom.",";
-				$values .= "'". str_replace("'","''",$val)."',";
+				if (!empty($val)) {
+					$names .= $nom.",";
+					$type=$MetaDataField[$name]['type'];
+					if ($field_dico[$type][0]==DBOBJ_INT)
+						$values .= $val.",";
+					else
+						$values .= "'". str_replace("'","''",$val)."',";
+				}
 			}
 			$names = substr($names,0,-1);
 			$values = substr($values,0,-1);

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 10 September 2008 20:04:14 By  ---
+// --- Last modification: Date 06 January 2010 23:54:04 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -40,8 +40,7 @@ class DBObj_CORE_extension_rights extends DBObj_Basic
 	var $weigth;
 	var $actions;
 	var $groupright;
-	var $extensionId;
-	var $__DBMetaDataField=array('extension'=>array('description'=>'Extension', 'type'=>10, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_extension')), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'rightId'=>array('description'=>'Droit', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>99)), 'weigth'=>array('description'=>'poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)), 'actions'=>array('description'=>'Actions', 'type'=>9, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_extension_actions', 'RefField'=>'rights')), 'groupright'=>array('description'=>'Group/Right', 'type'=>9, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_group_rights', 'RefField'=>'rightref')), 'extensionId'=>array('description'=>'extensionId OBSELETE', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>50, 'Multi'=>false)));
+	var $__DBMetaDataField=array('extension'=>array('description'=>'Extension', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>'CORE_extension')), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'rightId'=>array('description'=>'Droit', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>99)), 'weigth'=>array('description'=>'poids', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>100)), 'actions'=>array('description'=>'Actions', 'type'=>9, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_extension_actions', 'RefField'=>'rights')), 'groupright'=>array('description'=>'Group/Right', 'type'=>9, 'notnull'=>false, 'params'=>array('TableName'=>'CORE_group_rights', 'RefField'=>'rightref')));
 
 }
 

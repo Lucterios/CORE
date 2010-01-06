@@ -493,7 +493,7 @@ class DBObj_Abstract {
 			if ($connect->getNumRows($qId)!=1) {
 				__log($q,'Query get failure (nb)='.$connect->getNumRows($qId));
 				require_once"Lucterios_Error.inc.php";
-				throw new LucteriosException( IMPORTANT,"Selection impossible{[newline]}Veuillez rafraichir votre application. [Q=$q] (nb)=".$connect->getNumRows($qId));
+				throw new LucteriosException( IMPORTANT,"Selection impossible{[newline]}Veuillez rafraichir votre application.");
 			}
 			$this->debug("get($id):Q=$q",2);
 			$row=$connect->getRowByName($qId);

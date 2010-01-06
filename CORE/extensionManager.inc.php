@@ -296,20 +296,58 @@ class Extension {
 		return $DBextension->id>0? true: false;
 	}
 
-	public function updateTable() {
+	private function compareTable($tbl1,$tbl2){
+		$ext_tbl1=$this->extend_tables[$tbl1][2];
+		$ext_tbl2=$this->extend_tables[$tbl2][2];
+		$tbl1_in_tbl2=isset($ext_tbl2[$this->Name."_".$tbl1]) || ($this->extend_tables[$tbl2][1]==$this->Name."/".$tbl1);
+		$tbl2_in_tbl1=isset($ext_tbl1[$this->Name."_".$tbl2]) || ($this->extend_tables[$tbl1][1]==$this->Name."/".$tbl2);
+		if ($tbl1_in_tbl2==$tbl2_in_tbl1)
+			return 0;
+		else if ($tbl1_in_tbl2)
+			return -1;
+		else
+			return 1;
+	}
+
+	private $tbl_list=null;
+	public function getTableList() {
 		if(! is_dir($this->Dir))
-		return 0;
-		global $dbcnf;
-		$tbl_list = array();
-		$dh = opendir($this->Dir);
-		while(($file = readdir($dh)) != false) {
-			if( is_file($this->Dir.$file) && ( substr($file,-8,8) == ".tbl.php")) {
-				$tableName = substr($file,0,-8); array_push($tbl_list,$tableName);
+			return array();
+		if (!is_array($this->tbl_list)) {
+			global $dbcnf;
+			$this->tbl_list = array();
+			$dh = opendir($this->Dir);
+			while(($file = readdir($dh)) != false) {
+				if( is_file($this->Dir.$file) && ( substr($file,-8,8) == ".tbl.php")) {
+					$tableName = substr($file,0,-8); 
+					$this->tbl_list[]=$tableName;
+				}
 			}
+			foreach($this->tbl_list as $table_name)
+				require_once($this->Dir.$table_name.".tbl.php");
+	
+			$Max = count($this->tbl_list);
+			for($i = 0;$i<$Max-1;$i++) {
+				$min = $i;
+				for($j = $i+1;$j<$Max;$j++)
+					if($this->compareTable($this->tbl_list[$j],$this->tbl_list[$min])<0)
+						$min = $j;
+				if($min != $i) {
+					$x = $this->tbl_list[$i];
+					$this->tbl_list[$i] = $this->tbl_list[$min];
+					$this->tbl_list[$min] = $x;
+				}
+			}
+			global $connect;
+			$connect->printDebug("tbl_list:".print_r($this->tbl_list,true));
 		}
+		return $this->tbl_list;
+	}
+
+	public function updateTable() {
+		$tbl_list=$this->getTableList();
 		$success = true;
 		foreach($tbl_list as $table_name) {
-			require_once($this->Dir.$table_name.".tbl.php");
 			$class_name = "DBObj_".$this->Name."_".$table_name;
 			$obj = new $class_name();
 			if($success) {
@@ -321,19 +359,24 @@ class Extension {
 		return $success;
 	}
 
-	public function upgradeDefaultValueTable() {
-		if(! is_dir($this->Dir))
-		return 0;
-		global $dbcnf;
-		$tbl_list = array();
-		$dh = opendir($this->Dir);
-		while(($file = readdir($dh)) != false) {
-			if( is_file($this->Dir.$file) && ( substr($file,-8,8) == ".tbl.php")) {
-				$tableName = substr($file,0,-8); array_push($tbl_list,$tableName);
+	public function upgradeContraintsTable() {
+		$tbl_list=$this->getTableList();
+		$success = true;
+		foreach($tbl_list as $table_name) {
+			$class_name = "DBObj_".$this->Name."_".$table_name;
+			$obj = new $class_name;
+			if($success) {
+				require_once("CORE/DBSetup.inc.php");
+				$set_obj = new DBObj_Setup($obj);
+				$this->message .= $set_obj->CheckContraints();
 			}
 		}
+		return $success;
+	}
+
+	public function upgradeDefaultValueTable() {
+		$tbl_list=$this->getTableList();
 		$success = true;
-		foreach($tbl_list as $table_name)require_once($this->Dir.$table_name.".tbl.php");
 		foreach($tbl_list as $table_name) {
 			$class_name = "DBObj_".$this->Name."_".$table_name;
 			$obj = new $class_name;
@@ -597,6 +640,7 @@ class Extension {
 		 catch( Exception$e) {
 			$insert = false;
 		}
+		$nb += $this->upgradeContraintsTable();
 		$nb += $this->upgradeDefaultValueTable();
 		$nb += $this->updateRights();
 		$nb += $this->updateParams();
@@ -650,13 +694,11 @@ class Extension {
 function sortExtension($extList,$rootPath = '') {
 	$res = $extList;
 	$Max = count($res);
-	for($i = 0;
-	$i<$Max-1;
-	$i++) {
+	for($i = 0;$i<$Max-1;$i++) {
 		$min = $i;
-		for($j = $i+1;
-		$j<$Max;
-		$j++)if( sort_function($res[$j],$res[$min],$rootPath)<0)$min = $j;
+		for($j = $i+1;$j<$Max;$j++)
+			if(sort_function($res[$j],$res[$min],$rootPath)<0)
+				$min = $j;
 		if($min != $i) {
 			$x = $res[$i];
 			$res[$i] = $res[$min];
