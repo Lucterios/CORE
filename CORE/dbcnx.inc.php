@@ -62,7 +62,7 @@ class DBCNX {
  	}
 
 	function printDebug($msg) {
-		if($this->debugLevel>10) 
+		if (($this->debugLevel==-1) || ($this->debugLevel>10))
 			echo "<!-- $msg -->\n";
 	}
 
@@ -127,7 +127,9 @@ class DBCNX {
 				return $this->resIndex;
 			}
 			else if (substr($query, 0, 11) == "INSERT INTO") {
-				return $this->mysql->insert_id;
+				$ret=$this->mysql->insert_id;
+				$this->printDebug("DBCNX::execute : requette INSERT => ID=$ret\n");
+				return $ret;
 			}
 			else {				
 				return true;

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 January 2010 8:38:34 By  ---
+// --- Last modification: Date 05 January 2010 22:06:23 By  ---
 
 //@BEGIN@
 /**
@@ -437,8 +437,13 @@ class DBObj_Abstract {
 				if (isset($object[$fieldname]))
 					$this->$field_name=$object[$fieldname];
 			}
-			if($this->Heritage != "")
-				return $this->Super->setFrom($object);
+			if($this->Heritage != "") {
+				$ret=$this->Super->setFrom($object);
+				if ($ret && ($this->superId>0) && empty($this->Super->id)) {
+					$this->Super->get($this->superId);
+				}
+				return $ret;
+			}
 			return true;
 		}
 		return false;
