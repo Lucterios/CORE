@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 08 January 2010 19:30:51 By  ---
+// --- Last modification: Date 08 January 2010 23:21:43 By  ---
 
 //@BEGIN@
 /**
@@ -751,28 +751,35 @@ class DBObj_Setup {
 	*/
 	private function __createContraintQuery($contraintName,$fieldName,$referenceParams) {
 		$ref_table=$referenceParams['params']['TableName'];
- 		$create_contraint = "CONSTRAINT `$contraintName` FOREIGN KEY (`".$fieldName."`) REFERENCES `".$ref_table."` (`id`) ON DELETE ";
-		if ($referenceParams['notnull']) {
-			$has_child_in_ref=false;
-			require_once($this->DBObject->getTableName($ref_table));
-			$ref_class="DBObj_".$ref_table;
-			$ref_obj=new $ref_class;
-			foreach($ref_obj->__DBMetaDataField as $col_name => $item) {
-				$type = $item['type'];
-				if (($type==9) && ($item['params']['TableName']==$this->DBObject->__table) && ($item['params']['RefField']==$fieldName))
-					$has_child_in_ref=true;
+		$table_file_name=$this->DBObject->getTableName($ref_table);
+
+		// Vérification d'un dépendance optionnel non assurée
+		$table_file_splited=split('/',$table_file_name);
+		if ((count($table_file_splited)!=3) || is_dir("extensions/".$table_file_splited[1])) {
+			$create_contraint = "CONSTRAINT `$contraintName` FOREIGN KEY (`".$fieldName."`) REFERENCES `".$ref_table."` (`id`) ON DELETE ";
+			if ($referenceParams['notnull']) {
+				require_once($table_file_name);
+				$ref_class="DBObj_".$ref_table;
+				$ref_obj=new $ref_class;
+				$has_child_in_ref=false;
+				foreach($ref_obj->__DBMetaDataField as $col_name => $item) {
+					$type = $item['type'];
+					if (($type==9) && ($item['params']['TableName']==$this->DBObject->__table) && ($item['params']['RefField']==$fieldName))
+						$has_child_in_ref=true;
+				}
+				if (($has_child_in_ref) || ($fieldName=='superId'))
+					$create_contraint.= "CASCADE";
+				else
+					$create_contraint.= "NO ACTION";
+				$correct="DELETE FROM ".$this->DBObject->__table." WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
 			}
-			if (($has_child_in_ref) || ($fieldName=='superId'))
-				$create_contraint.= "CASCADE";
-			else
-				$create_contraint.= "NO ACTION";
-			$correct="DELETE FROM ".$this->DBObject->__table." WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
+			else {
+				$create_contraint.= "SET NULL";
+				$correct="UPDATE ".$this->DBObject->__table." SET $fieldName=NULL WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
+			}
+			return array($create_contraint,$correct);
 		}
-		else {
-			$create_contraint.= "SET NULL";
-			$correct="UPDATE ".$this->DBObject->__table." SET $fieldName=NULL WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
-		}
-		return array($create_contraint,$correct);
+		return array("","");
 	}
 
 	/**
@@ -781,22 +788,25 @@ class DBObj_Setup {
 	*/
 	private function ModifContraintQuery($contraintName,$currentcontraints,$fieldName,$referenceParams) {
 		list($create_contraint,$correct) = $this->__createContraintQuery($contraintName,$fieldName,$referenceParams);
-		if( array_key_exists($contraintName,$currentcontraints)) {
-			$old_contraint = $currentcontraints[$contraintName];
-			if($old_contraint != $create_contraint) {
-				$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
-				$q.=$correct;
+		if($contraintName != "") {
+			if( array_key_exists($contraintName,$currentcontraints)) {
+				$old_contraint = $currentcontraints[$contraintName];
+				if($old_contraint != $create_contraint) {
+					$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
+					$q.=$correct;
+					$q.="ALTER TABLE `".$this->DBObject->__table."` ADD ".$create_contraint.';';
+					return $q;
+				}
+				else
+					return "";
+			}
+			else {
+				$q =$correct;
 				$q.="ALTER TABLE `".$this->DBObject->__table."` ADD ".$create_contraint.';';
 				return $q;
 			}
-			else
-				return "";
 		}
-		else {
-			$q =$correct;
-			$q.="ALTER TABLE `".$this->DBObject->__table."` ADD ".$create_contraint.';';
-			return $q;
-		}
+		return "";
 	}
 
 	/**

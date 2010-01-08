@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // table file write by SDK tool
-// --- Last modification: Date 21 November 2009 13:50:01 By  ---
+// --- Last modification: Date 08 January 2010 22:39:36 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -40,7 +40,7 @@ class DBObj_CORE_extension_params extends DBObj_Basic
 	var $value;
 	var $type;
 	var $param;
-	var $__DBMetaDataField=array('extensionId'=>array('description'=>'Extension', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>50, 'Multi'=>false)), 'paramName'=>array('description'=>'Nom', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>25, 'Multi'=>false)), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'value'=>array('description'=>'Valeur', 'type'=>7, 'notnull'=>true, 'params'=>array()), 'type'=>array('description'=>'Type', 'type'=>8, 'notnull'=>false, 'params'=>array('Enum'=>array('Chaine', 'Entier', 'Réel'))), 'param'=>array('description'=>'Parametre de type', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>80, 'Multi'=>false)));
+	var $__DBMetaDataField=array('extensionId'=>array('description'=>'Extension', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>50, 'Multi'=>false)), 'paramName'=>array('description'=>'Nom', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>25, 'Multi'=>false)), 'description'=>array('description'=>'Description', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>200, 'Multi'=>false)), 'value'=>array('description'=>'Valeur', 'type'=>7, 'notnull'=>true, 'params'=>array()), 'type'=>array('description'=>'Type', 'type'=>8, 'notnull'=>true, 'params'=>array('Enum'=>array('Chaine', 'Entier', 'Réel', 'Booléen', 'Enumération'))), 'param'=>array('description'=>'Parametre de type', 'type'=>2, 'notnull'=>false, 'params'=>array('Size'=>80, 'Multi'=>false)));
 
 	var $__toText='$paramName';
 }

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 05 December 2008 20:46:28 By  ---
+// --- Last modification: Date 08 January 2010 22:42:22 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -57,7 +57,7 @@ foreach($Params as $name=>$value) {
      $DBObjextension_params->paramName=$name;
      if ($DBObjextension_params->find()>0) {
 		$DBObjextension_params->fetch();
-		$DBObjextension_params->value=$value;
+		$DBObjextension_params->value="$value";
 		$DBObjextension_params->update();
      }
 }

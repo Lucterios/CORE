@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 15 October 2009 23:43:09 By  ---
+// --- Last modification: Date 08 January 2010 22:24:52 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -29,12 +29,13 @@ require_once('CORE/extension_params.tbl.php');
 
 //@DESC@Ajouter un ensemble de parametres d'une extension
 //@PARAM@ extensionName
+//@PARAM@ ReadOnly
+//@PARAM@ ParamsDesc
 //@PARAM@ xfer_result
 
-function extension_params_APAS_fillCustom(&$self,$extensionName,$xfer_result)
+function extension_params_APAS_fillCustom(&$self,$extensionName,$ReadOnly,$ParamsDesc,$xfer_result)
 {
 //@CODE_ACTION@
-$ParamsDesc=$xfer_result->ParamsDesc;
 $DBParam=new DBObj_CORE_extension_params();
 $DBParam->extensionId=$extensionName;
 $DBParam->find();
@@ -45,7 +46,7 @@ while ($DBParam->fetch()) {
 		$lbl->setValue("{[bold]}".$DBParam->description."{[/bold]}");
 		$lbl->setLocation($ParamsDesc[$name_comp][0], $ParamsDesc[$name_comp][1]);
 		$xfer_result->addComponent($lbl);
-		if ($xfer_result->ReadOnly)
+		if ($ReadOnly)
 		    	$cmp=$DBParam->getParamComponentReadOnly($name_comp);
 		else
 		    	$cmp=$DBParam->getParamComponent($name_comp);

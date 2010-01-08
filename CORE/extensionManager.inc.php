@@ -435,9 +435,10 @@ class Extension {
 
 	public function updateParams() {
 		if(! is_dir($this->Dir))
-		return 0;
+			return 0;
 		if($this->ID == 0)
-		return 0;
+			return 0;
+
 		$success = true;
 		global $dbcnf;
 		require_once"CORE/extension_params.tbl.php";
@@ -445,7 +446,7 @@ class Extension {
 		$DBparams->extensionId = $this->Name;
 		$DBparams->find();
 		while($DBparams->fetch()) {
-			if(! array_key_exists($DBparams->paramName,$this->params))
+			if(!array_key_exists($DBparams->paramName,$this->params))
 				$DBparams->delete();
 		}
 		foreach($this->params as $key => $val) {
@@ -459,7 +460,7 @@ class Extension {
 				$act = "modification";
 			}
 			$DBparams->description = $val->description;
-			$DBparams->type = $val->type;
+			$DBparams->type = (int)$val->type;
 			$DBparams->param = $val->getExtendToText( false);
 			if($nb != 0)
 				$DBparams->update();
@@ -661,7 +662,8 @@ class Extension {
 		if(! is_dir($this->Dir))
 		return 0;
 		if(($this->Name == 'CORE') || ($this->Name == 'applis'))
-		throw new LucteriosExtension(2,'Extension non supprimable!');
+			throw new LucteriosExtension(2,'Extension non supprimable!');
+
 		global $connect;
 		require_once"CORE/extension.tbl.php";
 		$DBextension = new DBObj_CORE_extension;
@@ -671,27 +673,49 @@ class Extension {
 			$DBextension->fetch();
 			$q = "DELETE FROM CORE_group_rights WHERE rightref IN(SELECT id FROM CORE_extension_rights WHERE extension='$DBextension->id')";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_extension_actions WHERE extension='$DBextension->id'";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_menu WHERE extensionId='$this->Name'";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_extension_params WHERE extensionId='$this->Name'";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_extension_rights WHERE extension='$DBextension->id'";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_printmodel WHERE extensionId='$this->Name'";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_finalreport WHERE extensionId='$this->Name'";
 			$connect->execute($q,$this->throwExcept);
-			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
 			$DBextension->delete();
-		} deleteDir($this->Dir);
+		} 
+		deleteDir($this->Dir);
+
+		$ext_list = getExtensions($rootPath);
+		foreach($ext_list as $current_name => $current_dir) {
+			$current_obj = new Extension($current_name,$current_dir);
+			$current_obj->upgradeContraintsTable();
+		}
+
+		$tables=$this->getTableList();
+		foreach($tables as $table) {
+			$q = "DROP TABLE ".$this->Name."_".$table;
+			$connect->execute($q,$this->throwExcept);
+			if( trim($connect->errorMsg) != "")
+				$this->message .= $connect->errorMsg."{[newline]}";
+		}
 	}
 }
 

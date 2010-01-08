@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 December 2008 21:44:17 By  ---
+// --- Last modification: Date 08 January 2010 22:42:36 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -34,15 +34,16 @@ function extension_params_APAS_getParamComponentReadOnly(&$self,$compName)
 {
 //@CODE_ACTION@
 require_once 'CORE/setup_param.inc.php';
-if (is_numeric($compName)) $compName='value';
+if (is_numeric($compName))
+	$compName='value';
 $cmp=new Xfer_Comp_LabelForm($compName);
 switch ($self->type) {
   case PARAM_TYPE_BOOL:
  	$cmp->setValue($self->value=='o'?"Oui":"Non");
 	break;
   case PARAM_TYPE_ENUM:
-	eval('$params=array('.$self->param.');');
-     $cmp->setValue($params['Enum'][$self->value]);
+	eval('$param_array=array('.$self->param.');');
+     $cmp->setValue($param_array['Enum'][(int)$self->value]);
      break;
   default:
     	$cmp->setValue($self->value);
