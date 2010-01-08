@@ -138,13 +138,17 @@ if ($run) {
 		try {
 			$create_result=createDataBase(true,false);
 			$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
+			$ext_obj->ThrowExcept=true;
 			$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
 			if ($connect->connected) {
 				$set_of_ext[]=$ext_obj;
 				$dep_names=split(" ",$ext_obj->getDepencies());
 				foreach($dep_names as $name)
-					if ($name!='')
-						$set_of_ext[]=new Extension($name,Extension::getFolder($name));
+					if ($name!='') {
+						$new_ext=new Extension($name,Extension::getFolder($name));
+						$new_ext->ThrowExcept=true;
+						$set_of_ext[]=$new_ext;
+					}
 				$set_of_ext = sortExtension($set_of_ext);
 				foreach($set_of_ext as $ext)
 					$ext->installComplete();
@@ -154,9 +158,9 @@ if ($run) {
 				$GlobalTest->addTests($item);
 				$extDir=Extension::getFolder($ext_name);
 				$fileList=array();
-				$dh = opendir($extDir);
 				$setup_item=null;
-				while(($file = readdir($dh)) != false)
+				$dh = @opendir($extDir);
+				while(($file = @readdir($dh)) != false)
 					if(substr($file,-9)=='.test.php') {
 						$file_name=substr($file,0,-9);
 						if ($file_name!='setup')
@@ -164,6 +168,7 @@ if ($run) {
 						else
 							$setup_item=new TestItem($ext_name,"SETUP");
 					}
+				@closedir($dh);
 				sort($fileList);
 				if (is_file("$extDir/includes.inc.php"))
 					require_once("$extDir/includes.inc.php");
@@ -184,7 +189,6 @@ if ($run) {
 					}
 					$inc++;
 				} 
-				closedir($dh);
 			}
 			else {
 				$item->error($create_result);

@@ -104,6 +104,8 @@ class Extension {
 
 	public $Appli = "";
 
+	public $throwExcept = false;
+
 	public function __construct($Name,$Dir) {
 		$this->Name = $Name;
 		$this->Dir = $Dir;
@@ -179,7 +181,7 @@ class Extension {
 		global $connect;
 		$q = "SELECT versionMaj, versionMin, versionRev, versionBuild ";
 		$q .= "FROM CORE_extension WHERE extensionId = '".$this->Name."'";
-		$res = $connect->execute($q);
+		$res = $connect->execute($q,$this->throwExcept);
 		if(( trim($connect->errorMsg) == "") && (1 == $connect->getNumRows($res)))
 		return implode('.',$connect->getRow($res));
 		else
@@ -270,10 +272,10 @@ class Extension {
 				global $connect;
 				$this->message .= "netoyage de la base pour mise a jour{[newline]}";
 				$q = "DELETE FROM CORE_extension_actions WHERE extension='$DBextension->id'";
-				$connect->execute($q);
+				$connect->execute($q,$this->throwExcept);
 				if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 				$q = "DELETE FROM CORE_menu WHERE extensionId='$this->Name'";
-				$connect->execute($q);
+				$connect->execute($q,$this->throwExcept);
 				if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			}
 		}
@@ -487,7 +489,7 @@ class Extension {
 			$modal_txt = 'n';
 			if($m->modal == 1)$modal_txt = 'o';
 			$q .= "VALUES('$mid', '".$this->Name."', '".$m->act."', '".$pere."', '". str_replace("'","''",$m->description)."', '". str_replace("'","''",$m->help)."','".$m->icon."','".$m->shortcut."',".$m->position.",'$modal_txt')";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "") {
 				$this->message .= "Error d'insertion de menu '$q':".$connect->errorMsg."{[newline]}";
 				$success = false;
@@ -666,25 +668,25 @@ class Extension {
 		if($nb != 0) {
 			$DBextension->fetch();
 			$q = "DELETE FROM CORE_group_rights WHERE rightref IN(SELECT id FROM CORE_extension_rights WHERE extension='$DBextension->id')";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_extension_actions WHERE extension='$DBextension->id'";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_menu WHERE extensionId='$this->Name'";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_extension_params WHERE extensionId='$this->Name'";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_extension_rights WHERE extension='$DBextension->id'";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_printmodel WHERE extensionId='$this->Name'";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$q = "DELETE FROM CORE_finalreport WHERE extensionId='$this->Name'";
-			$connect->execute($q);
+			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")$this->message .= $connect->errorMsg."{[newline]}";
 			$DBextension->delete();
 		} deleteDir($this->Dir);
@@ -728,12 +730,7 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 	$setupMsg = "";
 	$dsn = $dbcnf['dbtype']."://".$dbcnf['dbuser'].":".$dbcnf['dbpass']."@".$dbcnf['dbhost'];
 	if($connect->connected && $DropDB) {
-		if (!$connect->execute('DROP DATABASE '.$dbcnf['dbname'])) {
-			if ($ThrowExcept) {
-				require_once("CORE/Lucterios_Error.inc.php");
-				throw new LucteriosException(GRAVE,$connect->errorMsg." - DSN=$dsn");
-			}
-		}
+		$connect->execute('DROP DATABASE '.$dbcnf['dbname'],$ThrowExcept);
 		$setupMsg .= "Destruction de DB :".$dbcnf['dbname']." ".$connect->errorMsg."{[newline]}";
 		$connect->connected = false;
 		$connect->connect($dbcnf);
