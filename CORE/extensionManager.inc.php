@@ -353,7 +353,7 @@ class Extension {
 			$class_name = "DBObj_".$this->Name."_".$table_name;
 			$obj = new $class_name();
 			if($success) {
-				$update_error = $obj->setup();
+				$update_error = $obj->setup($this->throwExcept);
 				$success = $update_error[0];
 				$this->message .= $update_error[1];
 			}
@@ -370,6 +370,7 @@ class Extension {
 			if($success) {
 				require_once("CORE/DBSetup.inc.php");
 				$set_obj = new DBObj_Setup($obj);
+				$set_obj->throwExcept=$this->throwExcept;
 				$this->message .= $set_obj->CheckContraints();
 			}
 		}
@@ -385,6 +386,7 @@ class Extension {
 			if($success) {
 				require_once("CORE/DBSetup.inc.php");
 				$set_obj = new DBObj_Setup($obj);
+				$set_obj->throwExcept=$this->throwExcept;
 				$this->message .= $set_obj->refreshDefaultValues();
 			}
 		}

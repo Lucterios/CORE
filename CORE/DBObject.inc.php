@@ -65,9 +65,10 @@ class DBObj_Basic extends DBObj_Abstract {
 	 *
 	 * @return array(boolean,string) tableau:succes + retour console
 	 */
-	public function setup() {
+	public function setup($throwExcept = false) {
 		require_once'DBSetup.inc.php';
 		$install = new DBObj_Setup($this);
+		$install->throwExcept=$throwExcept;
 		$success = $install->execute();
 		$result = $install->Return;
 		return array($success,$result);
