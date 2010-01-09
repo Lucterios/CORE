@@ -736,13 +736,28 @@ class DBObj_Setup {
 		foreach($lines as $line) {
 			$line=trim($line);
 			if (substr($line,0,11)=="CONSTRAINT ") {
-				if (substr($line,-1)==',')
-					$current_contraints[]=substr($line,0,-1);
-				else
-					$current_contraints[]=$line;
+				$pos_key=strpos($line,' FOREIGN KEY');
+				if ($pos_key!==false) {
+					$contraintName=trim(substr($line,12,$pos_key-13));
+					if (substr($line,-1)==',')
+						$current_contraints[$contraintName]=substr($line,0,-1);
+					else
+						$current_contraints[$contraintName]=$line;
+				}
 			}
 		}
 		return $current_contraints;
+	}
+
+	public function RemoveAllContraints() {
+		global $connect;
+		$current_contraints = $this->CurrentContraints();
+		foreach($current_contraints as $contraintName=>$current_contraint){
+			$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
+			$rep = $connect->execute("SHOW TABLE STATUS LIKE '".$this->DBObject->__table."';",$this->throwExcept);
+			if (!$rep)
+				$this->RetMsg .= "-- DROP FOREIGN KEY `$contraintName` failed:".$connect->errorMsg." --\n";
+		}
 	}
 
 	/**
@@ -775,7 +790,7 @@ class DBObj_Setup {
 			}
 			else {
 				$create_contraint.= "SET NULL";
-				$correct="UPDATE ".$this->DBObject->__table." SET $fieldName=NULL WHERE NOT $fieldName IN (SELECT id FROM $ref_table);";
+				$correct="UPDATE ".$this->DBObject->__table." SET $fieldName=NULL WHERE NOT $fieldName IN (SELECT * FROM (SELECT id FROM $ref_table) tmp);";
 			}
 			return array($create_contraint,$correct);
 		}
@@ -788,10 +803,11 @@ class DBObj_Setup {
 	*/
 	private function ModifContraintQuery($contraintName,$currentcontraints,$fieldName,$referenceParams) {
 		list($create_contraint,$correct) = $this->__createContraintQuery($contraintName,$fieldName,$referenceParams);
-		if($contraintName != "") {
+		if(($create_contraint!='') &&($contraintName != "")) {
 			if( array_key_exists($contraintName,$currentcontraints)) {
 				$old_contraint = $currentcontraints[$contraintName];
 				if($old_contraint != $create_contraint) {
+					$this->RetMsg .= "Modifier '$contraintName' : '$old_contraint' => '$create_contraint' .{[newline]}";
 					$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
 					$q.=$correct;
 					$q.="ALTER TABLE `".$this->DBObject->__table."` ADD ".$create_contraint.';';
@@ -845,7 +861,7 @@ class DBObj_Setup {
 
 		if($this->DBObject->Heritage != '') {
 			$col_name="superId";
-			$contraint_name = $this->DBObject->__table."_".$col_name;
+			$contraint_name = $this->DBObject->__table."_CFK_".$col_name;
 			$q = $this->ModifContraintQuery($contraint_name,$current_contraints,$col_name,array('description'=>'superId', 'type'=>10, 'notnull'=>true, 'params'=>array('TableName'=>$this->DBObject->Super->__table)));
 			$this->RunContraintQuery($contraint_name,$q,$current_contraints);
 		}
@@ -854,12 +870,24 @@ class DBObj_Setup {
 			$type = $item['type'];
 			if($type==10) {
 				// reference
-				$contraint_name = $this->DBObject->__table."_".$col_name;
+				$contraint_name = $this->DBObject->__table."_CFK_".$col_name;
 				$q = $this->ModifContraintQuery($contraint_name,$current_contraints,$col_name,$item);
 				if(!$this->RunContraintQuery($contraint_name,$q,$current_contraints))
 					break;
 			}
 		}
+		foreach($current_contraints as $contraintName=>$Contraint_desc)
+			if($Contraint_desc != "") {
+				$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
+				global $connect;
+				$rep=$connect->execute($q,$this->throwExcept);
+				if (!$rep) {
+					$this->RetMsg .= "DB::query - delete contraint : '".$connect->errorMsg."' dans '$q'{[newline]}";
+					$success = false;
+				}
+				else
+					$this->RetMsg .= "contraint '$contraintName' supprimè.{[newline]}";
+			}
 		global $connect;
 		$connect->printDebug("Contrainte Msg:".$this->RetMsg);
 		return $this->RetMsg;

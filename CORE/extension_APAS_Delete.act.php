@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 28 November 2008 12:48:09 By  ---
+// --- Last modification: Date 09 January 2010 13:41:59 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -35,7 +35,6 @@ require_once('CORE/xfer.inc.php');
 //@PARAM@ 
 //@INDEX:extension
 
-//@TRANSACTION:
 
 //@LOCK:2
 
@@ -46,9 +45,6 @@ $extension=getParams($Params,"extension",-1);
 if ($extension>=0) $self->get($extension);
 
 $self->lockRecord("extension_APAS_Delete");
-
-global $connect;
-$connect->begin();
 try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","extension_APAS_Delete",$Params);
 $xfer_result->Caption="Supprimer une extension";
@@ -79,16 +75,33 @@ else {
 
 if ($xfer_result->Confirme("Etes-vous sûre de vouloir supprimer l'extension '".$self->titre."'?$text{[newline]}Cela supprimera toutes les données en base."))
 {
-	foreach($ext_list as $ext_dep)
-		$ext_dep->delete();
-	$ext_obj->delete();
+	$temp_path = getcwd()."/tmp/delete/";
+	if(is_dir($temp_path))
+		deleteDir($temp_path);
+	global $connect;
+	$connect->begin();
+	try {
+		foreach($ext_list as $ext_dep)
+			$ext_dep->delete();
+		$ext_obj->delete();
+		$connect->commit();
+		if(is_dir($temp_path))
+			deleteDir($temp_path);
+	}
+	 catch(Exception $e) {
+		$connect->rollback();
+		$dh = @opendir($temp_path);
+		while(($file_dir = @readdir($dh)) != false) {
+			@rename($temp_path.$file_dir,$file_dir);
+		}
+		@closedir($dh);
+		throw $e;
+	}
 	$xfer_result->redirectAction(new Xfer_Action('menu','','CORE','menu'));
 }
 //@CODE_ACTION@
 	$xfer_result->setCloseAction(new Xfer_Action('unlock','','CORE','UNLOCK',FORMTYPE_MODAL,CLOSE_YES,SELECT_NONE));
-	$connect->commit();
 }catch(Exception $e) {
-	$connect->rollback();
 	$self->unlockRecord("extension_APAS_Delete");
 	throw $e;
 }

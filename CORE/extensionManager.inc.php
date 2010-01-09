@@ -361,6 +361,22 @@ class Extension {
 		return $success;
 	}
 
+	public function removeAllContraintsTable() {
+		$tbl_list=$this->getTableList();
+		$success = true;
+		foreach($tbl_list as $table_name) {
+			$class_name = "DBObj_".$this->Name."_".$table_name;
+			$obj = new $class_name;
+			if($success) {
+				require_once("CORE/DBSetup.inc.php");
+				$set_obj = new DBObj_Setup($obj);
+				$set_obj->throwExcept=$this->throwExcept;
+				$this->message .= $set_obj->RemoveAllContraints();
+			}
+		}
+		return $success;
+	}
+
 	public function upgradeContraintsTable() {
 		$tbl_list=$this->getTableList();
 		$success = true;
@@ -664,6 +680,12 @@ class Extension {
 		if(($this->Name == 'CORE') || ($this->Name == 'applis'))
 			throw new LucteriosExtension(2,'Extension non supprimable!');
 
+		$temp_path = getcwd()."/tmp/delete/";
+		if(is_dir($temp_path.$this->Dir)) 
+			deleteDir($temp_path.$this->Dir);
+		if(!is_dir($temp_path)) 
+			mkdir($temp_path,0777, true);
+
 		global $connect;
 		require_once"CORE/extension.tbl.php";
 		$DBextension = new DBObj_CORE_extension;
@@ -701,8 +723,8 @@ class Extension {
 				$this->message .= $connect->errorMsg."{[newline]}";
 			$DBextension->delete();
 		} 
-		deleteDir($this->Dir);
-
+		@rename($temp_path.$this->Dir,$this->Dir);
+		
 		$ext_list = getExtensions($rootPath);
 		foreach($ext_list as $current_name => $current_dir) {
 			$current_obj = new Extension($current_name,$current_dir);

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 15 October 2009 21:54:58 By  ---
+// --- Last modification: Date 09 January 2010 13:31:50 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -68,7 +68,7 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 		if( substr($item,-1) == "/") {
 			$item = substr($item,0,-1);
 			if(! is_dir($temp_path.$item))
-			throw new LucteriosException( IMPORTANT,"Répértoire ".$temp_path.$item." non trouvé!");
+				throw new LucteriosException( IMPORTANT,"Répértoire ".$temp_path.$item." non trouvé!");
 		}
 		else if(! is_file($temp_path.$item)) {
 			throw new LucteriosException( IMPORTANT,"Fichier ".$temp_path.$item." non trouvé!");
@@ -77,6 +77,14 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 	global $connect;
 	$connect->begin();
 	try {
+
+		require_once("CORE/extensionManager.inc.php");
+		$ext_list = getExtensions();
+		foreach($ext_list as $current_name => $current_dir) {
+			$current_obj = new Extension($current_name,$current_dir);
+			$current_obj->throwExcept=true;
+			$current_obj->removeAllContraintsTable();
+		}
 		$addSQL=false;
 		$dh = opendir($temp_path);
 		while(($file = readdir($dh)) != false)
