@@ -520,9 +520,9 @@ class Extension {
 
 	public function checkActions() {
 		if(! is_dir($this->Dir))
-		return 0;
+			return 0;
 		if($this->ID == 0)
-		return 0;
+			return 0;
 		$success = true;
 		global $dbcnf;
 		require_once"CORE/extension_actions.tbl.php";
@@ -566,6 +566,40 @@ class Extension {
 		return $success;
 	}
 
+	public function checkStorageFunctions(){
+		if(! is_dir($this->Dir))
+			return 0;
+		if($this->ID == 0)
+			return 0;
+		$success = true;
+		global $dbcnf;
+		global $connect;
+
+		$dh = opendir($this->Dir);
+		while(($file = readdir($dh)) != false) {
+			if( is_file($this->Dir.$file) && ( substr($file,-4,4) == ".fsk")) {
+				$storageName = substr($file,0,-4);
+				$storageFile = $this->Dir.$file;
+				$SQL="";
+				$contents=File($storageFile);
+				foreach($contents as $line) {
+					if ((substr($line,0,3)!='-- ') && (trim($line)!=''))
+						$SQL.=rtrim($line)." ";
+				}
+				if ($SQL!='') {
+					$connect->execute("DROP FUNCTION IF EXISTS ".$this->Name."_FCT_$storageName",$this->throwExcept);
+	
+					$connect->execute($SQL,$this->throwExcept);
+					if( trim($connect->errorMsg) != "") {
+						$this->message .= "Error d'insertion de fonction stockées '$q':".$connect->errorMsg."{[newline]}";
+						$success = false;
+					}
+				}
+			}
+		}
+		return $success;
+	}
+
 	public function checkReportModel() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -587,7 +621,8 @@ class Extension {
 		$dh = opendir($this->Dir);
 		while(($file = readdir($dh)) != false) {
 			if( is_file($this->Dir.$file) && ( substr($file,-8,8) == ".prt.php")) {
-				$modelName = substr($file,0,-8); array_push($prt_list,$modelName);
+				$modelName = substr($file,0,-8); 
+				array_push($prt_list,$modelName);
 			}
 		}
 		require_once("ConvertPrintModel.inc.php");
@@ -668,6 +703,7 @@ class Extension {
 		$nb += $this->updateMenu();
 		$nb += $this->checkReportModel();
 		$nb += $this->checkActions();
+		$nb += $this->checkStorageFunctions();
 		if(!$insert)$nb += $this->insertion( false);
 		$nb += $this->postInstall();
 		$nb += $this->validation();
