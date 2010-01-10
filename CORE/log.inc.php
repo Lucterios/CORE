@@ -35,7 +35,7 @@ function __log(&$XMLinput,$Title)
 	  // debug: requette logu?fichier
 	  $msg = "---$Title------".current_date()."----------------------------\n";
 	  $msg.= print_r($XMLinput, true);//Array_To_String($XMLinput);
-	  $msg.= "\r\n\r\n";
+	  $msg.= "\n--- ---- --- ---\n";
 
 	  $f = fopen($tmpPath."LuceriosCORE.log", "a");
 	  fwrite($f, $msg);

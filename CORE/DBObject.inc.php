@@ -70,7 +70,7 @@ class DBObj_Basic extends DBObj_Abstract {
 		$install = new DBObj_Setup($this);
 		$install->throwExcept=$throwExcept;
 		$success = $install->execute();
-		$result = $install->Return;
+		$result = $install->RetMsg;
 		return array($success,$result);
 	}
 
@@ -406,6 +406,10 @@ class DBObj_Basic extends DBObj_Abstract {
 				else {
 					return $item['params']['Enum'][$field_val];
 				}
+			}
+			elseif (($item['type'] == 12) || ($item['type'] == 13)) {
+				$params=$item['params'];
+				return $this->Call($params['MethodGet']);
 			}
 			else
 				return $field_val;

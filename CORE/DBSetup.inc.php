@@ -396,7 +396,10 @@ class DBObj_Setup {
 				$this->RetMsg .= " !! ".$currentFields[$columnName]."=>$fieldDescription{[newline]}";
 			}
 		}
-		else $q = "ALTER TABLE ".$this->DBObject->__table." ADD ".$fieldDescription.";\n";
+		else {
+			$q = "ALTER TABLE ".$this->DBObject->__table." ADD ".$fieldDescription.";\n";
+			$this->RetMsg .= " !! new $fieldDescription{[newline]}";
+		}
 		return $q;
 	}
 
@@ -520,7 +523,8 @@ class DBObj_Setup {
 		$success = $this->alterTableByField($currentFields,'superId','superId '. DBObj_Setup:: SUPERID_KEY_TYPE);
 		foreach($this->DBObject->__DBMetaDataField as $col_name => $item) {
 			$field_str = $this->__getFieldSQL($col_name,$item);
-			if($field_str != '')$success = $this->alterTableByField($currentFields,$col_name,$field_str);
+			if($field_str != '')
+				$success = $this->alterTableByField($currentFields,$col_name,$field_str);
 		}
 		foreach($currentFields as $fieldname => $val)if(($fieldname != 'id') && ($fieldname != 'lockRecord') && ($fieldname != 'superId') && ! array_key_exists($fieldname,$this->DBObject->__DBMetaDataField)) {
 			$q = "ALTER TABLE ".$this->DBObject->__table." DROP COLUMN ".$fieldname.";";
@@ -622,7 +626,7 @@ class DBObj_Setup {
 		$field_index = substr($field_index,0,-2);
 		if($field_index == "")
 			return "";
-		$create_index .= $field_index.");\n";
+		$create_index .= $field_index.")";
 		return $create_index;
 	}
 
@@ -634,13 +638,15 @@ class DBObj_Setup {
 		$create_index = $this->__createIndexQuery($index_name,$Indexfields);
 		if( array_key_exists($index_name,$current_indexes)) {
 			$old_index = $current_indexes[$index_name];
-			if($old_index != $create_index)
-				return "DROP INDEX ".$index_name." ON ".$this->DBObject->__table.";".$create_index;
+			if($old_index != $create_index) {
+				$this->RetMsg.="### Index '$index_name' $old_index => $create_index ###{[newline]}";
+				return "DROP INDEX ".$index_name." ON ".$this->DBObject->__table.";".$create_index.";";
+			}
 			else
 				return "";
 		}
 		else
-			return $create_index;
+			return $create_index.";";
 	}
 
 	/**
@@ -754,7 +760,7 @@ class DBObj_Setup {
 		$current_contraints = $this->CurrentContraints();
 		foreach($current_contraints as $contraintName=>$current_contraint){
 			$q="ALTER TABLE `".$this->DBObject->__table."` DROP FOREIGN KEY `$contraintName`;";
-			$rep = $connect->execute("SHOW TABLE STATUS LIKE '".$this->DBObject->__table."';",$this->throwExcept);
+			$rep = $connect->execute($q,$this->throwExcept);
 			if (!$rep)
 				$this->RetMsg .= "-- DROP FOREIGN KEY `$contraintName` failed:".$connect->errorMsg." --\n";
 		}
@@ -903,8 +909,9 @@ class DBObj_Setup {
 		if(!$this->ControleAndCreateTable())
 			return false;
 		$old_field = $this->GetCurrentFieldDescription();
-		if($old_field == null)
+		if($old_field == null) {
 			return false;
+		}
 		if(!$this->CheckFields($old_field))
 			return false;
 		$this->ReaffectAutoinc();

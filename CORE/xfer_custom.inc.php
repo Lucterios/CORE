@@ -32,6 +32,7 @@
  */
 
 require_once'xfer_component.inc.php';
+require_once'xfer_grid.inc.php';
 
 /**
  * Classe containaire d'une fenêtre personnalisée
@@ -145,6 +146,13 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 					$comp = new Xfer_Comp_Grid($FieldName);
 					$comp->setDBObject($field_val, null,$DBObjs->__table,$this->m_context);
 					break;
+				case 12:
+				case 13:
+					//Method
+					$params=$DBObjs->__DBMetaDataField[$FieldName]['params'];
+					$comp = new Xfer_Comp_Label($FieldName);
+					$comp->setValue($DBObjs->Call($params['MethodGet']));
+					break;
 				default :
 					$comp = new Xfer_Comp_Label($FieldName);
 					if(is_object($field_val))
@@ -222,6 +230,16 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 					}
 					$comp->setSelect($select_list);
 					$comp->setValue($DBObjs->$FieldName);
+					break;
+				case 12:
+					// method chaine
+					$comp = new Xfer_Comp_Edit($FieldName);
+					$comp->setValue($field_val);
+					break;
+				case 13:
+					// method réel
+					$comp = new Xfer_Comp_Float($FieldName,$param_fld['Min'],$param_fld['Max'],$param_fld['Prec']);
+					$comp->setValue($field_val);
 					break;
 				}
 			}

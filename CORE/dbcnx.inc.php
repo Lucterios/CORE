@@ -47,11 +47,15 @@ class DBCNX {
 		return true;
 	}
 
-	public function __construct($dbgLev = 0) {
+	public function __construct() {
 		$this->res = array();
 		$this->resIndex = 0;
 		$this->connected = false;
-		$this->debugLevel = $dbgLev;
+		global $debugLevel;
+		if (isset($debugLevel))
+			$this->debugLevel = $debugLevel;
+		else
+			$this->debugLevel = 0;
 	}
 
  	public function __destruct() 
@@ -62,8 +66,10 @@ class DBCNX {
  	}
 
 	function printDebug($msg) {
-		if (($this->debugLevel==-1) || ($this->debugLevel>10))
-			echo "<!-- $msg -->\n";
+		if (($this->debugLevel==-1) || ($this->debugLevel>10)) {
+			require_once('CORE/log.inc.php');
+			__log($msg,"DBCNX");
+		}
 	}
 
 	public function connect ($dbcnf){

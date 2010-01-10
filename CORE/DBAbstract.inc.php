@@ -35,16 +35,31 @@
 * @access private
 */
 define('DBOBJ_INT',1);
+
 /**
 * DBOBJ_STR
 * @access private
 */
 define('DBOBJ_STR',2);
+
 /**
 * DBOBJ_CHILD
 * @access private
 */
 define('DBOBJ_CHILD',3);
+
+/**
+* DBOBJ_STORAGE
+* @access private
+*/
+define('DBOBJ_STORAGE',4);
+
+/**
+* DBOBJ_METHOD
+* @access private
+*/
+define('DBOBJ_METHOD',5);
+
 
 /**
 * field_dico
@@ -63,6 +78,9 @@ $field_dico[7] = array( DBOBJ_STR,"Text long","longtext");
 $field_dico[8] = array( DBOBJ_INT,"Enumèration","tinyint(3)");
 $field_dico[9] = array( DBOBJ_CHILD,"Enfants","");
 $field_dico[10] = array( DBOBJ_INT,"Rèfèrent","int(10) unsigned");
+$field_dico[11] = array( DBOBJ_STORAGE,"Fonction","");
+$field_dico[12] = array( DBOBJ_METHOD,"Methode (chaine)","");
+$field_dico[13] = array( DBOBJ_METHOD,"Methode (réel)","");
 
 require_once"dbcnx.inc.php";
 global $connect;
@@ -249,12 +267,13 @@ class DBObj_Abstract {
 	 *
 	 * @return array
 	 */
-	public function table() {
+	public function table($withFunction=false,$withMethod=false) {
 		global $field_dico;
 		$tbl_fld = array('id' => DBOBJ_INT,'lockRecord' => DBOBJ_STR, 'superId' => DBOBJ_INT);
 		foreach($this->__DBMetaDataField as $col_name => $item) {
 			$dbt = $field_dico[$item['type']][0];
-			if($dbt != DBOBJ_CHILD)$tbl_fld[$col_name] = $dbt;
+			if (($withMethod || ($dbt != DBOBJ_METHOD)) &&  ($dbt != DBOBJ_CHILD) && ($withFunction || ($dbt != DBOBJ_STORAGE)))
+				$tbl_fld[$col_name] = $dbt;
 		}
 		return $tbl_fld;
 	}
@@ -365,9 +384,9 @@ class DBObj_Abstract {
 				array_push($FieldNames,$field_names);
 		}
 		if($nbfield>-1)
-		return array_slice($FieldNames,0,$nbfield);
+			return array_slice($FieldNames,0,$nbfield);
 		else
-		return $FieldNames;
+			return $FieldNames;
 	}
 
 	/**
@@ -429,13 +448,19 @@ class DBObj_Abstract {
 		if (is_object($object))
 			$object=get_object_vars($object);
 		if (is_array($object)) {
-			$fields = $this->table();
+			$fields = $this->table(true,true);
 			foreach($fields as $field_name => $field_item) {
-				$fieldname=$field_name;
-				if (!isset($object[$fieldname]))
-					$fieldname=$this->__table.".".$field_name;
-				if (isset($object[$fieldname]))
-					$this->$field_name=$object[$fieldname];
+				if (isset($object[$field_name])) {
+					if ($field_item!=DBOBJ_METHOD)
+						$this->$field_name=$object[$field_name];
+					else {
+						$params=$this->__DBMetaDataField[$field_name]['params'];
+						$method=$params['MethodSet'];
+						$this->Call($method,$object[$field_name]);
+					}
+				}
+				elseif (isset($object[$this->__table.".".$field_name]))
+					$this->$field_name=$object[$this->__table.".".$field_name];
 			}
 			if($this->Heritage != "") {
 				$ret=$this->Super->setFrom($object);
@@ -458,9 +483,14 @@ class DBObj_Abstract {
 			$wheres[]=$this->__table.".superId=".$this->Super->__table.".id";
 		}
 		$tables[]=$this->__table;
-		$field_names = $this->table();
+		$field_names = $this->table(true);
 		foreach($field_names as $field_name => $field_item) {
-			$fields[]=$this->__table.".".$field_name;
+			if ($field_item!=DBOBJ_STORAGE)
+				$fields[]=$this->__table.".".$field_name;
+			else {
+				$params=$this->__DBMetaDataField[$field_name]['params'];
+				$fields[]= $params['Function']."(".$this->__table.".id) AS ".$field_name;
+			}
 			if ($withValue && ($field_name!='superId')) {
 				if(!is_null($this->$field_name)) {
 					$value = $this->$field_name;
@@ -468,7 +498,7 @@ class DBObj_Abstract {
 						$value = str_replace("'","''",$value);
 						$fied_eq_value="$field_name='$value'";
 					}
-					else
+					else if ($field_item!=DBOBJ_STORAGE)
 						$fied_eq_value="$field_name=$value";
 					$wheres[]=$this->__table.".".$fied_eq_value;
 				}
@@ -745,8 +775,16 @@ class DBObj_Abstract {
 			}
 			return $this->__super;
 		}
-		if($this->__super != null)
-		return $this->__super->$key;
+		$find=false;
+		if (isset($this->__DBMetaDataField[$key])) {
+			$type=$this->__DBMetaDataField[$key]['type'];
+			$params=$this->__DBMetaDataField[$key]['params'];
+			if (($type==12) || ($type==13) && ($params['MethodGet']!='')) {
+				return $this->Call($params['MethodGet']);
+			}
+		}
+		if ($this->__super != null)
+			return $this->__super->$key;
 	}
 
 	/**
@@ -755,8 +793,10 @@ class DBObj_Abstract {
 	*/
 	public function debug($message,$level) {
 		global $connect;
-		if ($connect->debugLevel>=$level)
-			echo "<!-- debug ".get_class($this)." ($level)\n$message\n -->\n";
+		if ($connect->debugLevel>=$level) {
+			require_once('CORE/log.inc.php');
+			__log($message,"DBOBJ:".get_class($this)." ($level)");
+		}
 	}
 }
 //@END@
