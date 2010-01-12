@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 08 December 2008 0:20:14 By  ---
+// --- Last modification: Date 11 January 2010 21:44:00 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -59,6 +59,33 @@ while(list($menuItemId, $extensionId, $action, $description, $icon, $shortcut, $
 		$last_menuItemId=$menuItemId;
 	}
 }
+
+$menu_tabs=new Xfer_Menu_Item("menu_sup","","");
+$menu_status =new Xfer_Menu_Item("menu_status",'Résumé','status.png','CORE',"status",0,"","");
+$menu_tabs->addSubMenu($menu_status);
+
+$extpath="extensions";
+if ($handle=opendir($extpath))
+{
+	while ($item=readdir($handle))
+	{
+		if (($item != ".") && ($item != "..") && is_dir("$extpath/$item") && is_file("$extpath/$item/menuTab.inc.php"))
+		{
+			$memo.=" file existe ";
+			require_once "$extpath/$item/menuTab.inc.php";
+			$function_name=$item."_menuTab";
+			if (function_exists($function_name))
+			{
+				$new_Menu=$function_name();
+				if (($new_Menu!=null) && (get_class($new_Menu)=='Xfer_Menu_Item'))
+					$menu_tabs->addSubMenu($new_Menu);
+			}
+		}
+	}
+	closedir($handle);
+}
+
+$xfer_result->addSubMenu($menu_tabs);
 //@CODE_ACTION@
 }catch(Exception $e) {
 	throw $e;

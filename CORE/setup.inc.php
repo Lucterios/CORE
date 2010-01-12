@@ -18,10 +18,11 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // setup file write by SDK tool
-// --- Last modification: Date 10 January 2010 16:06:36 By  ---
+// --- Last modification: Date 11 January 2010 23:27:04 By  ---
 
 $extention_name="CORE";
-$extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.";
+$extention_description="Coeur du serveur Lucterios.
+Gère la connexion au logiciel, les droits d'accès ainsi que l'integration des autres modules.";
 $extention_appli="";
 $extention_famille="CORE";
 $extention_titre="Noyau Lucterios";
@@ -29,8 +30,8 @@ $extension_libre=true;
 
 $version_max=1;
 $version_min=1;
-$version_release=1;
-$version_build=333;
+$version_release=2;
+$version_build=344;
 
 $depencies=array();
 
@@ -49,7 +50,7 @@ $rights[10] = new Param_Rigth("Paramètres généraux (avancé)",101);
 $rights[11] = new Param_Rigth("Archivage",90);
 
 $menus=array();
-$menus[1] = new Param_Menu("Ad_ministration", "", "", "admin.png", "", 100 , 0, "Adminitration des outils de configuration et de réglages.");
+$menus[1] = new Param_Menu("Ad_ministration", "", "", "admin.png", "", 100 , 0, "Adminitration des configurations et des réglages.");
 $menus[2] = new Param_Menu("_Utilisateurs", "_Gestion des Droits", "users_APAS_list", "user.png", "", 5 , 0, "Gestion des utilisateurs autorisés à se connecter.");
 $menus[4] = new Param_Menu("_Paramètres", "_Avancé", "extension_params_APAS_list", "", "", 20 , 0, "");
 $menus[5] = new Param_Menu("_Extensions", "_Gestion des Droits", "extension_APAS_list", "extensions.png", "", 15 , 0, "Gestion des modules et association des droits.");

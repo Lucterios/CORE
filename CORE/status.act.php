@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 23 August 2007 18:55:38 By Laurent GAY ---
+// --- Last modification: Date 11 January 2010 21:05:34 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -41,45 +41,31 @@ function status($Params)
 {
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","status",$Params);
-$xfer_result->Caption='Résumé';
+$xfer_result->Caption="Résumé";
 //@CODE_ACTION@
-
 $lab=new Xfer_Comp_LabelForm('title');
 $lab->setLocation(0,0,4);
 $lab->setValue('{[center]}{[bold]}{[underline]}Etat de votre système{[/underline]}{[/bold]}{[/center]}');
 $xfer_result->addComponent($lab);
 
-$memo='';
 $extpath="extensions";
 if ($handle=opendir($extpath))
 {
 	while ($item=readdir($handle))
 	{
-		$memo.="dir:$item ";
-		if (($item != ".") && ($item != "..") && is_dir("$extpath/$item") &&
-is_file("$extpath/$item/status.inc.php"))
+		if (($item != ".") && ($item != "..") && is_dir("$extpath/$item") && is_file("$extpath/$item/status.inc.php"))
 		{
 			$memo.=" file existe ";
 			require_once "$extpath/$item/status.inc.php";
 			$function_name=$item."_status";
 			if (function_exists($function_name))
 			{
-				$memo.="function existe";
 				$function_name($xfer_result);
 			}
 		}
-		$memo.="{[newline]}";
 	}
 	closedir($handle);
 }
-else
-	$memo.=" bad $extpath {[newline]}";
-
-//$labmemo=new Xfer_Comp_LabelForm('memo');
-//$labmemo->setLocation(0,100,3);
-//$labmemo->setValue($memo);
-//$xfer_result->addComponent($labmemo);
-$xfer_result->addAction(new Xfer_Action("_Fermer","close.png"));
 //@CODE_ACTION@
 }catch(Exception $e) {
 	throw $e;
