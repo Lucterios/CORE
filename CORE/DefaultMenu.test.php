@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Test file write by SDK tool
-// --- Last modification: Date 18 October 2009 15:15:16 By  ---
+// --- Last modification: Date 14 January 2010 22:28:41 By  ---
 
 
 //@TABLES@
@@ -31,7 +31,7 @@ function CORE_DefaultMenu(&$test)
 {
 //@CODE_ACTION@
 $rep=$test->CallAction("CORE","menu",array(),"Xfer_Container_Menu");
-$test->assertEquals(1,count($rep->m_main_menus->m_sub_menus));
+$test->assertEquals(2,count($rep->m_main_menus->m_sub_menus));
 
 // Administration
 $menu_admin=$rep->m_main_menus->m_sub_menus[0];
@@ -172,6 +172,12 @@ $test->assertEquals("_Session",$menu_sub_item->m_title);
 $test->assertEquals("CORE",$menu_sub_item->m_extension);
 $test->assertEquals("sessions_APAS_list",$menu_sub_item->m_action);
 $test->assertEquals(0,count($menu_sub_item->m_sub_menus));
+
+// Bar lattérale
+$menu_latteral=$rep->m_main_menus->m_sub_menus[1];
+$test->assertEquals("",$menu_latteral->m_title);
+$test->assertEquals("",$menu_latteral->m_extension);
+$test->assertEquals("",$menu_latteral->m_action);
 //@CODE_ACTION@
 }
 
