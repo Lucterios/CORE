@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 January 2010 22:06:23 By  ---
+// --- Last modification: Date 18 January 2010 20:14:33 By  ---
 
 //@BEGIN@
 /**
@@ -459,7 +459,7 @@ class DBObj_Abstract {
 						$this->Call($method,$object[$field_name]);
 					}
 				}
-				elseif (isset($object[$this->__table.".".$field_name]))
+				else if (isset($object[$this->__table.".".$field_name]))
 					$this->$field_name=$object[$this->__table.".".$field_name];
 			}
 			if($this->Heritage != "") {
@@ -489,7 +489,13 @@ class DBObj_Abstract {
 				$fields[]=$this->__table.".".$field_name;
 			else {
 				$params=$this->__DBMetaDataField[$field_name]['params'];
-				$fields[]= $params['Function']."(".$this->__table.".id) AS ".$field_name;
+				$nb_field=max(1,(int)$params['NbField']);
+				$field_text=$this->__table.".id";
+				if ($nb_field>1){
+					for($i=1;$i<$nb_field;$i++)
+						$field_text.=",NULL";
+				}
+				$fields[]= $params['Function']."(".$field_text.") AS ".$field_name;
 			}
 			if ($withValue && ($field_name!='superId')) {
 				if(!is_null($this->$field_name)) {

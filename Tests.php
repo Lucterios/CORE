@@ -149,10 +149,18 @@ if ($run) {
 						$new_ext->ThrowExcept=true;
 						$set_of_ext[]=$new_ext;
 					}
+				$msg='';
 				$set_of_ext = sortExtension($set_of_ext);
-				foreach($set_of_ext as $ext)
+				foreach($set_of_ext as $ext) {
 					$ext->installComplete();
+					$msg.=$ext->message;
+				}
+				foreach($set_of_ext as $ext) {
+					$ext->upgradeContraintsTable();
+					$msg.=$ext->message;
+				}
 				$queries=extractData($ext_name);
+				//echo "<!-- ".str_replace(array("{[newline]}","--","<",">"),array("\n","","&#139;","&#155;"),$msg)." -->\n";
 
 				$item->success();
 				$GlobalTest->addTests($item);
