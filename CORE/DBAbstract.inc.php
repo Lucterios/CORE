@@ -450,17 +450,19 @@ class DBObj_Abstract {
 		if (is_array($object)) {
 			$fields = $this->table(true,true);
 			foreach($fields as $field_name => $field_item) {
-				if (isset($object[$field_name])) {
-					if ($field_item!=DBOBJ_METHOD)
+				if ($field_item!=DBOBJ_METHOD) {
+					if (isset($object[$field_name]))
 						$this->$field_name=$object[$field_name];
-					else {
+					else if (isset($object[$this->__table.".".$field_name]))
+						$this->$field_name=$object[$this->__table.".".$field_name];
+				}
+			}
+			foreach($fields as $field_name => $field_item) {
+				if (isset($object[$field_name]) && ($field_item==DBOBJ_METHOD)) {
 						$params=$this->__DBMetaDataField[$field_name]['params'];
 						$method=$params['MethodSet'];
 						$this->Call($method,$object[$field_name]);
-					}
 				}
-				else if (isset($object[$this->__table.".".$field_name]))
-					$this->$field_name=$object[$this->__table.".".$field_name];
 			}
 			if($this->Heritage != "") {
 				$ret=$this->Super->setFrom($object);
@@ -654,14 +656,17 @@ class DBObj_Abstract {
 		$fields = $this->table();
 		foreach($fields as $field_name => $field_item)
 			if(!is_null($this->$field_name)) {
+				$type=$this->__DBMetaDataField[$field_name]['type'];
 				$value = $this->$field_name;
-				$field_names[]=$field_name;
 				if ($field_item==DBOBJ_STR) {
 					$value = str_replace("'","''",$value);
 					$field_values[]="'$value'";
+					$field_names[]=$field_name;
 				}
-				else
+				else if (($type!=10) || (((int)$value)!=0)) {
 					$field_values[]=$value;
+					$field_names[]=$field_name;
+				}
 			}
 		$q = "INSERT INTO ".$this->__table;
 		$q .= " (".implode(' ,',$field_names).")";
@@ -699,12 +704,13 @@ class DBObj_Abstract {
 		unset($fields['superId']);
 		foreach($fields as $field_name => $field_item)
 			if(!is_null($this->$field_name)) {
+				$type=$this->__DBMetaDataField[$field_name]['type'];
 				$value = $this->$field_name;
 				if ($field_item==DBOBJ_STR) {
 					$value = str_replace("'","''",$value);
 					$fied_eq_value="$field_name='$value'";
 				}
-				else
+				else if (($type!=10) || (((int)$value)!=0))
 					$fied_eq_value="$field_name=$value";
 				if ($withTable)
 					$set[]=$this->__table.'.'.$fied_eq_value;
