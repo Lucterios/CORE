@@ -433,7 +433,6 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$record_current=0;
 		while(($row=$connect->getRowByName($queryId)) && ($record_current<$record_max)) {
 			if ($record_current>=$record_min) {
-				echo "<!-- row=".print_r($row,true)." -->\n";
 				$id=$row[$FieldKey];
 				foreach($this->m_headers as $header) {
 					$field_name=$header->m_name;
