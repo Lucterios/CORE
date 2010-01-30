@@ -37,6 +37,20 @@
 				<xsl:attribute name="margin-top"><xsl:value-of select="@margin_top"/>mm</xsl:attribute>
 				<xsl:attribute name="page-width"><xsl:value-of select="@page_width"/>mm</xsl:attribute>
 				<xsl:attribute name="page-height"><xsl:value-of select="@page_height"/>mm</xsl:attribute>
+				<fo:region-body>
+					<xsl:if test="number(page/header/@extent) != 0">
+						<xsl:attribute name="margin-top"><xsl:value-of select="page/header/@extent"/>mm</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="number(page/bottom/@extent) != 0">
+						<xsl:attribute name="margin-bottom"><xsl:value-of select="page/bottom/@extent"/>mm</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="number(page/left/@extent) != 0">
+						<xsl:attribute name="margin-left"><xsl:value-of select="page/left/@extent"/>mm</xsl:attribute>
+					</xsl:if>
+					<xsl:if test="number(page/rigth/@extent) != 0">
+						<xsl:attribute name="margin-right"><xsl:value-of select="page/rigth/@extent"/>mm</xsl:attribute>
+					</xsl:if>
+				</fo:region-body>
 				<xsl:if test="number(page/header/@extent) != 0">
 					<fo:region-before>
 						<xsl:attribute name="extent"><xsl:value-of select="page/header/@extent"/>mm</xsl:attribute>
@@ -57,25 +71,55 @@
 						<xsl:attribute name="extent"><xsl:value-of select="page/rigth/@extent"/>mm</xsl:attribute>
 					</fo:region-end>
 				</xsl:if>
-
-				<fo:region-body>
-					<xsl:if test="number(page/header/@extent) != 0">
-						<xsl:attribute name="margin-top"><xsl:value-of select="page/header/@extent"/>mm</xsl:attribute>
-					</xsl:if>
-					<xsl:if test="number(page/bottom/@extent) != 0">
-						<xsl:attribute name="margin-bottom"><xsl:value-of select="page/bottom/@extent"/>mm</xsl:attribute>
-					</xsl:if>
-					<xsl:if test="number(page/left/@extent) != 0">
-						<xsl:attribute name="margin-left"><xsl:value-of select="page/left/@extent"/>mm</xsl:attribute>
-					</xsl:if>
-					<xsl:if test="number(page/rigth/@extent) != 0">
-						<xsl:attribute name="margin-right"><xsl:value-of select="page/rigth/@extent"/>mm</xsl:attribute>
-					</xsl:if>
-				</fo:region-body>
  			</fo:simple-page-master>
 		</fo:layout-master-set>
 		<xsl:apply-templates select="page"/>
 	</fo:root>
+</xsl:template>
+
+<xsl:template name="left-trim">
+  <xsl:param name="s" />
+  <xsl:choose>
+    <xsl:when test="substring($s, 1, 1) = ''">
+      <xsl:value-of select="$s"/>
+    </xsl:when>
+    <xsl:when test="normalize-space(substring($s, 1, 1)) = ''">
+      <xsl:call-template name="left-trim">
+        <xsl:with-param name="s" select="substring($s, 2)" />
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$s" />
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="right-trim">
+  <xsl:param name="s" />
+  <xsl:choose>
+    <xsl:when test="substring($s, 1, 1) = ''">
+      <xsl:value-of select="$s"/>
+    </xsl:when>
+    <xsl:when test="normalize-space(substring($s, string-length($s))) = ''">
+      <xsl:call-template name="right-trim">
+        <xsl:with-param name="s" select="substring($s, 1, string-length($s) - 1)" />
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$s" />
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="trim">
+  <xsl:param name="s" />
+  <xsl:call-template name="right-trim">
+    <xsl:with-param name="s">
+      <xsl:call-template name="left-trim">
+        <xsl:with-param name="s" select="$s" />
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
 </xsl:template>
 
 <xsl:template match='page'>
@@ -212,9 +256,6 @@
 				</xsl:if>
 				<xsl:call-template name="component_font"/>
 				<xsl:attribute name="space-before"><xsl:value-of select="@spacing"/>mm</xsl:attribute>
-				<xsl:if test="number(@left) &gt;= 0">
-					<xsl:attribute name="margin-left"><xsl:value-of select="@left"/>mm</xsl:attribute>
-				</xsl:if>
 				<xsl:apply-templates/>
 			</fo:block>
 		</xsl:otherwise>
@@ -259,7 +300,20 @@
 							<xsl:call-template name="component_border"/>
 							<fo:block>
 								<xsl:call-template name="component_font"/>
-								<xsl:apply-templates/>
+								<xsl:choose>
+									<xsl:when test="@image=1">
+										<xsl:call-template name="addimage"/>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:apply-templates/>
+									</xsl:otherwise>
+								</xsl:choose>
+								<!-- xsl:if test="@image=1">
+									<xsl:call-template name="addimage"/>
+								</xsl:if>
+								<xsl:if test="@image!=1">
+									<xsl:apply-templates/>
+								</xsl:if -->
 							</fo:block>
 						</fo:table-cell>				
 					</xsl:for-each>
@@ -288,14 +342,17 @@
 			<xsl:if test="@space-before">
 				<xsl:attribute name="space-before"><xsl:value-of select="@space_before"/>mm</xsl:attribute>
 			</xsl:if>
-			<xsl:if test="number(@left) &gt;= 0">
-				<xsl:attribute name="margin-left"><xsl:value-of select="@left"/>mm</xsl:attribute>
-			</xsl:if>
 			<fo:block>
 				<xsl:call-template name="table_body"/>
-                        </fo:block>
+            </fo:block>
 		</fo:block>
 	</xsl:if>
+</xsl:template>
+
+<xsl:template name="addimage">
+    <fo:external-graphic>
+		<xsl:attribute name="src">url('<xsl:call-template name="trim"><xsl:with-param name="s" select="text()"/></xsl:call-template>')</xsl:attribute>
+	</fo:external-graphic>
 </xsl:template>
 
 <xsl:template match="image">
@@ -307,12 +364,8 @@
 			<xsl:call-template name="component_border"/>
 			<xsl:call-template name="component_font"/>
 			<fo:block>
-                                <fo:external-graphic>
-					<xsl:attribute name="src">
-						url(<xsl:value-of select="text()"/>)
-					</xsl:attribute>
-				</fo:external-graphic>
-                        </fo:block>
+				<xsl:call-template name="addimage"/>
+            </fo:block>
 		</fo:block-container>
 	</xsl:if>
 	<xsl:if test="number(@spacing)!=0">
@@ -323,14 +376,9 @@
 			<xsl:if test="@space-before">
 				<xsl:attribute name="space-before"><xsl:value-of select="@space_before"/>mm</xsl:attribute>
 			</xsl:if>
-			<xsl:if test="number(@left) &gt;= 0">
-				<xsl:attribute name="margin-left"><xsl:value-of select="@left"/>mm</xsl:attribute>
-			</xsl:if>
 			<fo:block>
-                                <fo:external-graphic>
-					<xsl:attribute name="src">url(http://apas.reali-soft.com/<xsl:value-of select="text()"/>)</xsl:attribute>
-				</fo:external-graphic>
-                        </fo:block>
+				<xsl:call-template name="addimage"/>
+            </fo:block>
 		</fo:block>
 	</xsl:if>
 </xsl:template>

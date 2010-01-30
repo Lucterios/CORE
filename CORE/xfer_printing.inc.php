@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 14 July 2009 18:25:13 By  ---
+// --- Last modification: Date 30 January 2010 0:40:15 By  ---
 
 //@BEGIN@
 /**
@@ -297,6 +297,52 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	}
 
 	/**
+	 * getBodyContent
+	 *
+	 * @access private
+	 * @return string
+	 */
+	function getBodyContent($InBase64=true)
+	{
+		$fop_java_file="CORE/fop/fop.jar";
+		$xsl_file="CORE/LucteriosPrintStyleForFo.xsl";
+		if (is_file($fop_java_file) && is_file($xsl_file)) {
+			$xml_file=tempnam(sys_get_temp_dir(),'xml');
+			$pdf_file=tempnam(sys_get_temp_dir(),'pdf');
+
+			$handle = fopen($xml_file, "w");
+			fwrite($handle, $this->ReportContent);
+			fclose($handle);
+
+			$output=array();
+			$return_var=0;
+			$last_line=exec("java -jar $fop_java_file -xml $xml_file -xsl $xsl_file -pdf $pdf_file",$output,$return_var);
+			if (is_file($pdf_file) && ($return_var==0)) {
+				$content=file_get_contents($pdf_file);
+			}
+			else {
+				$content="";
+				foreach($output as $line) {
+					$content.=$line."{[newline]}";
+				}
+				$content.=$last_line;
+				require_once("CORE/Lucterios_Error.inc.php");
+				throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}$content");
+			}
+			unlink($xml_file);
+			unlink($pdf_file);
+
+			$this->ReportType=2;
+			if ($InBase64)
+				return base64_encode($content);
+			else
+				return $content;
+		}
+		else
+			return $this->ReportContent;
+	}
+
+	/**
 	 * _ReponseXML
 	 *
 	 * @access private
@@ -304,7 +350,8 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 */
 	function _ReponseXML()
 	{
-		$xml_text=sprintf("<PRINT title='%s' type='%d' mode='%d' withTextExport='%d'><![CDATA[%s]]></PRINT>",$this->ReportTitle,$this->ReportType,$this->ReportMode,$this->withTextExport,$this->ReportContent);
+		$content=$this->getBodyContent();
+		$xml_text=sprintf("<PRINT title='%s' type='%d' mode='%d' withTextExport='%d'><![CDATA[%s]]></PRINT>",$this->ReportTitle,$this->ReportType,$this->ReportMode,$this->withTextExport,$content);
 		return $xml_text;
 	}
 }
