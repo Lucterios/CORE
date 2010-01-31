@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 30 January 2010 0:40:15 By  ---
+// --- Last modification: Date 31 January 2010 0:12:07 By  ---
 
 //@BEGIN@
 /**
@@ -141,7 +141,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 */
 	function _ReponseSelector()
 	{
-		if (!is_array($this->Selector))
+		if (!is_array($this->Selector) && ($this->Selector!=0))
 			throw new LucteriosException(GRAVE,"Erreur de selecteur d'impression!");
 
 		require_once('CORE/xfer_custom.inc.php');
@@ -161,31 +161,33 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 		$print_mode->setLocation(1,0);
 		$xfer_result->addComponent($print_mode);
 
-		if (count($this->Selector)==0) {
-			require_once('CORE/etiquettes.tbl.php');
-			$etiquette=new DBObj_CORE_etiquettes;
-			$etiquette->orderBy('nom');
-			$etiquette->find();
-			while ($etiquette->fetch())
-				$this->Selector[$etiquette->id]=$etiquette->nom;
-			$lbl=new Xfer_Comp_LabelForm('lbldecalage');
-			$lbl->setValue('{[bold]}N° première étiquette{[/bold]}');
-			$lbl->setLocation(0,2);
+		if ($this->Selector!=0) {
+			if (count($this->Selector)==0) {
+				require_once('CORE/etiquettes.tbl.php');
+				$etiquette=new DBObj_CORE_etiquettes;
+				$etiquette->orderBy('nom');
+				$etiquette->find();
+				while ($etiquette->fetch())
+					$this->Selector[$etiquette->id]=$etiquette->nom;
+				$lbl=new Xfer_Comp_LabelForm('lbldecalage');
+				$lbl->setValue('{[bold]}N° première étiquette{[/bold]}');
+				$lbl->setLocation(0,2);
+				$xfer_result->addComponent($lbl);
+				$num=new Xfer_Comp_Float("PREMIERE_ETIQUETTE",1,100,0);
+				$num->setValue(1);
+				$num->setLocation(1,2);
+				$xfer_result->addComponent($num);
+			}
+			$lbl=new Xfer_Comp_LabelForm('lblselector');
+			$lbl->setValue('{[bold]}'.$this->SelectorDesc[0].'{[/bold]}');
+			$lbl->setLocation(0,1);
 			$xfer_result->addComponent($lbl);
-			$num=new Xfer_Comp_Float("PREMIERE_ETIQUETTE",1,100,0);
-			$num->setValue(1);
-			$num->setLocation(1,2);
-			$xfer_result->addComponent($num);
+			$selector=new Xfer_Comp_Select($this->SelectorDesc[1]);
+			$selector->setSelect($this->Selector);
+			$selector->setValue('');
+			$selector->setLocation(1,1);
+			$xfer_result->addComponent($selector);
 		}
-		$lbl=new Xfer_Comp_LabelForm('lblselector');
-		$lbl->setValue('{[bold]}'.$this->SelectorDesc[0].'{[/bold]}');
-		$lbl->setLocation(0,1);
-		$xfer_result->addComponent($lbl);
-		$selector=new Xfer_Comp_Select($this->SelectorDesc[1]);
-		$selector->setSelect($this->Selector);
-		$selector->setValue('');
-		$selector->setLocation(1,1);
-		$xfer_result->addComponent($selector);
 
 		$xfer_result->addAction(new Xfer_Action("_Imprimer", "print.png", $this->m_extension, $this->m_action, FORMTYPE_MODAL, CLOSE_YES));
 		$xfer_result->addAction(new Xfer_Action("_Fermer", "close.png"));
@@ -288,7 +290,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 			$ReportMode=(int)$this->m_context["PRINT_MODE"];
 		else
 			$ReportMode=$this->ReportMode;
-		if (!is_array($this->Selector) || ($ReportMode!=0)) {
+		if ((!is_array($this->Selector) && ($this->Selector!=0)) || ($ReportMode!=0)) {
 			$this->ReportMode=$ReportMode;
 			return Xfer_Container_Abstract::getReponseXML();
 		}
@@ -304,42 +306,61 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 */
 	function getBodyContent($InBase64=true)
 	{
-		$fop_java_file="CORE/fop/fop.jar";
-		$xsl_file="CORE/LucteriosPrintStyleForFo.xsl";
-		if (is_file($fop_java_file) && is_file($xsl_file)) {
-			$xml_file=tempnam(sys_get_temp_dir(),'xml');
-			$pdf_file=tempnam(sys_get_temp_dir(),'pdf');
-
-			$handle = fopen($xml_file, "w");
-			fwrite($handle, $this->ReportContent);
-			fclose($handle);
-
-			$output=array();
-			$return_var=0;
-			$last_line=exec("java -jar $fop_java_file -xml $xml_file -xsl $xsl_file -pdf $pdf_file",$output,$return_var);
-			if (is_file($pdf_file) && ($return_var==0)) {
-				$content=file_get_contents($pdf_file);
+		if ($this->ReportMode==4) {
+			$xsl_file="CORE/ConvertxlpToCSV.xsl";
+			if (is_file($xsl_file)) {
+				require_once("CORE/ConvertPrintModel.inc.php");
+				$rep_content=str_replace(array("\t","<br/>"),' ',$this->ReportContent);
+				$content=ModelConverter::TransformXsl($rep_content,implode("", file($xsl_file)));
+				$content=str_replace(array("\t"),' ',$content);
+				$content=str_replace(array('<?xml version="1.0" encoding="ISO-8859-1"?>'."\n"),'',$content);
+				$this->ReportType=2;
+				if ($InBase64)
+					return base64_encode($content);
+				else
+					return $content;
 			}
-			else {
-				$content="";
-				foreach($output as $line) {
-					$content.=$line."{[newline]}";
-				}
-				$content.=$last_line;
-				require_once("CORE/Lucterios_Error.inc.php");
-				throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}$content");
-			}
-			unlink($xml_file);
-			unlink($pdf_file);
-
-			$this->ReportType=2;
-			if ($InBase64)
-				return base64_encode($content);
 			else
-				return $content;
+				return $this->ReportContent;
 		}
-		else
-			return $this->ReportContent;
+		else {
+			$fop_java_file="CORE/fop/fop.jar";
+			$xsl_file="CORE/LucteriosPrintStyleForFo.xsl";
+			if (is_file($fop_java_file) && is_file($xsl_file)) {
+				$xml_file=tempnam(sys_get_temp_dir(),'xml');
+				$pdf_file=tempnam(sys_get_temp_dir(),'pdf');
+
+				$handle = fopen($xml_file, "w");
+				fwrite($handle, $this->ReportContent);
+				fclose($handle);
+
+				$output=array();
+				$return_var=0;
+				$last_line=exec("java -jar $fop_java_file -xml $xml_file -xsl $xsl_file -pdf $pdf_file",$output,$return_var);
+				if (is_file($pdf_file) && ($return_var==0)) {
+					$content=file_get_contents($pdf_file);
+				}
+				else {
+					$content="";
+					foreach($output as $line) {
+						$content.=$line."{[newline]}";
+					}
+					$content.=$last_line;
+					require_once("CORE/Lucterios_Error.inc.php");
+					throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}$content");
+				}
+				unlink($xml_file);
+				unlink($pdf_file);
+
+				$this->ReportType=2;
+				if ($InBase64)
+					return base64_encode($content);
+				else
+					return $content;
+			}
+			else
+				return $this->ReportContent;
+		}
 	}
 
 	/**
