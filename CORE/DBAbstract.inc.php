@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 January 2010 20:14:33 By  ---
+// --- Last modification: Date 02 February 2010 1:47:45 By  ---
 
 //@BEGIN@
 /**
@@ -82,7 +82,8 @@ $field_dico[11] = array( DBOBJ_STORAGE,"Fonction","");
 $field_dico[12] = array( DBOBJ_METHOD,"Methode (chaine)","");
 $field_dico[13] = array( DBOBJ_METHOD,"Methode (réel)","");
 
-require_once"dbcnx.inc.php";
+require_once("CORE/log.inc.php");
+require_once("CORE/dbcnx.inc.php");
 global $connect;
 
 /**
