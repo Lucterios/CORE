@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 November 2009 19:10:27 By  ---
+// --- Last modification: Date 03 February 2010 23:24:49 By  ---
 
 //@BEGIN@
 /**
@@ -35,13 +35,13 @@ require_once("CORE/DBAbstract.inc.php");
 /**
 * SEP_SEARCH
 * @access private
-*/ 
+*/
 define('SEP_SEARCH','%');
 
 /**
 * SEP_SHOW
 * @access private
-*/ 
+*/
 define('SEP_SHOW','#|#');
 
 /**
@@ -213,6 +213,14 @@ class DBObj_Basic extends DBObj_Abstract {
 					if (($params['TableName']==$table) && ($params['RefField']==$fieldname))
 						$search=false;
 				}
+			if ($search) {
+				$file_class_name = DBObj_Abstract::getTableName($table);
+				$class_name = 'DBObj_'. $table;
+				require_once($file_class_name);
+				$DBObj=new $class_name;
+				$sub_type=$DBObj->__DBMetaDataField[$fieldname]['type'];
+				$search=$sub_type['notnull'];
+			}
 			if ($search) {
 				try {
 					$q="SELECT id FROM $table WHERE $fieldname=$this->id";

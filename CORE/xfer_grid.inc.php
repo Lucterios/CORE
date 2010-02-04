@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 06 August 2009 23:21:38 By  ---
+// --- Last modification: Date 03 February 2010 9:28:01 By  ---
 
 //@BEGIN@
 /**
@@ -355,6 +355,22 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$this->setValue($NewId,$FieldName,$val);
 	}
 
+	function definePage($ContextParams) {
+		if (is_array($ContextParams)) {
+			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
+			$this->mPageMax = (int)ceil($this->mNbLines/MAX_GRID_RECORD);
+			if ($this->mPageMax<$page_num) $page_num=0;
+			$this->mPageMum = $page_num;
+			$record_min=$this->mPageMum*MAX_GRID_RECORD;
+			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
+		}
+		else {
+			$record_min=0;
+			$record_max=$this->mNbLines;
+		}
+		return array($record_min,$record_max);
+	}
+
 	/**
 	 * Remplis une grille avec la déscription de l'objet $DBObjs et les champs décrits.
 	 *
@@ -365,18 +381,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 */
 	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
 		$this->mNbLines=$DBObjs->N;
-		if (is_array($ContextParams)) {
-			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
-			$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);
-			if ($this->mPageMax<$page_num) $page_num=0;
-			$this->mPageMum = $page_num;
-			$record_min=$this->mPageMum*MAX_GRID_RECORD;
-			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
-		}
-		else {
-			$record_min=0;
-			$record_max=$DBObjs->N;
-		}
+		list($record_min,$record_max)=$this->definePage($ContextParams);
 
 		if( is_int($FieldNames))
 			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
@@ -415,20 +420,9 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param array $ContextParams Context des parametres => Numero de la page [0,N-1]
 	 */
 	function setDBRows($queryId,$FieldKey,$ContextParams=null) {
-		global $connect;		
+		global $connect;
 		$this->mNbLines=$connect->getNumRows($queryId);
-		if (is_array($ContextParams)) {
-			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
-			$this->mPageMax = (int)ceil($DBObjs->N/MAX_GRID_RECORD);
-			if ($this->mPageMax<$page_num) $page_num=0;
-			$this->mPageMum = $page_num;
-			$record_min=$this->mPageMum*MAX_GRID_RECORD;
-			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
-		}
-		else {
-			$record_min=0;
-			$record_max=$DBObjs->N;
-		}
+		list($record_min,$record_max)=$this->definePage($ContextParams);
 
 		$record_current=0;
 		while(($row=$connect->getRowByName($queryId)) && ($record_current<$record_max)) {
@@ -521,6 +515,5 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		return $xml_text;
 	}
 }
-
 //@END@
 ?>

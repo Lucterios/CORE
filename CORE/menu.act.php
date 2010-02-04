@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 11 January 2010 21:44:00 By  ---
+// --- Last modification: Date 03 February 2010 8:29:35 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -42,6 +42,12 @@ try {
 $xfer_result=&new Xfer_Container_Menu("CORE","menu",$Params);
 $xfer_result->Caption="Menu de l application";
 //@CODE_ACTION@
+global $rootPath;
+if(!isset($rootPath))
+	$rootPath = "";
+require_once "CORE/extensionManager.inc.php";
+checkExtensions($rootPath);
+
 global $connect, $login;
 
 require_once('menufunction.inc.php');

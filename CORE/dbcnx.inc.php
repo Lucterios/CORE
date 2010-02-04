@@ -162,7 +162,7 @@ class DBCNX {
 	public function throwError() {
 		if ($this->errorMsg!='') {
 			require_once("CORE/Lucterios_Error.inc.php");
-			throw new LucteriosException(GRAVE,$this->errorMsg);
+			throw new LucteriosException(GRAVE,"#".$this->mysql->errno." - ".$this->errorMsg);
 		}
 	}
 

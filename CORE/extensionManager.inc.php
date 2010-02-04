@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 12 August 2009 19:43:50 By  ---
+// --- Last modification: Date 02 February 2010 19:32:16 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -287,12 +287,12 @@ class Extension {
 		$DBextension->validite = 'n';
 		if($nb != 0)
 			$DBextension->update();
-		else 
+		else
 			$DBextension->insert();
 		global $connect;
 		if( $connect->isFailed())
 			$this->message .= $connect->errorMsg."{[newline]}";
-		else 
+		else
 			$this->message .= $act."de l'extension N°".$DBextension->id."{[newline]}";
 		$this->ID = $DBextension->id;
 		return $DBextension->id>0? true: false;
@@ -321,13 +321,13 @@ class Extension {
 			$dh = opendir($this->Dir);
 			while(($file = readdir($dh)) != false) {
 				if( is_file($this->Dir.$file) && ( substr($file,-8,8) == ".tbl.php")) {
-					$tableName = substr($file,0,-8); 
+					$tableName = substr($file,0,-8);
 					$this->tbl_list[]=$tableName;
 				}
 			}
 			foreach($this->tbl_list as $table_name)
 				require_once($this->Dir.$table_name.".tbl.php");
-	
+
 			$Max = count($this->tbl_list);
 			for($i = 0;$i<$Max-1;$i++) {
 				$min = $i;
@@ -432,7 +432,7 @@ class Extension {
 			$DBrights->weigth = $r->weigth;
 			if($nb != 0)
 				$DBrights->update();
-			else 
+			else
 				$DBrights->insert();
 			global $connect;
 			if( $connect->isFailed()) {
@@ -550,7 +550,7 @@ class Extension {
 			$DBaction->rights = $DBext_rights->id;
 			if($nb != 0)
 				$DBaction->update();
-			else 
+			else
 				$DBaction->insert();
 			global $connect;
 			if( $connect->isFailed()) {
@@ -567,14 +567,16 @@ class Extension {
 	}
 
 	public function checkStorageFunctions(){
+		$this->message .= "checkStorageFunctions ";
 		if(! is_dir($this->Dir))
 			return 0;
-		if($this->ID == 0)
-			return 0;
+		$this->message .= "--";
 		$success = true;
 		global $dbcnf;
 		global $connect;
 
+		$nb=0;
+		$this->message .= " ".$this->Dir;
 		$dh = opendir($this->Dir);
 		while(($file = readdir($dh)) != false) {
 			if( is_file($this->Dir.$file) && ( substr($file,-4,4) == ".fsk")) {
@@ -582,21 +584,24 @@ class Extension {
 				$storageFile = $this->Dir.$file;
 				$SQL="";
 				$contents=File($storageFile);
+				$this->message .= "fonction stockée:'$storageFile' (lines=".count($contents)."){[newline]}";
 				foreach($contents as $line) {
 					if ((substr($line,0,3)!='-- ') && (trim($line)!=''))
 						$SQL.=rtrim($line)." ";
 				}
 				if ($SQL!='') {
 					$connect->execute("DROP FUNCTION IF EXISTS ".$this->Name."_FCT_$storageName",$this->throwExcept);
-	
+
 					$connect->execute($SQL,$this->throwExcept);
 					if( trim($connect->errorMsg) != "") {
 						$this->message .= "Error d'insertion de fonction stockées '$q':".$connect->errorMsg."{[newline]}";
 						$success = false;
 					}
+					$nb++;
 				}
 			}
 		}
+		$this->message .= "Insertion de $nb fonction(s) stockée(s){[newline]}";
 		return $success;
 	}
 
@@ -621,7 +626,7 @@ class Extension {
 		$dh = opendir($this->Dir);
 		while(($file = readdir($dh)) != false) {
 			if( is_file($this->Dir.$file) && ( substr($file,-8,8) == ".prt.php")) {
-				$modelName = substr($file,0,-8); 
+				$modelName = substr($file,0,-8);
 				array_push($prt_list,$modelName);
 			}
 		}
@@ -717,9 +722,9 @@ class Extension {
 			throw new LucteriosExtension(2,'Extension non supprimable!');
 
 		$temp_path = getcwd()."/tmp/delete/";
-		if(is_dir($temp_path.$this->Dir)) 
+		if(is_dir($temp_path.$this->Dir))
 			deleteDir($temp_path.$this->Dir);
-		if(!is_dir($temp_path)) 
+		if(!is_dir($temp_path))
 			mkdir($temp_path,0777, true);
 
 		global $connect;
@@ -758,9 +763,9 @@ class Extension {
 			if( trim($connect->errorMsg) != "")
 				$this->message .= $connect->errorMsg."{[newline]}";
 			$DBextension->delete();
-		} 
+		}
 		@rename($temp_path.$this->Dir,$this->Dir);
-		
+
 		$ext_list = getExtensions($rootPath);
 		foreach($ext_list as $current_name => $current_dir) {
 			$current_obj = new Extension($current_name,$current_dir);
@@ -899,6 +904,20 @@ function getReferenceTablesList($tableName,$rootPath="") {
 		$ret = array_merge($ret,$current_ret);
 	}
 	return $ret;
+}
+
+
+function checkExtensions($rootPath="") {
+	$ext_list = getExtensions($rootPath);
+	foreach($ext_list as $name => $dir)
+		$set_of_ext[] = new Extension($name,$dir);
+	$set_of_ext = sortExtension($set_of_ext);
+	$ExtensionDescription = array();
+	foreach($set_of_ext as $ext) {
+		$ext->upgradeContraintsTable();
+		$ext->checkStorageFunctions();
+		$ext->postInstall();
+	}
 }
 //@END@
 ?>

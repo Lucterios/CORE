@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 11 January 2010 21:05:34 By  ---
+// --- Last modification: Date 03 February 2010 8:30:14 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -43,11 +43,6 @@ try {
 $xfer_result=&new Xfer_Container_Custom("CORE","status",$Params);
 $xfer_result->Caption="Résumé";
 //@CODE_ACTION@
-$lab=new Xfer_Comp_LabelForm('title');
-$lab->setLocation(0,0,4);
-$lab->setValue('{[center]}{[bold]}{[underline]}Etat de votre système{[/underline]}{[/bold]}{[/center]}');
-$xfer_result->addComponent($lab);
-
 $extpath="extensions";
 if ($handle=opendir($extpath))
 {

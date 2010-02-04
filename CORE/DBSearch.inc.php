@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 November 2009 15:36:40 By  ---
+// --- Last modification: Date 03 February 2010 23:24:57 By  ---
 
 //@BEGIN@
 /**
@@ -48,6 +48,7 @@ class DB_Search {
 	private $dataField;
 
 	private $paramSearch=array();
+	public $fields=array();
 	public $tables=array();
 	public $conditions=array();
 
@@ -307,6 +308,11 @@ class DB_Search {
 	public function queryCreator($select_item,$OrderBy="") {
 		if ($select_item==null)
 			$ret_col="count(*)";
+		else
+		if ($select_item=='*') {
+			list($fields,$tables,$wheres)=$this->DBObject->prepQuery();
+			$ret_col=implode(',',$fields);
+		}
 		else
 			$ret_col=$this->DBObject->__table.".$select_item";
 		if ((count($this->tables)>0) && (count($this->conditions)>=count($this->tables))) {

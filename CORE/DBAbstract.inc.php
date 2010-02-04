@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 02 February 2010 1:47:45 By  ---
+// --- Last modification: Date 03 February 2010 23:24:32 By  ---
 
 //@BEGIN@
 /**
@@ -416,7 +416,7 @@ class DBObj_Abstract {
 		else
 			$table_file_name = "$extName/$tableName.tbl.php";
 		if(! is_file($rootPath.$table_file_name))
-			$table_file_name = DBObj_Basic:: getTableName($tbl_select, true);
+			$table_file_name = DBObj_Abstract::getTableName($tbl_select, true);
 		else
 			$table_file_name=$rootPath.$table_file_name;
 		return $table_file_name;
@@ -429,9 +429,9 @@ class DBObj_Abstract {
 	 * @return array(string,string)
 	 */
 	public function getTableAndClass($Heritage) {
-		$file_class_name = $this->getTableName($Heritage, true,'/');
+		$file_class_name = DBObj_Abstract::getTableName($Heritage, true,'/');
 		$class_name = 'DBObj_'. str_replace('/','_',$Heritage);
-		return array($rootPath.$file_class_name,$class_name);
+		return array($file_class_name,$class_name);
 	}
 
 	/**
@@ -477,12 +477,12 @@ class DBObj_Abstract {
 		return false;
 	}
 
-	protected function _prepQuery($withValue=false){
+	public function prepQuery($withValue=false){
 		$tables=array();
 		$fields=array();
 		$wheres=array();
 		if($this->Heritage != "") {
-			list($fields,$tables,$wheres)=$this->Super->_prepQuery();
+			list($fields,$tables,$wheres)=$this->Super->prepQuery();
 			$wheres[]=$this->__table.".superId=".$this->Super->__table.".id";
 		}
 		$tables[]=$this->__table;
@@ -524,7 +524,7 @@ class DBObj_Abstract {
 	public function get($id) {
 		$this->__son = null;
 		if ($id>0) {
-			list($fields,$tables,$wheres)=$this->_prepQuery();
+			list($fields,$tables,$wheres)=$this->prepQuery();
 			$wheres[]=$this->__table.".id=".$id;
 			$q="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables)." WHERE ".implode(' AND ',$wheres);
 			global $connect;
@@ -587,7 +587,7 @@ class DBObj_Abstract {
 	 *
 	 */
 	public function find() {
-		list($fields,$tables,$wheres)=$this->_prepQuery(true);
+		list($fields,$tables,$wheres)=$this->prepQuery(true);
 		$query="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables);
 		foreach($this->whereAddList as $other_where)
 			$wheres[]=$other_where;
