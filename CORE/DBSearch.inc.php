@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 February 2010 23:24:57 By  ---
+// --- Last modification: Date 04 February 2010 8:35:43 By  ---
 
 //@BEGIN@
 /**
@@ -311,6 +311,10 @@ class DB_Search {
 		else
 		if ($select_item=='*') {
 			list($fields,$tables,$wheres)=$this->DBObject->prepQuery();
+			$this->tables=array_merge($this->tables,$tables);
+			$this->conditions=array_merge($this->conditions,$wheres);
+			$this->tables=array_unique($this->tables);
+			$this->conditions=array_unique($this->conditions);
 			$ret_col=implode(',',$fields);
 		}
 		else

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 February 2010 23:24:49 By  ---
+// --- Last modification: Date 04 February 2010 8:50:15 By  ---
 
 //@BEGIN@
 /**
@@ -218,8 +218,8 @@ class DBObj_Basic extends DBObj_Abstract {
 				$class_name = 'DBObj_'. $table;
 				require_once($file_class_name);
 				$DBObj=new $class_name;
-				$sub_type=$DBObj->__DBMetaDataField[$fieldname]['type'];
-				$search=$sub_type['notnull'];
+				$sub_param=$DBObj->__DBMetaDataField[$fieldname];
+				$search=$sub_param['notnull'];
 			}
 			if ($search) {
 				try {
