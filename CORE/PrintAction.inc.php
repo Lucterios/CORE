@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 16 March 2009 22:32:24 By  ---
+// --- Last modification: Date 04 February 2010 21:47:32 By  ---
 
 //@BEGIN@
 /**
@@ -144,7 +144,7 @@ class PrintLabel extends PrintItem {
 
 	public function getReportPart() {
 		$value = $this->convertValue($this->value);
-		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
+		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
 		$content .= ModelConverter:: convertApasFormat($value);
 		$content .= '</text>';
 		return $content;
@@ -292,7 +292,7 @@ class PrintTable extends PrintItem {
 		$content = sprintf('<table height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
 		foreach($this->columns as $column) {
 			$size_col = (int)($this->width*$column[1]/$this->sizeX);
-			$content .= sprintf('<columns width="%d.0" data=""><cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="center" line_height="10" font_family="sans-serif" font_weight="" font_size="10">',$size_col);
+			$content .= sprintf('<columns width="%d.0" data=""><cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="center" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$size_col);
 			$value = $this->convertValue($column[0]);
 			$content .= ModelConverter:: convertApasFormat($value);
 			$content .= '</cell></columns>';
@@ -301,7 +301,7 @@ class PrintTable extends PrintItem {
 			$content .= '<rows data="">';
 			foreach($row as $value) {
 				if (substr($value,0,20)=="data:image/*;base64,") $img='image="1"'; else $img='image="0"';
-				$content .= '<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="start" line_height="11" font_family="sans-serif" font_weight="" font_size="10" '.$img.'>';
+				$content .= '<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="start" line_height="10" font_family="sans-serif" font_weight="" font_size="9" '.$img.'>';
 				$content .= ModelConverter::convertApasFormat($value);
 				$content .= '</cell>';
 			}
@@ -403,7 +403,7 @@ class PrintAction {
 		$content = '<page>';
 		if($this->Title != "") {
 			$content .= '<header extent="12.0" name="before">';
-			$content .= sprintf('<text height="12.0" width="%d.0" top="0.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="20" font_family="sans-serif" font_weight="" font_size="20">',$this->largeur_page-2*$this->marge_horizontal);
+			$content .= sprintf('<text height="12.0" width="%d.0" top="0.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="15" font_family="sans-serif" font_weight="" font_size="12">',$this->largeur_page-2*$this->marge_horizontal);
 			$content .= ModelConverter:: convertApasFormat("{[bold]}{[underline]}".$this->Title."{[/underline]}{[/bold]}");
 			$content .= '</text>';
 			$content .= '</header>';

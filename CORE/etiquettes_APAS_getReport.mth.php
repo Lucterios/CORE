@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 01 December 2007 11:02:54 By Laurent GAY ---
+// --- Last modification: Date 04 February 2010 22:01:58 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -34,7 +34,6 @@ require_once('CORE/etiquettes.tbl.php');
 function etiquettes_APAS_getReport(&$self,$premEtiquette,$etiquetteValues)
 {
 //@CODE_ACTION@
-
 if ($self->id>0) {
 
 $etiquette_values=array();
@@ -69,7 +68,7 @@ foreach($etiquette_values as $ettiquetteValue)
 	$row_num=(int)($index / $self->colonnes);
 	$left=$col_num*$self->ecart_horizontal;
 	$top=$row_num*$self->ecart_vertical;
-	$content.=sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="12" font_family="sans-serif" font_weight="" font_size="12">',$self->hauteur,$self->largeur,$top,$left);
+	$content.=sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$self->hauteur,$self->largeur,$top,$left);
 	$content.=ModelConverter::convertApasFormat("&#160;{[newline]}".$ettiquetteValue);
 	$content.='</text>';
 	$index++;
