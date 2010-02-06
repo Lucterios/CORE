@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 February 2010 23:24:32 By  ---
+// --- Last modification: Date 05 February 2010 14:01:06 By  ---
 
 //@BEGIN@
 /**
@@ -606,6 +606,8 @@ class DBObj_Abstract {
 	 */
 	public function fetch() {
 		$this->__son = null;
+		foreach($this->__DBMetaDataField as $col_name => $item)
+			$this->$col_name = null;
 		global $connect;
 		$row=$connect->getRowByName($this->lastQuery);
 		if ($row) {
@@ -655,6 +657,7 @@ class DBObj_Abstract {
 		$field_names=array();
 		$field_values=array();
 		$fields = $this->table();
+		unset($fields['id']);
 		foreach($fields as $field_name => $field_item)
 			if(!is_null($this->$field_name)) {
 				$type=$this->__DBMetaDataField[$field_name]['type'];
@@ -669,12 +672,19 @@ class DBObj_Abstract {
 					$field_names[]=$field_name;
 				}
 			}
+			else {
+				$type=$this->__DBMetaDataField[$field_name]['type'];
+				if ($type==10) {
+					$field_values[]='NULL';
+					$field_names[]=$field_name;
+				}
+			}
 		$q = "INSERT INTO ".$this->__table;
 		$q .= " (".implode(' ,',$field_names).")";
 		$q .= " VALUES (".implode(' ,',$field_values).")";
 		global $connect;
 		$result = $connect->execute($q);
-		$this->debug("Insert:Q=$q -> $result",1);
+		$this->debug("Insert:Q=$q -> $result /".$connect->errorMsg,1);
 		if($connect->errorCode) {
 			__log($q,'Query insert failure:');
 			require_once"Lucterios_Error.inc.php";

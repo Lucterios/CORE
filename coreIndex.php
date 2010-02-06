@@ -58,7 +58,6 @@ if(array_key_exists("XMLinput", $GLOBAL)) {
 }
 
 // gestion des exceptions
-//require_once('CORE/addConficuration.inc.php');
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/xfer.inc.php');
 

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 31 January 2010 0:12:07 By  ---
+// --- Last modification: Date 05 February 2010 23:53:30 By  ---
 
 //@BEGIN@
 /**
@@ -153,7 +153,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 		$lbl->setLocation(0,0);
 		$xfer_result->addComponent($lbl);
 		$print_mode=new Xfer_Comp_Select('PRINT_MODE');
-		$selector=array(1=>'Imprimante',2=>'Prévisualisation',3=>'Fichier PDF');
+		$selector=array(2=>'Prévisualisation',3=>'Fichier PDF');
 		if ($this->withTextExport!=0)
 			$selector[4]='Fichier CSV';
 		$print_mode->setSelect($selector);
@@ -347,6 +347,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 					}
 					$content.=$last_line;
 					require_once("CORE/Lucterios_Error.inc.php");
+					logAutre("ReportContent:\n$this->ReportContent");
 					throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}$content");
 				}
 				unlink($xml_file);
@@ -436,16 +437,13 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 *
 	 * @param string $extension
 	 * @param string $printmodel
-	 * @param integer $reference
 	 * @return boolean
 	 */
-	function selectModel($extension,$printmodel,$reference)
+	function selectModel($extension,$printmodel)
 	{
-		require_once 'PrintStructureDoc.inc.php';
-		$reference=(int)$reference;
-		list($id,$model) = checkDBModel($extension,$printmodel,$reference);
-		$printfile='extensions/'.$extension.'/'.$printmodel.'.prt.php';
-		require_once $printfile;
+		list($id,$model,$res) = checkDBModel($extension,$printmodel);
+		$printfile="extensions/$extension/$printmodel.prt.php";
+		require_once($printfile);
 		return $this->setModel($extension,$printmodel,$id,$model,$Title);
 	}
 
@@ -468,8 +466,8 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 			$this->m_idmodel=$id;
 
 			$printfile="extensions/$extension/$printmodel.prt.php";
-			require_once $printfile;
-                        $XmlDataFctName=$extension."_APAS_".$printmodel."_getXmlData";
+			require_once($printfile);
+              $XmlDataFctName=$extension."_APAS_".$printmodel."_getXmlData";
 			$this->m_xml_data=$XmlDataFctName();
 		}
 		return ($id!=0);

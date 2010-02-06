@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 May 2009 0:01:44 By  ---
+// --- Last modification: Date 05 February 2010 22:26:02 By  ---
 
 //@BEGIN@
 /**
@@ -258,6 +258,9 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 		}
 	}
 
+	var 	$FULL_TEXT_SELECTOR = array("contient","commence par","fini par","égal");
+	var $testSelector=0;
+
 	/**
 	 * Remplire une fenêtre avec des controle de selection de recherche
 	 *
@@ -326,7 +329,10 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				else
 					$comp = new Xfer_Comp_Edit($field_name."_value1");
 				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("contient");
+				if ($this->testSelector!=-1)
+					$select_list = array($this->testSelector => $this->FULL_TEXT_SELECTOR[$this->testSelector]);
+				else
+					$select_list = $this->FULL_TEXT_SELECTOR;
 				$line[] = $comp;
 				break;
 			case 3:
@@ -361,7 +367,10 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				// long text
 				$comp = new Xfer_Comp_Memo($field_name."_value1");
 				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("contient");
+				if ($this->testSelector!=-1)
+					$select_list = array($this->testSelector => $this->FULL_TEXT_SELECTOR[$this->testSelector]);
+				else
+					$select_list = $this->FULL_TEXT_SELECTOR;
 				$line[] = $comp;
 				break;
 			case 8:
@@ -445,11 +454,13 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				$label->setLocation(0,$posY);
 				$this->addComponent($label);
 				if( count($select_list) == 1) {
+					$keys=array_keys($select_list);
+					$first_key=(int)$keys[0];
 					$lbl_select = new Xfer_Comp_Label($field_name."_lbl_select");
 					$lbl_select->setLocation(1,$posY);
-					$lbl_select->setValue($select_list[0]);
+					$lbl_select->setValue($select_list[$first_key]);
 					$this->addComponent($lbl_select);
-					$this->m_context[$field_name."_select"] = 1;
+					$this->m_context[$field_name."_select"] = ($first_key+1);
 				}
 				else {
 					$select_field_name = $field_name."_select";

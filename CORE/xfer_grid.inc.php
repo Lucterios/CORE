@@ -91,7 +91,6 @@ class Xfer_Comp_Header extends Xfer_Object {
 	 * @return Xfer_Comp_Header
 	 */
 	function Xfer_Comp_Header($name,$descript,$type = "",$formula="",$functionName="") {
-		$this->PEAR('Observer_Error');
 		$this->m_name = $name;
 		$this->m_descript = $descript;
 		$this->m_type = $type;

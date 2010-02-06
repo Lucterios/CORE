@@ -1,25 +1,24 @@
 <?php
-//
-//  This file is part of Lucterios.
-//
-//  Lucterios is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-//
-//  Lucterios is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with Lucterios; if not, write to the Free Software
-//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-//
-//	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//
-// library file write by SDK tool
-// --- Last modification: Date 18 June 2008 22:20:16 By  ---
+// 
+//     This file is part of Lucterios.
+// 
+//     Lucterios is free software; you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation; either version 2 of the License, or
+//     (at your option) any later version.
+// 
+//     Lucterios is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+// 
+//     You should have received a copy of the GNU General Public License
+//     along with Lucterios; if not, write to the Free Software
+//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//  // library file write by SDK tool
+// --- Last modification: Date 05 February 2010 23:02:28 By  ---
 
 //@BEGIN@
 /**
@@ -29,8 +28,9 @@
  * @version 0.10
  * @package Lucterios
  * @subpackage Xfer
- */require_once'PEAR.php';
+ */
 require_once'xfer.inc.php';
+
 /**
  * Verifie l'existance d'un ensemble de parametre.
  * Remonter une erreur si non trouvé.
@@ -56,6 +56,7 @@ function checkParams($extension,$action,$params) {
 	else $ret = xfer_returnError($extension,$action,$param,"Parametres incorrect!");
 	return $ret;
 }
+
 /**
  * Extrait une valeur dans un tableu si elle exists
  *
@@ -70,6 +71,7 @@ function getParams($params,$name,$default = null) {
 	else
 	return $default;
 }
+
 /**
  * Classe containaire d'une exception
  *
@@ -80,14 +82,17 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 	/**
 	 * Erreur PEAR
 	 *
-	 * @var PEAR_Error
- or Exception
-	 */var$m_error = "";
+	 * @var Exception
+	 */
+	var $m_error = "";
+
 	/**
 	 * Description
 	 *
 	 * @var string
-	 */var$m_text = "";
+	 */
+	var $m_text = "";
+
 	/**
 	 * Constructor
 	 *
@@ -100,6 +105,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		$this->Xfer_Container_Abstract($extension,$action,$context);
 		$this->m_observer_name = "CORE.Exception";
 	}
+
 	/**
 	 * Assigne valeurs
 	 *
@@ -110,6 +116,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		$this->m_error = $error;
 		$this->m_text = $text;
 	}
+
 	/**
 	 * affichage
 	 *
@@ -120,7 +127,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		$ret .= "[".$this->m_pear_error->getMessage().";".$this->m_pear_error->getCode().";".$this->m_pear_error->getMode()."]";
 		return $ret;
 	}
-	
+
 	function getLucteriosFile($File) {
 		if($File == $_SERVER['SCRIPT_FILENAME'])
 		return "[init]";
@@ -135,7 +142,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 			return $new_File;
 		}
 	}
-	
+
 	function getErrorTrace() {
 		$trace = "";
 		if( is_subclass_of($this->m_error,'Exception')) {
@@ -152,6 +159,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		}
 		return $trace;
 	}
+
 	/**
 	 * _ReponseXML
 	 *
@@ -167,14 +175,6 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 			$xml_text = $xml_text."\t<DEBUG_INFO><![CDATA[0]]></DEBUG_INFO>\n";
 			$xml_text = $xml_text."\t<TYPE><![CDATA[0]]></TYPE>\n";
 			$xml_text = $xml_text."\t<USER_INFO><![CDATA[0]]></USER_INFO>\n";
-		}
-		if( PEAR:: isError($this->m_error)) {
-			$xml_text = $xml_text."\t<MESSAGE><![CDATA[".$this->m_error->getMessage()."]]></MESSAGE>\n";
-			$xml_text = $xml_text."\t<CODE><![CDATA[".$this->m_error->getCode()."]]></CODE>\n";
-			$xml_text = $xml_text."\t<MODE><![CDATA[".$this->m_error->getMode()."]]></MODE>\n";
-			$xml_text = $xml_text."\t<DEBUG_INFO><![CDATA[".$this->m_error->getDebugInfo()."]]></DEBUG_INFO>\n";
-			$xml_text = $xml_text."\t<TYPE><![CDATA[".$this->m_error->getType()."]]></TYPE>\n";
-			$xml_text = $xml_text."\t<USER_INFO><![CDATA[".$this->m_error->getUserInfo()."]]></USER_INFO>\n";
 		}
 		if( is_subclass_of($this->m_error,'Exception') || ( get_class($this->m_error) == 'Exception')) {
 			$xml_text = $xml_text."\t<MESSAGE><![CDATA[".$this->m_error->getMessage()."]]></MESSAGE>\n";
@@ -195,7 +195,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
  * @param string $extension
  * @param string $action
  * @param array $context
- * @param PEAR_Error $error
+ * @param Exceotion $error
  * @return string
  */
 function xfer_returnError($extension,$action,$context,$error) {
@@ -203,6 +203,5 @@ function xfer_returnError($extension,$action,$context,$error) {
 	$error_rep->setData($error,"");
 	return $error_rep->getReponseXML();
 }
-
 //@END@
 ?>

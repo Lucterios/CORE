@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 February 2010 8:35:43 By  ---
+// --- Last modification: Date 05 February 2010 22:25:05 By  ---
 
 //@BEGIN@
 /**
@@ -196,9 +196,22 @@ class DB_Search {
 		case 7:
 			//long text
 
-			// "ignorer","contiens"
-			if(( trim($value1) != "") && ($select_id == 1)) {
-				$conditions[]="$current_table.$current_field like '%$value1%'";
+			// "ignorer","contiens","commence par","fini par","égal"
+			if((trim($value1) != "")) {
+				switch($select_id) {
+				case 1:
+					$conditions[]="$current_table.$current_field like '%$value1%'";
+					break;
+				case 2:
+					$conditions[]="$current_table.$current_field like '$value1%'";
+					break;
+				case 3:
+					$conditions[]="$current_table.$current_field like '%$value1'";
+					break;
+				case 4:
+					$conditions[]="$current_table.$current_field like '$value1'";
+					break;
+				}
 			}
 			break;
 		case 3:

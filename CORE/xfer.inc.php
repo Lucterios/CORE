@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 14 July 2009 18:11:41 By  ---
+// --- Last modification: Date 05 February 2010 22:56:27 By  ---
 
 //@BEGIN@
 /**
@@ -28,76 +28,56 @@
  * @version 0.10
  * @package Lucterios
  * @subpackage Xfer
- */require_once'PEAR.php';
-require_once"XML/Beautifier.php";
+ */
+
 /**
 * CLOSE_NO
 * Constante de non fermeture de fenetre
-*/ define('CLOSE_NO',0);
+*/
+define('CLOSE_NO',0);
+
 /**
 * CLOSE_YES
 * Constante de fermeture de fenetre
-*/ define('CLOSE_YES',1);
+*/
+define('CLOSE_YES',1);
+
 /**
 * FORMTYPE_NOMODAL
 * Constante d'un type de fiche no-modal
-*/ define('FORMTYPE_NOMODAL',0);
+*/
+define('FORMTYPE_NOMODAL',0);
+
 /**
 * FORMTYPE_MODAL
 * Constante d'un type de fiche modal
-*/ define('FORMTYPE_MODAL',1);
+*/
+define('FORMTYPE_MODAL',1);
+
 /**
 * FORMTYPE_REFRESH
 * Constante d'un type de fiche refresh
-*/ define('FORMTYPE_REFRESH',2);
+*/
+define('FORMTYPE_REFRESH',2);
+
 /**
 * SELECT_NONE
 * Constante d'un mode de selection (grille) : aucune selection
-*/ define('SELECT_NONE',1);
+*/
+define('SELECT_NONE',1);
+
 /**
 * SELECT_SINGLE
 * Constante d'un mode de selection (grille) : selection unique
-*/ define('SELECT_SINGLE',0);
+*/
+define('SELECT_SINGLE',0);
+
 /**
 * SELECT_MULTI
 * Constante d'un mode de selection (grille) : selection multiple
-*/ define('SELECT_MULTI',2);
-/**
- * trace_debug
- *
- * @access private
- * @param string $name
- * @param object $obj
- */
-function trace_debug($name,$obj = null) {
-	$res = "";
-	if($obj != null) {
-		require_once'debug_tools.php';
-		$res .= " : ". Array_To_String($obj);
-	}
-	echo"<!--$name$res-->\n";
-}
-/**
- * Classe d'erreur de transfert
- *
- * @package Lucterios
- * @subpackage Xfer
- * @author Pierre-Oliver Vershoore/Laurent Gay
- */
-class Xfer_Error extends PEAR_Error {
-	/**
-	 * Constructor
-	 *
-	 * @param string $msgorparser
-	 * @param integer $code
-	 * @param integer $mode
-	 * @param integer $level
-	 * @return Xfer_Error
-	 */
-	function Xfer_Error($msgorparser = 'unknown error',$code = 0,$mode = PEAR_ERROR_RETURN,$level = E_USER_NOTICE) {
-		$this->PEAR_Error($msgorparser,$code,$mode,$level);
-	}
-}
+*/
+define('SELECT_MULTI',2);
+
 /**
  * Classe de base de transfert
  *
@@ -105,16 +85,15 @@ class Xfer_Error extends PEAR_Error {
  * @subpackage Xfer
  * @author Pierre-Oliver Vershoore/Laurent Gay
  */
-class Xfer_Object extends PEAR {
+class Xfer_Object {
 	/**
 	 * Constructeur
-
 	 *
 	 * @return Xfer_Object
 	 */
 	function Xfer_Object() {
-		$this->PEAR('Xfer_Error');
 	}
+
 	/**
 	 * Retourne la chaine XML à transferer
 	 *
@@ -123,17 +102,7 @@ class Xfer_Object extends PEAR {
 	function getReponseXML() {
 		return "";
 	}
-	/**
-	 * Remonte une erreur PEAR
-	 *
-	 * @param string $msg
-	 * @param integer $ecode
-	 * @return PEAR_Error
-	 */
-	function raiseError($msg = null,$ecode = 0) {
-		$err = & new Xfer_Error($msg,$ecode);
-		return parent:: raiseError($err);
-	}
+
 	/**
 	 * Vérifie les droits de l'utilisateur courant pour cette action
 	 *
@@ -152,6 +121,7 @@ class Xfer_Object extends PEAR {
 		return $ret;
 	}
 }
+
 /**
  * Classe d'action
  *

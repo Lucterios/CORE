@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 0:20:51 By  ---
+// --- Last modification: Date 05 February 2010 23:02:45 By  ---
 
 //@BEGIN@
 function studyReponse($current_reponse)
@@ -121,7 +121,7 @@ function BoucleReponse($lesRequettes,$internal=false)
 				if ($current_reponse!="")
 					$REPONSE.=$current_reponse."\n";
 				else
-					$REPONSE.=xfer_returnError($extension,$action,$params,new Xfer_Error("Résultat vide!!",10003));
+					$REPONSE.=xfer_returnError($extension,$action,$params,"Résultat vide!!");
 			}
 			else{
 				$REPONSE.=$current_reponse->getReponseXML()."\n";

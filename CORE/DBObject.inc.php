@@ -91,8 +91,10 @@ class DBObj_Basic extends DBObj_Abstract {
 			global $connect;
 			$res = $connect->execute("SELECT sid FROM CORE_sessions WHERE valid='o' AND sid='$lock_session'");
 			list($sid) = $connect->getRow($res);
-			if($sid != $lock_session)
+			if($sid != $lock_session) {
 				$this->lockRecord = "";
+				$this->update();
+			}
 		}
 		if($this->Heritage != "")
 			$this->Super->checkLockRecord();
@@ -105,18 +107,19 @@ class DBObj_Basic extends DBObj_Abstract {
 	 */
 	public function setLockRecord() {
 		if($this->id<=0)
-		return LOCKRECORD_THIS;
+			return LOCKRECORD_THIS;
 		if(!$this->is_super) {
 			$son = $this->getSon();
 			if($son != null) {
 				return $son->setLockRecord();
 			}
 		}
+		$this->checkLockRecord();
 		global $GLOBAL;
 		$session = $GLOBAL["ses"];
 		list($lock_session,$lock_origine) = split('@',$this->lockRecord);
 		if($lock_session == $session)
-		return LOCKRECORD_THIS;
+			return LOCKRECORD_THIS;
 		else {
 			if($this->lockRecord == "") {
 				if($this->Heritage != "")
@@ -170,7 +173,8 @@ class DBObj_Basic extends DBObj_Abstract {
 			}
 		}
 		if(($this->id<=0) || ($this->lockRecord == ''))
-		return true;
+			return true;
+		$this->checkLockRecord();
 		global $GLOBAL;
 		$session = $GLOBAL["ses"];
 		list($lock_session,$lock_origine) = split('@',$this->lockRecord);
