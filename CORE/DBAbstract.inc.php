@@ -658,9 +658,9 @@ class DBObj_Abstract {
 		$field_values=array();
 		$fields = $this->table();
 		unset($fields['id']);
-		foreach($fields as $field_name => $field_item)
+		foreach($fields as $field_name => $field_item) {
+			$type=$this->__DBMetaDataField[$field_name]['type'];
 			if(!is_null($this->$field_name)) {
-				$type=$this->__DBMetaDataField[$field_name]['type'];
 				$value = $this->$field_name;
 				if ($field_item==DBOBJ_STR) {
 					$value = str_replace("'","''",$value);
@@ -671,14 +671,18 @@ class DBObj_Abstract {
 					$field_values[]=$value;
 					$field_names[]=$field_name;
 				}
+				else if ($type==10) {
+					$field_values[]='NULL';
+					$field_names[]=$field_name;
+				}
 			}
 			else {
-				$type=$this->__DBMetaDataField[$field_name]['type'];
 				if ($type==10) {
 					$field_values[]='NULL';
 					$field_names[]=$field_name;
 				}
 			}
+		}
 		$q = "INSERT INTO ".$this->__table;
 		$q .= " (".implode(' ,',$field_names).")";
 		$q .= " VALUES (".implode(' ,',$field_values).")";
