@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 February 2010 9:28:01 By  ---
+// --- Last modification: Date 12 February 2010 0:15:00 By  ---
 
 //@BEGIN@
 /**
@@ -356,9 +356,10 @@ class Xfer_Comp_Grid extends Xfer_Component {
 
 	function definePage($ContextParams) {
 		if (is_array($ContextParams)) {
-			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
 			$this->mPageMax = (int)ceil($this->mNbLines/MAX_GRID_RECORD);
-			if ($this->mPageMax<$page_num) $page_num=0;
+			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
+			if ($this->mPageMax<$page_num)
+				$page_num=0;
 			$this->mPageMum = $page_num;
 			$record_min=$this->mPageMum*MAX_GRID_RECORD;
 			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
@@ -366,6 +367,8 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		else {
 			$record_min=0;
 			$record_max=$this->mNbLines;
+			$this->mPageMax = null;
+			$this->mPageMum = 0;
 		}
 		return array($record_min,$record_max);
 	}

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 February 2010 8:50:15 By  ---
+// --- Last modification: Date 12 February 2010 0:03:19 By  ---
 
 //@BEGIN@
 /**
@@ -183,7 +183,12 @@ class DBObj_Basic extends DBObj_Abstract {
 				$this->lockRecord = "";
 				if($this->Heritage != "")
 					$this->Super->unlockRecord($origine);
-				$this->update();
+				global $connect;
+				$q="UPDATE ".$this->__table." SET lockRecord='' WHERE id=".$this->id;
+				$result = $connect->execute($q);
+				if ($result === false) {
+					__log($q,'Query unlock failure:'.$connect->errorMsg);
+				}
 			}
 		}
 		else {
