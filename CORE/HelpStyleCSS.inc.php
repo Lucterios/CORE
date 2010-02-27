@@ -51,6 +51,7 @@ h3 {
     font-size : 12px;
     font-style : italic;
     text-decoration : underline;
+    text-align : center;
   }
 
 TABLE.main {
@@ -81,6 +82,7 @@ h3 {
     font-size : 6mm;
     font-style : italic;
     text-decoration : underline;
+    text-align : center;
   }
 
 TABLE.main {

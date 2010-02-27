@@ -43,7 +43,9 @@ try {
 $xfer_result=&new Xfer_Container_Custom("CORE","status",$Params);
 $xfer_result->Caption="Résumé";
 //@CODE_ACTION@
-$extpath="extensions";
+global $rootPath;
+if(!isset($rootPath)) $rootPath = "";
+$extpath=$rootPath."extensions";
 if ($handle=opendir($extpath))
 {
 	while ($item=readdir($handle))

@@ -378,11 +378,12 @@ class PrintAction {
 		global $login;
 		require_once("CORE/Lucterios_Error.inc.php");
 		$action = $this->m_action;
-		$CURRENT_PATH = ".";
+		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
 		if( strtoupper($this->m_extension) == "CORE")
-			$EXT_FOLDER = "$CURRENT_PATH/CORE";
+			$EXT_FOLDER = $rootPath."CORE";
 		else
-			$EXT_FOLDER = "$CURRENT_PATH/extensions/".$this->m_extension;
+			$EXT_FOLDER = $rootPath."extensions/".$this->m_extension;
 		$ACTION_FILE_NAME = "$EXT_FOLDER/$action.act.php";
 		if(! is_dir($EXT_FOLDER))
 			throw new LucteriosException( CRITIC,"Extension '".$this->m_extension."' inconnue !");

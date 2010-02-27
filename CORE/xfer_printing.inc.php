@@ -306,6 +306,8 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 */
 	function getBodyContent($InBase64=true)
 	{
+		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
 		if ($this->ReportMode==4) {
 			$xsl_file="CORE/ConvertxlpToCSV.xsl";
 			if (is_file($xsl_file)) {
@@ -324,8 +326,8 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 				return $this->ReportContent;
 		}
 		else {
-			$fop_java_file="CORE/fop/fop.jar";
-			$xsl_file="CORE/LucteriosPrintStyleForFo.xsl";
+			$fop_java_file=$rootPath."CORE/fop/fop.jar";
+			$xsl_file=$rootPath."CORE/LucteriosPrintStyleForFo.xsl";
 			if (is_file($fop_java_file) && is_file($xsl_file)) {
 				$xml_file=tempnam(sys_get_temp_dir(),'xml');
 				$pdf_file=tempnam(sys_get_temp_dir(),'pdf');

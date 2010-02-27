@@ -23,7 +23,7 @@
 //@BEGIN@
 
 function checkRight($login,$extension,$action) {
-	if (!is_null($login)) {
+	//if (!is_null($login)) {
 		global $connect;
 		list($usec,$sec) = split(" ", microtime());
 		$q = "SELECT cgr.value
@@ -52,8 +52,8 @@ function checkRight($login,$extension,$action) {
 		list($usec2,$sec2) = split(" ", microtime());
 		$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$actionreponse:$droittemps:$t");
 		return ($droit == 'o');
-	}
-	return true;
+	//}
+	//return true;
 }
 
 //@END@

@@ -30,8 +30,8 @@ header('Content-Type: text/html; charset=ISO-8859-1');
 	<meta NAME="Copyright" CONTENT="(c)2005-2008 - lucterios.org">
 	<meta NAME="Reply-to" CONTENT="support@lucterios.org">
 </head>
-<frameset cols="230, *" border="1" frameborder="1" framespacing="0">
-	<frame src="./CORE/HelpMenu.inc.php" name="MenuFram" noresize>
+<frameset cols="250, *" frameborder="YES" border="1" framespacing="1" rows="*">
+	<frame src="./CORE/HelpMenu.inc.php" name="MenuFrame" noresize>
 	<frame src="./CORE/HelpDefault.inc.php" name="MainFrame" noresize>
 </frameset>
 <noframes>

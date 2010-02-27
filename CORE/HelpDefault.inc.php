@@ -101,7 +101,7 @@ function showHelpPage($extension,$helpname,$title = '',$includeAll = false) {
 } header('Content-Type: text/html; charset=ISO-8859-1');
 echo"<html>
 	<head>
-		<title>$extention_description</title>
+		<title>$extention_titre</title>
 		<link rel='stylesheet' href='HelpStyleCSS.inc.php' />
 	</head>
 	<body>";

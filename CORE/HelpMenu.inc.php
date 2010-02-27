@@ -28,11 +28,15 @@ require_once("HelpTools.inc.php");
 function showMenuItem($menu_item) {
 	list($extension,$main_title,$list_menu) = $menu_item;
 	if( count($list_menu)>0) {
-		$item_text = "<a href='#' onclick='showClass(".'"'."$extension".'"'.",". count($list_menu).")' class='menuhead'>$main_title</a>
-			<div id='$extension' style='visibility:hidden;height:5px;'>";
-		foreach($list_menu as $desc)$item_text .= "<li><a href='HelpDefault.inc.php?extension=$extension&helpname=".$desc[0]."' target='MainFrame'>".$desc[1]."</a></li>";
-		$item_text .= "</div>";
-		echo$item_text;
+		$item_text = "<tr name='0' class='menurow'>\n\t<td valign=top><img id='$extension' src='../images/closed.png' border=0></td>\n\t<td colspan=2>\n";
+		$item_text.= "\t\t<a href='#' onclick='showClass(".'"'."$extension".'"'.")' class='menuhead'>$main_title</a>\n";
+		$item_text.= "\t</td>\n</tr>\n";
+		foreach($list_menu as $desc) {
+			$item_text.= "\t<tr name='$extension' class='menurow' style='display:none'>\n\t\t<td valign=top></td>\n\t\t<td valign=top><img src='../images/topic.png' border=0></td>\n\t\t<td>\n";
+			$item_text.= "\t\t\t<a href='HelpDefault.inc.php?extension=$extension&helpname=".$desc[0]."' target='MainFrame'>".$desc[1]."</a>\n";
+			$item_text.= "\t\t</td>\n</tr>\n";
+		}
+		echo $item_text;
 	}
 }
 if( array_key_exists('mode',$_GET) && ($_GET['mode'] == 'xml')) { header("Content-Type: text/xml; charset=ISO-8859-1");
@@ -60,19 +64,28 @@ else { header('Content-Type: text/html; charset=ISO-8859-1');
   <title>$extention_titre</title>
 	<link rel='stylesheet' href='HelpStyleCSS.inc.php' />
 <script language='javascript'>
-function showClass(className, nblignes)
+function showClass(className)
 {
-	var field_obj=document.getElementById(className);
-	if (field_obj.style.visibility=='hidden')
-	{
-		field_obj.style.visibility='visible';
-		field_obj.style.height=(25*nblignes)+'px';
+	var table_menu=document.getElementById('menuList');
+	var lines=table_menu.getElementsByTagName('tr');
+	for (i=0; i<lines.length; i++) {
+		var item_name=lines[i].getAttribute('name');
+		if (item_name=='0') {
+			lines[i].style.display='block';
+			var imgs=lines[i].getElementsByTagName('img');
+			if (imgs[0].getAttribute('id')==className)
+				imgs[0].src='../images/open.png';
+			else
+				imgs[0].src='../images/closed.png';
+		}
+		else {
+			if (item_name==className)
+				lines[i].style.display='block';
+			else
+				lines[i].style.display='none';
+		}
 	}
-	else
-	{
-		field_obj.style.visibility='hidden';
-		field_obj.style.height='5px';
-	}
+
 }
 </script>
 </head>
@@ -80,14 +93,15 @@ function showClass(className, nblignes)
 <table class='Main' width='100%'>
 	<tr class='menu'>
         	<td class='menu' style='height: 40px;'>
-		<h3>Sommaire</h3>
+		<h3><a href='HelpDefault.inc.php' target='MainFrame' onclick='showClass(\"\")'>Sommaire</a></h3>
 		</td>
 	</tr>
 	<tr class='menu'>
-        	<td class='menu'>";
+        	<td class='menu'>\n<table id='menuList'>\n";
 	$MenuList = getMenuList();
-	foreach($MenuList as $menu_item)echo showMenuItem($menu_item);
-	echo"</td>
+	foreach($MenuList as $menu_item)
+		echo showMenuItem($menu_item);
+	echo"\n</table>\n</td>
 	</tr>
 	<tr>
         	<td style='height: 50px;'>
