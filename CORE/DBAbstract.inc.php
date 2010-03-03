@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 February 2010 14:01:06 By  ---
+// --- Last modification: Date 02 March 2010 16:20:50 By  ---
 
 //@BEGIN@
 /**
@@ -231,8 +231,10 @@ class DBObj_Abstract {
 
 	public function getSon() {
 		if(($this->__son == null) && ($this->id>0)) {
+			global $rootPath;
+			if(!isset($rootPath)) $rootPath = "";
 			require_once('CORE/extensionManager.inc.php');
-			$class_list = getDaughterClassesList($this->extname.'/'.$this->tblname);
+			$class_list = getDaughterClassesList($this->extname.'/'.$this->tblname,$rootPath);
 			$file_class_name = '';
 			$class_name = '';
 			$son_id = 0;

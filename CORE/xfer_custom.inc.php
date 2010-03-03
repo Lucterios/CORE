@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 February 2010 22:26:02 By  ---
+// --- Last modification: Date 02 March 2010 16:41:17 By  ---
 
 //@BEGIN@
 /**
@@ -597,6 +597,32 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 		}
 		else
 		return null;
+	}
+
+	/**
+	 * Supprime un composant identifier par son numéro ou son nom
+	 *
+	 * @param integer|string $cmp_idx
+	 */
+	function removeComponents($cmp_idx) {
+		if( is_int($cmp_idx)) {
+			$nb = count($this->m_components);
+			if($cmp_idx<0)
+				$cmp_idx = $nb+$cmp_idx;
+			if(($cmp_idx >= 0) && ($cmp_idx<$nb)) {
+				$list_ids = array_keys($this->m_components);
+				$comp_id = $list_ids[$cmp_idx];
+				unset($this->m_components[$comp_id]);
+			}
+		}
+		else if( is_string($cmp_idx)) {
+			$comp_id = '';
+			foreach($this->m_components as $key => $comp)
+				if($comp->m_name == $cmp_idx)
+					$comp_id = $key;
+			if($comp_id != '')
+				unset($this->m_components[$comp_id]);
+		}
 	}
 
 	/**

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 10 December 2008 20:46:30 By  ---
+// --- Last modification: Date 02 March 2010 15:44:53 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -52,8 +52,7 @@ try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_confirmpwdmodif",$Params);
 $xfer_result->Caption="Changer mot de passe";
 //@CODE_ACTION@
-$ses=new DBObj_CORE_sessions;
-$login=$ses->CurrentLogin();
+global $login;
 $oldpass_md5=md5($oldpass);
 $Q="SELECT * FROM CORE_users WHERE login='$login' AND (pass=PASSWORD('$oldpass') OR pass='$oldpass_md5')";
 $self->query($Q);
@@ -69,7 +68,7 @@ if ($self->fetch()) {
 }
 else {
 	// erreur de oldpass, reaffichage du formalaire de changement plus message d'erreur
-	$xfer_result->message("Mot de passe actuel érroné.($login) $Q", 4);
+	$xfer_result->message("Mot de passe actuel érroné.", 4);
 }
 //@CODE_ACTION@
 }catch(Exception $e) {
