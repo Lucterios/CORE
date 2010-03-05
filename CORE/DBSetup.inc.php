@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 08 January 2010 23:21:43 By  ---
+// --- Last modification: Date 04 March 2010 19:49:52 By  ---
 
 //@BEGIN@
 /**
@@ -133,12 +133,12 @@ class DBObj_Setup {
 		$DBObjClass = $this->DBObject->GetClassName();
 		$DBObj = new $DBObjClass;
 		$nb_find = 0;
-		if($fieldId != -1) {
-
+		if($fieldId > 0) {
 			try {
-				$nb_find = $DBObj->get($fieldId);
+				$DBObj->get($fieldId,false);
+				$nb_find = 1;
 			}
-			 catch( Exception$e) {
+			 catch(Exception $e) {
 				$nb_find = 0;
 			}
 		}

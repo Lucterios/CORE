@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 02 March 2010 16:20:50 By  ---
+// --- Last modification: Date 04 March 2010 19:49:36 By  ---
 
 //@BEGIN@
 /**
@@ -479,12 +479,12 @@ class DBObj_Abstract {
 		return false;
 	}
 
-	public function prepQuery($withValue=false){
+	public function prepQuery($withValue=false,$withFct=true){
 		$tables=array();
 		$fields=array();
 		$wheres=array();
 		if($this->Heritage != "") {
-			list($fields,$tables,$wheres)=$this->Super->prepQuery();
+			list($fields,$tables,$wheres)=$this->Super->prepQuery(false,$withFct);
 			$wheres[]=$this->__table.".superId=".$this->Super->__table.".id";
 		}
 		$tables[]=$this->__table;
@@ -500,7 +500,8 @@ class DBObj_Abstract {
 					for($i=1;$i<$nb_field;$i++)
 						$field_text.=",NULL";
 				}
-				$fields[]= $params['Function']."(".$field_text.") AS ".$field_name;
+				if ($withFct)
+					$fields[]= $params['Function']."(".$field_text.") AS ".$field_name;
 			}
 			if ($withValue && ($field_name!='superId')) {
 				if(!is_null($this->$field_name)) {
@@ -523,10 +524,10 @@ class DBObj_Abstract {
 	 *
 	 * @param int $id
 	 */
-	public function get($id) {
+	public function get($id,$withFct=true) {
 		$this->__son = null;
 		if ($id>0) {
-			list($fields,$tables,$wheres)=$this->prepQuery();
+			list($fields,$tables,$wheres)=$this->prepQuery(false,$withFct);
 			$wheres[]=$this->__table.".id=".$id;
 			$q="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables)." WHERE ".implode(' AND ',$wheres);
 			global $connect;
@@ -588,8 +589,8 @@ class DBObj_Abstract {
 	 *
 	 *
 	 */
-	public function find() {
-		list($fields,$tables,$wheres)=$this->prepQuery(true);
+	public function find($withFct=true) {
+		list($fields,$tables,$wheres)=$this->prepQuery(true,$withFct);
 		$query="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables);
 		foreach($this->whereAddList as $other_where)
 			$wheres[]=$other_where;
