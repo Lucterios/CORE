@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 05 February 2010 23:53:30 By  ---
+// --- Last modification: Date 07 March 2010 13:49:03 By  ---
 
 //@BEGIN@
 /**
@@ -329,8 +329,9 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 			$fop_java_file=$rootPath."CORE/fop/fop.jar";
 			$xsl_file=$rootPath."CORE/LucteriosPrintStyleForFo.xsl";
 			if (is_file($fop_java_file) && is_file($xsl_file)) {
-				$xml_file=tempnam(sys_get_temp_dir(),'xml');
-				$pdf_file=tempnam(sys_get_temp_dir(),'pdf');
+				global $tmpPath;
+				$xml_file=tempnam($tmpPath,'xml');
+				$pdf_file=tempnam($tmpPath,'pdf');
 
 				$handle = fopen($xml_file, "w");
 				fwrite($handle, $this->ReportContent);
@@ -349,7 +350,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 					}
 					$content.=$last_line;
 					require_once("CORE/Lucterios_Error.inc.php");
-					logAutre("ReportContent:\n$this->ReportContent");
+					logAutre("ReportContent:\nXML:$xml_file\nPDF:$pdf_file\n$this->ReportContent");
 					throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}$content");
 				}
 				unlink($xml_file);
