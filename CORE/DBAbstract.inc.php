@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 March 2010 19:49:36 By  ---
+// --- Last modification: Date 16 March 2010 19:39:37 By  ---
 
 //@BEGIN@
 /**
@@ -340,16 +340,19 @@ class DBObj_Abstract {
 	 * @return string
 	 */
 	public function toText() {
-		$son = $this->getSon();
-		if($son != null) {
-			return $son->toText();
+		if ($this->id>0) {
+			$son = $this->getSon();
+			if($son != null) {
+				return $son->toText();
+			}
+			elseif (!isset($this->__toText) || ($this->__toText == "")) {
+				return "".$this->id;
+			}
+			else {
+				return $this->evalByText($this->__toText);
+			}
 		}
-		elseif (!isset($this->__toText) || ($this->__toText == "")) {
-			return "".$this->id;
-		}
-		else {
-			return $this->evalByText($this->__toText);
-		}
+		return "";
 	}
 
 	/**
