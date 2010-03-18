@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 March 2010 1:01:06 By  ---
+// --- Last modification: Date 18 March 2010 8:07:21 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -485,6 +485,8 @@ class Extension {
 			if($DBparams->id>0)
 				$DBparams->update();
 			else {
+				$DBparams->extensionId = $this->Name;
+				$DBparams->paramName = $key;
 				$DBparams->value = $val->defaultvalue;
 				$DBparams->insert();
 			}
