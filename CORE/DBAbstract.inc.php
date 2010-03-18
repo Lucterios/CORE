@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 16 March 2010 19:39:37 By  ---
+// --- Last modification: Date 18 March 2010 1:00:28 By  ---
 
 //@BEGIN@
 /**
@@ -461,6 +461,8 @@ class DBObj_Abstract {
 						$this->$field_name=$object[$field_name];
 					else if (isset($object[$this->__table.".".$field_name]))
 						$this->$field_name=$object[$this->__table.".".$field_name];
+					else if (isset($object[strtolower($this->__table).".".$field_name]))
+						$this->$field_name=$object[strtolower($this->__table).".".$field_name];
 				}
 			}
 			foreach($fields as $field_name => $field_item) {

@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 02 February 2010 19:32:16 By  ---
+// --- Last modification: Date 18 March 2010 1:01:06 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -263,10 +263,9 @@ class Extension {
 		require_once"CORE/extension.tbl.php";
 		$DBextension = new DBObj_CORE_extension;
 		$DBextension->extensionId = $this->Name;
-		$nb = $DBextension->find();
+		$DBextension->find(false);
 		$act = 'insertion';
-		if($nb != 0) {
-			$DBextension->fetch();
+		if($DBextension->fetch()) {
 			$act = 'modification';
 			if($first) {
 				global $connect;
@@ -285,10 +284,13 @@ class Extension {
 		$DBextension->versionRev = $this->version_release;
 		$DBextension->versionBuild = $this->version_build;
 		$DBextension->validite = 'n';
-		if($nb != 0)
+		if($DBextension->id>0) {
 			$DBextension->update();
-		else
+		}
+		else {
+			$DBextension->extensionId = $this->Name;
 			$DBextension->insert();
+		}
 		global $connect;
 		if( $connect->isFailed())
 			$this->message .= $connect->errorMsg."{[newline]}";
@@ -422,18 +424,21 @@ class Extension {
 			$DBrights = new DBObj_CORE_extension_rights;
 			$DBrights->extension = $this->ID;
 			$DBrights->rightId = $key;
-			$nb = $DBrights->find();
+			$DBrights->find(false);
 			$act = 'insertion';
-			if($nb != 0) {
-				$DBrights->fetch();
+			if($DBrights->fetch()) {
 				$act = 'modification';
 			}
 			$DBrights->description = $r->description;
 			$DBrights->weigth = $r->weigth;
-			if($nb != 0)
+			if($DBrights->id>0) {
 				$DBrights->update();
-			else
+			}
+			else {
+				$DBrights->extension = $this->ID;
+				$DBrights->rightId = $key;
 				$DBrights->insert();
+			}
 			global $connect;
 			if( $connect->isFailed()) {
 				$this->message .= $act." du droit:".$r->description.$connect->errorMsg."{[newline]}";
@@ -460,7 +465,7 @@ class Extension {
 		require_once"CORE/extension_params.tbl.php";
 		$DBparams = new DBObj_CORE_extension_params;
 		$DBparams->extensionId = $this->Name;
-		$DBparams->find();
+		$DBparams->find(false);
 		while($DBparams->fetch()) {
 			if(!array_key_exists($DBparams->paramName,$this->params))
 				$DBparams->delete();
@@ -469,16 +474,15 @@ class Extension {
 			$DBparams = new DBObj_CORE_extension_params;
 			$DBparams->extensionId = $this->Name;
 			$DBparams->paramName = $key;
-			$nb = $DBparams->find();
+			$DBparams->find(false);
 			$act = "insertion";
-			if($nb != 0) {
-				$DBparams->fetch();
+			if($DBparams->fetch()) {
 				$act = "modification";
 			}
 			$DBparams->description = $val->description;
 			$DBparams->type = (int)$val->type;
 			$DBparams->param = $val->getExtendToText( false);
-			if($nb != 0)
+			if($DBparams->id>0)
 				$DBparams->update();
 			else {
 				$DBparams->value = $val->defaultvalue;
@@ -532,26 +536,29 @@ class Extension {
 			$DBext_rights = new DBObj_CORE_extension_rights;
 			$DBext_rights->extension = $this->ID;
 			$DBext_rights->rightId = $act->rightNumber;
-			$DBext_rights->find();
+			$DBext_rights->find(false);
 			$DBext_rights->fetch();
 			// creation de l'action
 			$DBaction = new DBObj_CORE_extension_actions;
 			$DBaction->extension = $this->ID;
 			$DBaction->action = $act->action;
-			$nb = $DBaction->find();
+			$DBaction->find(false);
 			$ret = "insertion";
-			if($nb != 0) {
-				$DBaction->fetch();
+			if($DBaction->fetch()) {
 				$ret = "modification";
 			}
 			$DBaction->extension = $this->ID;
 			$DBaction->action = $act->action;
 			$DBaction->description = str_replace("'","`",$act->description);
 			$DBaction->rights = $DBext_rights->id;
-			if($nb != 0)
+			if($DBaction->id>0) {
 				$DBaction->update();
-			else
+			}
+			else {
+				$DBaction->extension = $this->ID;
+				$DBaction->action = $act->action;
 				$DBaction->insert();
+			}
 			global $connect;
 			if( $connect->isFailed()) {
 				$this->message .= $ret." de l'action:".$act->action." [".$connect->errorMsg."-$q]{[newline]}";
@@ -614,7 +621,7 @@ class Extension {
 		require_once("CORE/printmodel.tbl.php");
 		$model = new DBObj_CORE_printmodel;
 		$model->extensionid = $this->Name;
-		$model->find();
+		$model->find(false);
 		while($model->fetch()) {
 			$printfile = $this->Dir.$model->identify.".prt.php";
 			if(! is_file($printfile)) {
@@ -649,8 +656,7 @@ class Extension {
 		require_once"CORE/extension.tbl.php";
 		$DBextension = new DBObj_CORE_extension;
 		$DBextension->extensionId = $this->Name;
-		if($DBextension->find()>0) {
-			$DBextension->fetch();
+		if($DBextension->find(false) && $DBextension->fetch()) {
 			$DBextension->titre = $this->titre;
 			$DBextension->validite = 'o';
 			$DBextension->update();
@@ -731,9 +737,8 @@ class Extension {
 		require_once"CORE/extension.tbl.php";
 		$DBextension = new DBObj_CORE_extension;
 		$DBextension->extensionId = $this->Name;
-		$nb = $DBextension->find();
-		if($nb != 0) {
-			$DBextension->fetch();
+		$DBextension->find(false);
+		if($DBextension->fetch()) {
 			$q = "DELETE FROM CORE_group_rights WHERE rightref IN(SELECT id FROM CORE_extension_rights WHERE extension='$DBextension->id')";
 			$connect->execute($q,$this->throwExcept);
 			if( trim($connect->errorMsg) != "")
@@ -906,18 +911,39 @@ function getReferenceTablesList($tableName,$rootPath="") {
 	return $ret;
 }
 
-
 function checkExtensions($rootPath="") {
-	$ext_list = getExtensions($rootPath);
-	foreach($ext_list as $name => $dir)
-		$set_of_ext[] = new Extension($name,$dir);
-	$set_of_ext = sortExtension($set_of_ext);
-	$ExtensionDescription = array();
-	foreach($set_of_ext as $ext) {
-		$ext->upgradeContraintsTable();
-		$ext->checkStorageFunctions();
-		$ext->postInstall();
+	global $dbcnf;
+	global $connect;
+	$q="SELECT CORE_FCT_extension_APAS_getExtDesc(id) as info FROM CORE_extension limit 0,1";
+	try{
+		$QId=$connect->execute($q,true);
+		$row=$connect->getRow($QId);
+		$refresh=!is_array($row);
+	}catch(Exception $e) {
+		$refresh=true;
 	}
+	if ($refresh) {
+		logAutre("QId=$QId - Q=$q");
+		$ext_list = getExtensions($rootPath);
+		foreach($ext_list as $name => $dir)
+			$set_of_ext[] = new Extension($name,$dir);
+		$set_of_ext = sortExtension($set_of_ext);
+		$connect->begin();
+		try{
+			foreach($set_of_ext as $ext) {
+				$ext->upgradeContraintsTable();
+				$ext->checkStorageFunctions();
+				$ext->postInstall();
+				logAutre($ext->Name.":".$ext->message);
+			}
+			$connect->commit();
+		}catch(Exception $e) {
+			$connect->rollback();
+			throw $e;
+		}
+	}
+	else
+		logAutre("No refresh");
 }
 //@END@
 ?>
