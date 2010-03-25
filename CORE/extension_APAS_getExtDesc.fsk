@@ -17,7 +17,7 @@
 -- 
 -- 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 --  -- Stocked file write by SDK tool
--- Last modification: Date 17 March 2010 22:40:05 By  ---
+-- Last modification: Date 24 March 2010 21:54:16 By  ---
 
 
 -- @DESC@Retourne la description de l'extension
@@ -25,6 +25,7 @@
 
 CREATE FUNCTION CORE_FCT_extension_APAS_getExtDesc(ObjId int(10))
 RETURNS TEXT
+READS SQL DATA
 BEGIN
 DECLARE result TEXT DEFAULT '';
 -- @CODE_ACTION@
