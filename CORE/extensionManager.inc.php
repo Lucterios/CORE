@@ -771,7 +771,7 @@ class Extension {
 				$this->message .= $connect->errorMsg."{[newline]}";
 			$DBextension->delete();
 		}
-		@rename($temp_path.$this->Dir,$this->Dir);
+		@rename($this->Dir,$temp_path.$this->Dir);
 
 		$ext_list = getExtensions($rootPath);
 		foreach($ext_list as $current_name => $current_dir) {

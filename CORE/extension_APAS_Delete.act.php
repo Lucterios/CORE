@@ -87,6 +87,11 @@ if ($xfer_result->Confirme("Etes-vous sûre de vouloir supprimer l'extension '".$
 		$connect->commit();
 		if(is_dir($temp_path))
 			deleteDir($temp_path);
+		foreach($ext_list as $ext_dep)
+			if(is_dir($ext_dep->Dir))
+				deleteDir($ext_dep->Dir);
+		if(is_dir($ext_obj->Dir))
+			deleteDir($ext_obj->Dir);
 	}
 	 catch(Exception $e) {
 		$connect->rollback();

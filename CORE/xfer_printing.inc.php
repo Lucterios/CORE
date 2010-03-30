@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 07 March 2010 13:49:03 By  ---
+// --- Last modification: Date 30 March 2010 15:57:05 By  ---
 
 //@BEGIN@
 /**
@@ -326,12 +326,13 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 				return $this->ReportContent;
 		}
 		else {
-			$fop_java_file=$rootPath."CORE/fop/fop.jar";
-			$xsl_file=$rootPath."CORE/LucteriosPrintStyleForFo.xsl";
+			$fop_java_dir=realpath($rootPath."CORE/fop/");
+			$fop_java_file=realpath($rootPath."CORE/fop/fop.jar");
+			$xsl_file=realpath($rootPath."CORE/LucteriosPrintStyleForFo.xsl");
 			if (is_file($fop_java_file) && is_file($xsl_file)) {
 				global $tmpPath;
-				$xml_file=tempnam($tmpPath,'xml');
-				$pdf_file=tempnam($tmpPath,'pdf');
+				$xml_file=realpath(tempnam($tmpPath,'xml'));
+				$pdf_file=realpath(tempnam($tmpPath,'pdf'));
 
 				$handle = fopen($xml_file, "w");
 				fwrite($handle, $this->ReportContent);
@@ -339,7 +340,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 
 				$output=array();
 				$return_var=0;
-				$last_line=exec("java -jar $fop_java_file -xml $xml_file -xsl $xsl_file -pdf $pdf_file",$output,$return_var);
+				$last_line=exec("java -classpath '$fop_java_dir' -jar '$fop_java_file' -xml '$xml_file' -xsl '$xsl_file' -pdf '$pdf_file'",$output,$return_var);
 				if (is_file($pdf_file) && ($return_var==0)) {
 					$content=file_get_contents($pdf_file);
 				}
