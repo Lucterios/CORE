@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 30 March 2010 15:57:05 By  ---
+// --- Last modification: Date 30 March 2010 22:39:10 By  ---
 
 //@BEGIN@
 /**
@@ -340,7 +340,8 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 
 				$output=array();
 				$return_var=0;
-				$last_line=exec("java -classpath '$fop_java_dir' -jar '$fop_java_file' -xml '$xml_file' -xsl '$xsl_file' -pdf '$pdf_file'",$output,$return_var);
+				$print_cmd='java -classpath "'.$fop_java_dir.'" -jar "'.$fop_java_file.'" -xml "'.$xml_file.'" -xsl "'.$xsl_file.'" -pdf "'.$pdf_file.'"';
+				$last_line=exec($print_cmd,$output,$return_var);
 				if (is_file($pdf_file) && ($return_var==0)) {
 					$content=file_get_contents($pdf_file);
 				}
