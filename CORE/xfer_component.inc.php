@@ -536,8 +536,8 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 		$protocol=($protocol=='')?'http':$protocol;
 		$server_name = $_SERVER["SERVER_NAME"];
 		$server_port = $_SERVER["SERVER_PORT"];
-		$server_dir = $_SERVER["PHP_SELF"];
-		$pos = strpos($server_dir,'coreIndex.php');
+		$server_dir = $_SERVER["PHP_SELF"];		
+		$pos = strrpos($server_dir,'/')+1;
 		$server_dir = substr($server_dir,0,$pos);
 		$this->setLink( sprintf('%s://%s:%d%s%s',$protocol,$server_name,$server_port,$server_dir,$filename));
 	}
