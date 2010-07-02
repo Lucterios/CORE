@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 09 January 2010 13:31:50 By  ---
+// --- Last modification: Date 01 July 2010 20:52:46 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -85,6 +85,8 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 			$current_obj->throwExcept=true;
 			$current_obj->removeAllContraintsTable();
 		}
+		
+		$cst_list=array();
 		$addSQL=false;
 		$dh = opendir($temp_path);
 		while(($file = readdir($dh)) != false)
@@ -96,9 +98,24 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 	        		$line = @fgets($handle);
 				if(( substr( trim($line),0,2) != '--') && ( trim($line) != '')) {
 					$line = trim($line);
-					$query_txt .= " ".$line;
-					if((substr($line,-1) == ';') && ($query_txt != '')) {
+					$query_txt .= " ".trim($line);
+					if(((substr($line,-1) == ';') || (substr($line,-14) == 'CHARSET=latin1')) && ($query_txt != '')) {
 						$addSQL=true;
+						$query_txt=trim($query_txt);
+						if (substr($query_txt,0,12)=='CREATE TABLE') {
+							$cst_pos=strpos($query_txt,', CONSTRAINT');
+							if ($cst_pos>0) {
+								$par_pos=strrpos($query_txt,')');
+								$cst_line=trim(substr($query_txt,$cst_pos+1,$par_pos-$cst_pos-1));
+								$query_txt=substr($query_txt,0,$cst_pos).substr($query_txt,$par_pos);
+								$cst_line=str_replace(array('CONSTRAINT'),array('ADD CONSTRAINT'),$cst_line);
+								$first_par=strpos($query_txt,'(');
+								$cst_line=str_replace(array('CREATE'),array('ALTER'),substr($query_txt,0,$first_par)).$cst_line.";";
+								$cst_list[]=$cst_line;
+							}
+						}
+						if (substr($query_txt,-1) != ';')
+							$query_txt.=';';
 						$connect->execute($query_txt,true);
 						$query_txt = '';
 					}
@@ -110,6 +127,9 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 		closedir($dh);
 		if(!$addSQL)
 			throw new LucteriosException( IMPORTANT,'Données non trouvées! ('.$temp_path.")");
+		foreach($cst_list as $cst_item) {
+			$connect->execute($cst_item,true);
+		}
 		foreach($items as $item) {
 			$r = rm_recursive($item);
 			$r = rename($temp_path.$item,$item);
