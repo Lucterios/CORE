@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 July 2010 10:29:55 By  ---
+// --- Last modification: Date 03 July 2010 12:21:21 By  ---
 
 //@BEGIN@
 /**
@@ -451,7 +451,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 					else if (isset($row[convertFieldCase($field_name)]))
 						$val=$row[convertFieldCase($field_name)];
 					else
-						throw new LucteriosException(IMPORTANT,"Champ $field_name (".convertFieldCase($field_name).") inconnu !");
+						$val="";
 					$this->setValue($id,$field_name,$val);
 				}
 			}
