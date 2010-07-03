@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 03 July 2010 12:21:21 By  ---
+// --- Last modification: Date 03 July 2010 12:55:43 By  ---
 
 //@BEGIN@
 /**
@@ -451,7 +451,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 					else if (isset($row[convertFieldCase($field_name)]))
 						$val=$row[convertFieldCase($field_name)];
 					else
-						$val="";
+						$val=Null;
 					$this->setValue($id,$field_name,$val);
 				}
 			}
