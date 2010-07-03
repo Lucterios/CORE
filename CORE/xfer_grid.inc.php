@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 12 February 2010 0:15:00 By  ---
+// --- Last modification: Date 03 July 2010 10:29:55 By  ---
 
 //@BEGIN@
 /**
@@ -36,6 +36,15 @@ require_once'xfer_component.inc.php';
 
 define('MAX_GRID_RECORD',25);
 define('GRID_PAGE','GRID_PAGE%');
+
+function convertFieldCase($fieldname) {
+	$split_point=explode('.',$fieldname);
+	if (count($split_point)==2) {
+		return strtolower($split_point[0]).'.'.$split_point[1];
+	}
+	else
+		return strtolower($fieldname);
+}
 
 /**
  * Classe gérant un entête d'un composant Xfer_Comp_Grid
@@ -429,10 +438,20 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$record_current=0;
 		while(($row=$connect->getRowByName($queryId)) && ($record_current<$record_max)) {
 			if ($record_current>=$record_min) {
-				$id=$row[$FieldKey];
+				if (isset($row[$FieldKey]))
+					$id=$row[$FieldKey];
+				else if (isset($row[convertFieldCase($FieldKey)]))
+					$id=$row[convertFieldCase($FieldKey)];
+				else
+					throw new LucteriosException(IMPORTANT,"Clé $FieldKey inconnu !");
 				foreach($this->m_headers as $header) {
 					$field_name=$header->m_name;
-					$val=$row[$field_name];
+					if (isset($row[$field_name]))
+						$val=$row[$field_name];
+					else if (isset($row[convertFieldCase($field_name)]))
+						$val=$row[convertFieldCase($field_name)];
+					else
+						throw new LucteriosException(IMPORTANT,"Champ $field_name (".convertFieldCase($field_name).") inconnu !");
 					$this->setValue($id,$field_name,$val);
 				}
 			}
