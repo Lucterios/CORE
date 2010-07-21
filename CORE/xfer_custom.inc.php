@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 02 March 2010 16:41:17 By  ---
+// --- Last modification: Date 21 July 2010 9:10:59 By  ---
 
 //@BEGIN@
 /**
@@ -125,6 +125,11 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 			$comp = null;
 			if($ReadOnly) {
 				switch($type_fld) {
+				case 3:
+					//bool
+					$comp = new Xfer_Comp_Label($FieldName);
+					$comp->setValue($field_val!=0?'Oui':'Non');
+					break;
 				case 4:
 					//Date
 					$comp = new Xfer_Comp_Label($FieldName);
