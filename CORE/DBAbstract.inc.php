@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 18 March 2010 1:00:28 By  ---
+// --- Last modification: Date 19 January 2011 8:38:30 By  ---
 
 //@BEGIN@
 /**
@@ -196,12 +196,6 @@ class DBObj_Abstract {
 	 * @access public
 	 */
 	public $__super = null;
-
-	/**
-	 * DNS
-	 * @access private
-	 */
-	public $_database_dsn = DSN;
 
 	/**
 	 * Nombre d'enregistrement de la dernière requete

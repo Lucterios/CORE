@@ -18,10 +18,9 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 17 June 2009 1:21:25 By  ---
+// --- Last modification: Date 19 January 2011 8:31:05 By  ---
 
 //@BEGIN@
-
 class DBCNX {
 	var $mysql;
 	var $res;
@@ -58,7 +57,7 @@ class DBCNX {
 			$this->debugLevel = 0;
 	}
 
- 	public function __destruct() 
+ 	public function __destruct()
 	{
 		if ($this->mysql!=null)
 			$this->mysql->close();
@@ -107,9 +106,9 @@ class DBCNX {
 		$this->errorMsg = "";
 		$this->errorCode = false;
 
-		if(!$this->connected || $this->connect_errno) {
+		if(!$this->connected || $this->mysql->connect_error) {
 			$this->printDebug("DBCNX::execute : non connecté à une base de données\n");
-			$this->errorMsg = "non connecté à une base de données (".$this->connect_error.")";
+			$this->errorMsg = "non connecté à une base de données (".$this->mysql->connect_error.")";
 			$this->errorCode = "NOTCONNECTED";
 			if ($throw) $this->throwError();
 			return false;
@@ -120,7 +119,7 @@ class DBCNX {
 			$this->printDebug("DBCNX::execute : apres execution de la requette: ".$this->mysql->error."\n");
 			$this->errorMsg = $this->mysql->error."[$query]";
 			$this->errorCode = $this->mysql->errno;
-			if ($throw) 
+			if ($throw)
 				$this->throwError();
 			return false;
 		}
@@ -137,7 +136,7 @@ class DBCNX {
 				$this->printDebug("DBCNX::execute : requette INSERT => ID=$ret\n");
 				return $ret;
 			}
-			else {				
+			else {
 				$ret=$this->mysql->affected_rows;
 				$this->printDebug("DBCNX::execute : nombre enregistrement modifiés=$ret\n");
 				return true;
@@ -241,9 +240,9 @@ class DBCNX {
 
 	public function getNumRows($queryId) {
 		if(is_string($queryId) || is_int($queryId)) {
-			if(array_key_exists($queryId, $this->res)) 
+			if(array_key_exists($queryId, $this->res))
 				return $this->res[$queryId]->num_rows;
-			else 
+			else
 				return false;
 		}
 		else return false;

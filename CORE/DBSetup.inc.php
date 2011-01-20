@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 04 March 2010 19:49:52 By  ---
+// --- Last modification: Date 19 January 2011 8:35:25 By  ---
 
 //@BEGIN@
 /**
@@ -157,7 +157,7 @@ class DBObj_Setup {
 				$DBObj->fetch();
 			}
 		}
-		if ($fieldValues['id']=='')
+		if (isset($fieldValues['id']) && ($fieldValues['id']==''))
 			unset($fieldValues['id']);
 		$DBObj->setFrom($fieldValues);
 		if($nb_find>0) {
