@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 06 August 2009 23:21:38 By  ---
+// --- Last modification: Date 24 February 2011 19:49:50 By  ---
 
 //@BEGIN@
 /**
@@ -536,7 +536,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 		$protocol=($protocol=='')?'http':$protocol;
 		$server_name = $_SERVER["SERVER_NAME"];
 		$server_port = $_SERVER["SERVER_PORT"];
-		$server_dir = $_SERVER["PHP_SELF"];		
+		$server_dir = $_SERVER["PHP_SELF"];
 		$pos = strrpos($server_dir,'/')+1;
 		$server_dir = substr($server_dir,0,$pos);
 		$this->setLink( sprintf('%s://%s:%d%s%s',$protocol,$server_name,$server_port,$server_dir,$filename));
@@ -654,6 +654,66 @@ class Xfer_Comp_Button extends Xfer_Component {
 		$xml_text = $xml_text."</ACTIONS>";
 		return $xml_text;
 	}
+
+
+	/**
+	 * Valeur retourné par un clique button
+	 *
+	 * @var unknown_type
+	 */
+	var $m_clickvalue="";
+
+	/**
+	 * Nom retourné par un clique button
+	 *
+	 * @var unknown_type
+	 */
+	var $m_clickname="";
+
+	/**
+	 * change l'action associé au bouton
+	 *
+	 * @param Xfer_Action $action
+	 */
+	function setClickInfo($clickname,$clickvalue) {
+		$this->m_clickname = "$clickname";
+		$this->m_clickvalue = "$clickvalue";
+	}
+
+	/**
+	 * Présise si le bouton doit être "mini"
+	 *
+	 * @var unknown_type
+	 */
+	var $m_isMini=false;
+
+	/**
+	 * change l'action associé au bouton
+	 *
+	 * @param Xfer_Action $action
+	 */
+	function setIsMini($isMini) {
+		if ($isMini)
+			$this->m_isMini = true;
+		else
+			$this->m_isMini = false;
+	}
+
+	/**
+	 * Retourne l'ensemble des attributs du composant
+	 *
+	 * @access public
+	 * @return string
+	 */
+	function _attributs() {
+		$xml_attr = parent::_attributs();
+		if ($this->m_clickname!='')
+			$xml_attr = sprintf("%s clickname='%s' clickvalue='%s' ",$xml_attr,$this->m_clickname,$this->m_clickvalue);
+		if ($this->m_isMini)
+			$xml_attr.= "isMini='1' ";
+		return $xml_attr;
+	}
+
 	/**
 	 * Retourne le contenu XML du composant
 	 *

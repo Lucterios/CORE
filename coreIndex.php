@@ -43,7 +43,7 @@ require_once("CORE/XMLparse.inc.php");
 $REQUETTE = "";
 $nourlencode=array_key_exists("nourlencode", $GLOBAL);
 if(array_key_exists("XMLinput", $GLOBAL)) {
-	$p = &new COREParser();
+	$p = new COREParser();
 	$xml_input=$GLOBAL["XMLinput"];
 	if ($nourlencode || (substr($xml_input,0,3)!='%3C'))
 		$XMLinput=str_replace(array("\"","\'"),"'",$xml_input);

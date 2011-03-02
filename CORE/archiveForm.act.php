@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 29 October 2009 22:43:54 By  ---
+// --- Last modification: Date 01 March 2011 22:34:40 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -55,13 +55,12 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	$xfer_result->addComponent($lbl);
 	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png'));
 	//
-	PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);
 	$temp_path = "./tmp/";
 	$r = unlink($file_path);
 	$ListToArchive = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
-	require_once("Archive/Tar.php");
-	$tar = new Archive_Tar($file_path,'gz');
-	$tar->addModify($ListToArchive);
+	require_once("CORE/ArchiveTar.inc.php");
+	$tar = new ArchiveTar($file_path,true);
+	$tar->add($ListToArchive);
 	require_once("CORE/DBSetup.inc.php");
 	require_once("CORE/extensionManager.inc.php");
 	$dir_list = getExtensions();
@@ -86,7 +85,7 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 		}
 		else
 			throw new LucteriosException(IMPORTANT,"Fichier $SQL_file_name non créable!");
-		$tar->addModify($SQL_file_name, "", $temp_path);
+		$tar->addModify($SQL_file_name, $temp_path);
 		@unlink($SQL_file_name);
 	}
 	//
@@ -100,7 +99,6 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	}
 	else
 		$lbl->setValue("{[center]}{[bold]}Sauvegarde échouer!!{[/bold]}{[/center]}");
-	PEAR::setErrorHandling(PEAR_ERROR_RETURN);
 }
 else {
 	$xfer_result->m_context['ARCHIVE'] = 1;

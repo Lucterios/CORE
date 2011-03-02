@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Method file write by SDK tool
-// --- Last modification: Date 05 January 2008 18:32:42 By Laurent GAY ---
+// --- Last modification: Date 01 March 2011 21:07:30 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -33,11 +33,10 @@ require_once('CORE/finalreport.tbl.php');
 function finalreport_APAS_setXap(&$self,$xap)
 {
 //@CODE_ACTION@
-
 global $tmpPath;
 $compressedFileName = $tmpPath."reportXAP.tar.gz";
-require_once 'Archive/Tar.php';
-$zip = new Archive_Tar($compressedFileName,'gz');
+require_once('CORE/ArchiveTar.inc.php');
+$zip = new ArchiveTar($compressedFileName,true);
 $zip->addString('XAP',$xap);
 $report=file_get_contents($compressedFileName);
 unlink($compressedFileName);

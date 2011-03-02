@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // library file write by SDK tool
-// --- Last modification: Date 27 April 2009 20:25:17 By  ---
+// --- Last modification: Date 28 February 2011 23:22:56 By  ---
 
 //@BEGIN@
 class ModelConverter {
@@ -114,10 +114,6 @@ class ModelConverter {
 
 	function Save($modelFile,$content = null) {
 		if($content == null)$content = $this->_Model;
-		require_once"XML/Beautifier.php";
-		$fmt = new XML_Beautifier();
-		$res = $fmt->formatString($content);
-		if(! PEAR:: isError($res))$content = $res;
 		$wh = fopen($modelFile,'w');
 		if($wh !== false) {
 			foreach( split("\n",$content) as $line) fwrite($wh,$line."\n");

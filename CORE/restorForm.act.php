@@ -18,7 +18,7 @@
 // 
 // 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //  // Action file write by SDK tool
-// --- Last modification: Date 01 July 2010 20:52:46 By  ---
+// --- Last modification: Date 01 March 2011 21:03:35 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -59,9 +59,9 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 	if(! is_dir($temp_path)) mkdir($temp_path,0777, true);
 	//
 	PEAR::setErrorHandling(PEAR_ERROR_EXCEPTION);
-	require_once("Archive/Tar.php");
+	require_once("CORE/ArchiveTar.inc.php");
 	require_once("CORE/Lucterios_Error.inc.php");
-	$tar = new Archive_Tar($file_path);
+	$tar = new ArchiveTar($file_path);
 	$result = $tar->extract($temp_path);
 	$items = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
 	foreach($items as $item) {
@@ -85,7 +85,7 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 			$current_obj->throwExcept=true;
 			$current_obj->removeAllContraintsTable();
 		}
-		
+
 		$cst_list=array();
 		$addSQL=false;
 		$dh = opendir($temp_path);
