@@ -18,7 +18,8 @@ $timeOut = 30;
 
 $pathSeparator = DIRECTORY_SEPARATOR;
 
-$tmpPath = $_SERVER["DOCUMENT_ROOT"].$pathSeparator."tmp".$pathSeparator;
+//$tmpPath = $_SERVER["DOCUMENT_ROOT"].$pathSeparator."tmp".$pathSeparator;
+$tmpPath = "tmp".$pathSeparator;
 
 // si les repertoires n'existent pas, on les crée
 if(!is_dir($tmpPath)) mkdir($tmpPath, 0777);

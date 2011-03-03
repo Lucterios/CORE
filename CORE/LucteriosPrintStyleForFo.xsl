@@ -319,6 +319,13 @@
 					</xsl:for-each>
 				</fo:table-row>
 			</xsl:for-each>
+			<xsl:if test="count(rows)=0">
+				<fo:table-row>
+					<xsl:for-each select="columns">
+						<fo:table-cell padding="2pt"><fo:block></fo:block></fo:table-cell>
+					</xsl:for-each>
+				</fo:table-row>
+			</xsl:if>
 		</fo:table-body>
 	</fo:table>
 </xsl:template>

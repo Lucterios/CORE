@@ -62,25 +62,22 @@ function checkAndShowPrerquired()
 	echo "<tr><td>PHP</td><td>".phpversion()."</td><td>$result</td></tr>\n";
 	
 	$lib_classes=array();
-	$lib_classes[]='DomDocument';
-	$lib_classes[]='XsltProcessor';
-	foreach($lib_classes as $lib_classe)
+	$lib_classes['php5-mysql']='mysqli';
+	$lib_classes['DomDocument']='DomDocument';
+	$lib_classes['php5-xsl']='XsltProcessor';
+	$lib_classes['php5-phar']='PharData';
+	$lib_classes['cURL']='curl_init';
+	foreach($lib_classes as $lib_name=>$lib_classe)
 	{
 		$result="<font color='red'>Non trouvé</font>";
-		if (class_exists($lib_classe))
+		if (class_exists($lib_classe) || function_exists($lib_classe))
 			$result="<font color='blue'>OK</font>";
 		else
 			$depend_OK=0;
-		echo "<tr><td>Lib</td><td>$lib_classe</td><td>$result</td></tr>\n";
+		echo "<tr><td>Bibliothèque</td><td>$lib_name</td><td>$result</td></tr>\n";
 	}
 	
 	$lib_files=array();
-	$lib_files[]='PEAR.php';
-	$lib_files[]='HTTP/Request.php';
-	$lib_files[]='DB/DataObject.php';
-	$lib_files[]='DB.php';
-	$lib_files[]='XML/Beautifier.php';
-	$lib_files[]='Archive/Tar.php';
 	
 	$sep=$_SERVER['DOCUMENT_ROOT'][0]=='/'?':':';';
 	$paths = explode($sep,ini_get('include_path'));

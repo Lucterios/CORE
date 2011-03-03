@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 01 March 2011 22:54:21 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 03 March 2011 13:28:53 By  ---
 
 //@BEGIN@
 class ArchiveTar {
@@ -29,11 +29,15 @@ class ArchiveTar {
 
 	function __construct($tarFile,$isCompress=false) {
 		if (class_exists('PharData')) {
-			$this->phar_object = new PharData($tarFile);
-			if ($isCompress)
-				$this->phar_object->compress(Phar::GZ);
+			if (!is_file($tarFile) && ($isCompress || ($isCompress=='gz'))) {
+				$pos=strrpos($tarFile,'.');
+				$ext=substr($tarFile,$pos);
+				$tmp_tarFile=substr($tarFile,0,$pos).".tar";
+				$temp_phar_object = new PharData($tmp_tarFile);
+				$this->phar_object=$temp_phar_object->compress(Phar::GZ,$ext);
+			}
 			else
-				$this->phar_object->compress(Phar::NONE);
+				$this->phar_object = new PharData($tarFile);
 		}
 		else {
 			require_once("Archive/Tar.php");
@@ -56,7 +60,7 @@ class ArchiveTar {
 
     	function extractInString($fileName){
 		if (!is_null($this->phar_object)) {
-			return $this->phar_object[$fileName]->getContent();;
+			return $this->phar_object[$fileName]->getContent();
 		}
 		if (!is_null($this->pear_object)) {
 	    		return $this->pear_object->extractInString($fileName);
@@ -66,7 +70,9 @@ class ArchiveTar {
 
     	function extract($targetDir) {
 		if (!is_null($this->phar_object)) {
-			return $this->phar_object->extractTo($targetDir);
+			if (substr($targetDir,-1)=='/')
+				$targetDir=substr($targetDir,0,-1);
+			return $this->phar_object->extractTo($targetDir,null,true);
 		}
 		if (!is_null($this->pear_object)) {
 	    		$res=$this->pear_object->extract($targetDir);
@@ -75,22 +81,24 @@ class ArchiveTar {
 		$this->_throwError();
     	}
 
-    	function extractModify($targetDir,$sourceDir){
+    	function extractList($listToExtract,$targetDir = '',$removePath='') {
 		if (!is_null($this->phar_object)) {
-			return $this->phar_object->extractTo($targetDir,$sourceDir);
+			if (is_string($listToExtract))
+				$listToExtract=array($listToExtract);
+			foreach($listToExtract as $file) {
+				$localname=substr($file,strlen($removePath));
+				$localname=$targetDir.$localname;
+				if ($localname[0]=='/')
+					$localname=substr($localname,1);
+				$content=$this->phar_object[$file]->getContent();
+				$fh = fopen($localname, 'w');
+				fwrite($fh, $content);
+				fclose($fh);
+			}
+			return true;
 		}
 		if (!is_null($this->pear_object)) {
-	    		$res=$this->pear_object->extractModify($targetDir,$sourceDir);
-	    		return !PEAR::isError($res);
-		}
-		$this->_throwError();
-    	}
-
-    	function extractList($listToExtract,$ignorePath="",$addPath="") {
-		if (!is_null($this->phar_object)) {
-		}
-		if (!is_null($this->pear_object)) {
-	    		$res=$this->pear_object->extractList($listToExtract,$ignorePath,$addPath);
+	    		$res=$this->pear_object->extractList($listToExtract,$targetDir,$removePath);
 	    		return !PEAR::isError($res);
 		}
 		$this->_throwError();
@@ -112,15 +120,9 @@ class ArchiveTar {
 			if (is_string($listToAdd))
 				$listToAdd=array($listToAdd);
 			foreach($listToAdd as $file) {
-				if (is_file($file)) {
-					//logAutre("Add file = $file");
-					$this->phar_object->addFile($file);
-				}
-				else {
-					//logAutre("Add dir = $file");
-					$sub_files=$this->_getFiles($file);
-					$this->phar_object->buildFromIterator(new ArrayIterator($sub_files));
-				}
+				$sub_files=$this->_getFiles($file);
+				//echo "<!-- Add = $file // ".print_r($sub_files,true)." -->\n";
+				$this->phar_object->buildFromIterator(new ArrayIterator($sub_files));
 			}
 			return true;
 		}
@@ -136,16 +138,9 @@ class ArchiveTar {
 			if (is_string($listToAdd))
 				$listToAdd=array($listToAdd);
 			foreach($listToAdd as $file) {
-				if (is_file($file)) {
-					$localname=substr($file,strlen($removePath));
-					//logAutre("Add file = $file // $localname");
-					$this->phar_object->addFile($file,$localname);
-				}
-				else {
-					//logAutre("Add dir = $file // $removePath");
-					$sub_files=$this->_getFiles($file,$removePath);
-					$this->phar_object->buildFromIterator(new ArrayIterator($sub_files));
-				}
+				$sub_files=$this->_getFiles($file,$removePath);
+				//echo "<!-- AddModify = $file // $removePath //".print_r($sub_files,true)." -->\n";
+				$this->phar_object->buildFromIterator(new ArrayIterator($sub_files));
 			}
 			return true;
 		}
@@ -158,20 +153,28 @@ class ArchiveTar {
 
 	function _getFiles($dir,$removePath="") {
 		$ret=array();
-		if (substr($dir,-1)!='/')
-			$dir.='/';
 		if(is_dir($dir)) {
+			if (substr($dir,-1)!='/')
+			  $dir.='/';
 			$dh = opendir($dir);
 			while(($file = readdir($dh)) != false) {
-				if (is_file($dir.$file))
-					$ret[$dir.$file] = substr($dir.$file,strlen($removePath));
+				if (is_file($dir.$file)) {
+					$name=substr($dir.$file,strlen($removePath));
+					$ret[$name]=$dir.$file;
+				}
 				else if(is_dir($dir.$file) && ($file[0] != '.')) {
 					$sub=$this->_getFiles($dir.$file);
-					foreach($sub as $item)
-					  $ret[$item] = substr($item,strlen($removePath));
+					foreach($sub as $item) {
+					    $name=substr($item,strlen($removePath));
+					    $ret[$name]=$item;
+					}
 				}
 			}
 			closedir($dh);
+		}
+		else if (is_file($dir)) {
+		    $name=substr($dir,strlen($removePath));
+		    $ret[$name]=$dir;
 		}
 		return $ret;
 	}
