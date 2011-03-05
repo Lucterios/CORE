@@ -18,16 +18,19 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 03 March 2011 13:28:53 By  ---
+// --- Last modification: Date 04 March 2011 19:56:33 By  ---
 
 //@BEGIN@
 class ArchiveTar {
+
+	var $tarFileName="";
 
 	var $pear_object=null;
 
 	var $phar_object=null;
 
 	function __construct($tarFile,$isCompress=false) {
+		$this->tarFileName=$tarFile;
 		if (class_exists('PharData')) {
 			if (!is_file($tarFile) && ($isCompress || ($isCompress=='gz'))) {
 				$pos=strrpos($tarFile,'.');
@@ -72,7 +75,13 @@ class ArchiveTar {
 		if (!is_null($this->phar_object)) {
 			if (substr($targetDir,-1)=='/')
 				$targetDir=substr($targetDir,0,-1);
-			return $this->phar_object->extractTo($targetDir,null,true);
+			foreach($this->phar_object as $fileName=>$phafile) {
+				//echo "<!-- phafile:".get_class($phafile)." -->\n";
+				if ($phafile->isFile()) {
+					$this->_saveContent($fileName,$phafile->getContent(),$targetDir);
+				}
+			}
+			return true;
 		}
 		if (!is_null($this->pear_object)) {
 	    		$res=$this->pear_object->extract($targetDir);
@@ -86,14 +95,11 @@ class ArchiveTar {
 			if (is_string($listToExtract))
 				$listToExtract=array($listToExtract);
 			foreach($listToExtract as $file) {
-				$localname=substr($file,strlen($removePath));
-				$localname=$targetDir.$localname;
-				if ($localname[0]=='/')
-					$localname=substr($localname,1);
-				$content=$this->phar_object[$file]->getContent();
-				$fh = fopen($localname, 'w');
-				fwrite($fh, $content);
-				fclose($fh);
+				if ($file[0]=='/')
+					$file=substr($file,1);
+				if ($this->phar_object[$file]->isFile()) {
+					$this->_saveContent($file,$this->phar_object[$file]->getContent(),$targetDir,$removePath);
+				}
 			}
 			return true;
 		}
@@ -103,6 +109,33 @@ class ArchiveTar {
 		}
 		$this->_throwError();
     	}
+
+	function _saveContent($fileName,$content,$targetDir = '',$removePath='') {
+		require_once("CORE/Lucterios_Error.inc.php");
+		if (substr($fileName,0,6)=='phar:/') {
+			$pos_phar=strpos($fileName,$this->tarFileName);
+			if ($pos_phar>0) {
+				$fileName=substr($fileName,$pos_phar+strlen($this->tarFileName));
+			}
+		}
+		$localname=substr($fileName,strlen($removePath));
+		$localname=$targetDir.$localname;
+		if ($localname[0]=='/')
+			$localname=substr($localname,1);
+		unlink($localname);
+		if (is_file($localname))
+			throw new LucteriosException(CRITIC,"Fichier '$localname' non supprimable!");
+		if (!is_dir(dirname($localname))){
+			mkdir(dirname($localname),0777,true);
+		}
+		if (!is_dir(dirname($localname)))
+			throw new LucteriosException(CRITIC,"Repertoire '".dirname($localname)."' non creable!");
+		$fh = fopen($localname, 'w');
+		fwrite($fh, $content);
+		fclose($fh);
+		if (!is_file($localname))
+			throw new LucteriosException(CRITIC,"Fichier '$localname' non sauvegardé!");
+	}
 
     	function addString($fileName,$content) {
 		if (!is_null($this->phar_object)) {
