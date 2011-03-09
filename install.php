@@ -63,9 +63,9 @@ function checkAndShowPrerquired()
 	
 	$lib_classes=array();
 	$lib_classes['php5-mysql']='mysqli';
-	$lib_classes['DomDocument']='DomDocument';
 	$lib_classes['php5-xsl']='XsltProcessor';
-	$lib_classes['php5-phar']='PharData';
+	$lib_classes['DomDocument']='DomDocument';
+	$lib_classes['zlib']='gzinflate';
 	$lib_classes['cURL']='curl_init';
 	foreach($lib_classes as $lib_name=>$lib_classe)
 	{
