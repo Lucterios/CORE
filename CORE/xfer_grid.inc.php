@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 03 July 2010 12:55:43 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 11 March 2011 13:15:10 By  ---
 
 //@BEGIN@
 /**
@@ -34,7 +34,7 @@
 require_once'xfer.inc.php';
 require_once'xfer_component.inc.php';
 
-define('MAX_GRID_RECORD',25);
+define('MAX_GRID_RECORD',50);
 define('GRID_PAGE','GRID_PAGE%');
 
 function convertFieldCase($fieldname) {
@@ -169,6 +169,14 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @var int
 	 */
 	var $mNbLines = 0;
+
+
+	/**
+	 * Nombre maximum de lignes totales
+	 *
+	 * @var int
+	 */
+	var $mMaxGridRecord=MAX_GRID_RECORD;
 
 	/**
 	 * Constructeur
@@ -365,13 +373,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 
 	function definePage($ContextParams) {
 		if (is_array($ContextParams)) {
-			$this->mPageMax = (int)ceil($this->mNbLines/MAX_GRID_RECORD);
+			$this->mPageMax = (int)ceil($this->mNbLines/$this->mMaxGridRecord);
 			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
 			if ($this->mPageMax<$page_num)
 				$page_num=0;
 			$this->mPageMum = $page_num;
-			$record_min=$this->mPageMum*MAX_GRID_RECORD;
-			$record_max=($this->mPageMum+1)*MAX_GRID_RECORD;
+			$record_min=$this->mPageMum*$this->mMaxGridRecord;
+			$record_max=($this->mPageMum+1)*$this->mMaxGridRecord;
 		}
 		else {
 			$record_min=0;
