@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 04 February 2010 21:47:32 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 14 March 2011 8:40:41 By  ---
 
 //@BEGIN@
 /**
@@ -113,7 +113,7 @@ abstract class PrintItem {
 			$last_top = $this->printAction->m_last_top;
 			$spacing = $this->top-$last_top;
 			if($spacing == 0)
-				$spacing = 0.1;
+				$spacing = 0.01;
 			return $spacing;
 		}
 		else
@@ -139,12 +139,12 @@ class PrintLabel extends PrintItem {
 	public function __construct($XferLabel,$printAction) { parent:: __construct($XferLabel,$printAction);
 		$this->value = $XferLabel->m_value;
 		list($this->sizeX,$sizeY) = $this->getTextSize($this->value);
-		$this->height = 5*$sizeY;
+		$this->height = 4.3*$sizeY;
 	}
 
 	public function getReportPart() {
 		$value = $this->convertValue($this->value);
-		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
+		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.2f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
 		$content .= ModelConverter:: convertApasFormat($value);
 		$content .= '</text>';
 		return $content;
@@ -177,7 +177,7 @@ class PrintTab extends PrintItem {
 	}
 
 	public function getReportPart() {
-		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="13" font_family="sans-serif" font_weight="" font_size="13">',$this->height,$this->width,$this->top+$sep_height,$this->Left,$this->getspacing());
+		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.2f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="13" font_family="sans-serif" font_weight="" font_size="13">',$this->height,$this->width,$this->top+$sep_height,$this->Left,$this->getspacing());
 		$content .= ModelConverter:: convertApasFormat($this->value);
 		$content .= '</text>';
 		return $content;
@@ -222,7 +222,7 @@ class PrintImage extends PrintItem {
 
 	public function getReportPart() {
 		list($this->width,$this->height)=$this->getImgSize();
-		$content = sprintf('<image height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
+		$content = sprintf('<image height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.2f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="10">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
 		$content .= $this->getImgContent();
 		$content .= '</image>';
 		return $content;
@@ -289,7 +289,7 @@ class PrintTable extends PrintItem {
 	}
 
 	public function getReportPart() {
-		$content = sprintf('<table height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.1f" border_color="black" border_style="" border_width="0.2">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
+		$content = sprintf('<table height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.2f" border_color="black" border_style="" border_width="0.2">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
 		foreach($this->columns as $column) {
 			$size_col = (int)($this->width*$column[1]/$this->sizeX);
 			$content .= sprintf('<columns width="%d.0" data=""><cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="center" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$size_col);
@@ -404,7 +404,7 @@ class PrintAction {
 		$content = '<page>';
 		if($this->Title != "") {
 			$content .= '<header extent="12.0" name="before">';
-			$content .= sprintf('<text height="12.0" width="%d.0" top="0.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="15" font_family="sans-serif" font_weight="" font_size="12">',$this->largeur_page-2*$this->marge_horizontal);
+			$content .= sprintf('<text height="12.0" width="%d.0" top="0.0" left="0.0" padding="1.0" spacing="0.00" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="15" font_family="sans-serif" font_weight="" font_size="12">',$this->largeur_page-2*$this->marge_horizontal);
 			$content .= ModelConverter:: convertApasFormat("{[bold]}{[underline]}".$this->Title."{[/underline]}{[/bold]}");
 			$content .= '</text>';
 			$content .= '</header>';
@@ -419,7 +419,7 @@ class PrintAction {
 	}
 
 	public function changePage($checkTopValue = true) {
-		if(!$checkTopValue || ($this->m_top>($this->hauteur_page-2*$this->marge_vertical))) {
+		if(!$checkTopValue || (!$this->Extended && ($this->m_top>($this->hauteur_page-2*$this->marge_vertical)))) {
 			$this->m_content .= '</body></page>';
 			$this->m_content .= $this->getPrepPage();
 			$this->m_top = 0;
@@ -523,6 +523,7 @@ class PrintAction {
 		}
 		$this->m_content .= '</body></page></model>';
 		$this->m_content = str_replace('>',">\n",$this->m_content);
+		//logAutre($this->m_content);
 		return $this->m_content;
 	}
 }

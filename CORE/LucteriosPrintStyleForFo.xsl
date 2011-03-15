@@ -254,6 +254,9 @@
 				<xsl:if test="@padding!=''">
 					<xsl:attribute name="padding"><xsl:value-of select="@padding"/>mm</xsl:attribute>
 				</xsl:if>
+				<xsl:if test="number(@left) &gt;= 0">
+					<xsl:attribute name="margin-left"><xsl:value-of select="@left"/>mm</xsl:attribute>
+				</xsl:if>
 				<xsl:call-template name="component_font"/>
 				<xsl:attribute name="space-before"><xsl:value-of select="@spacing"/>mm</xsl:attribute>
 				<xsl:apply-templates/>
@@ -319,13 +322,6 @@
 					</xsl:for-each>
 				</fo:table-row>
 			</xsl:for-each>
-			<xsl:if test="count(rows)=0">
-				<fo:table-row>
-					<xsl:for-each select="columns">
-						<fo:table-cell padding="2pt"><fo:block></fo:block></fo:table-cell>
-					</xsl:for-each>
-				</fo:table-row>
-			</xsl:if>
 		</fo:table-body>
 	</fo:table>
 </xsl:template>
@@ -346,12 +342,15 @@
 		<fo:block>
 			<xsl:call-template name="component_border"/>
 			<xsl:call-template name="component_font"/>
+			<xsl:if test="number(@left) &gt;= 0">
+				<xsl:attribute name="margin-left"><xsl:value-of select="@left"/>mm</xsl:attribute>
+			</xsl:if>
 			<xsl:if test="@space-before">
 				<xsl:attribute name="space-before"><xsl:value-of select="@space_before"/>mm</xsl:attribute>
 			</xsl:if>
 			<fo:block>
 				<xsl:call-template name="table_body"/>
-            </fo:block>
+			</fo:block>
 		</fo:block>
 	</xsl:if>
 </xsl:template>
@@ -380,12 +379,15 @@
 			<xsl:call-template name="component_border"/>
 			<xsl:attribute name="padding"><xsl:value-of select="@padding"/>mm</xsl:attribute>
 			<xsl:call-template name="component_font"/>
+			<xsl:if test="number(@left) &gt;= 0">
+				<xsl:attribute name="margin-left"><xsl:value-of select="@left"/>mm</xsl:attribute>
+			</xsl:if>
 			<xsl:if test="@space-before">
 				<xsl:attribute name="space-before"><xsl:value-of select="@space_before"/>mm</xsl:attribute>
 			</xsl:if>
 			<fo:block>
 				<xsl:call-template name="addimage"/>
-            </fo:block>
+			</fo:block>
 		</fo:block>
 	</xsl:if>
 </xsl:template>
