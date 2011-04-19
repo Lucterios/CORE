@@ -66,7 +66,6 @@ function checkAndShowPrerquired()
 	$lib_classes['php5-xsl']='XsltProcessor';
 	$lib_classes['DomDocument']='DomDocument';
 	$lib_classes['zlib']='gzinflate';
-	$lib_classes['cURL']='curl_init';
 	foreach($lib_classes as $lib_name=>$lib_classe)
 	{
 		$result="<font color='red'>Non trouvé</font>";

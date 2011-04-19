@@ -139,7 +139,7 @@ class PrintLabel extends PrintItem {
 	public function __construct($XferLabel,$printAction) { parent:: __construct($XferLabel,$printAction);
 		$this->value = $XferLabel->m_value;
 		list($this->sizeX,$sizeY) = $this->getTextSize($this->value);
-		$this->height = 4.3*$sizeY;
+		$this->height = 4.8*$sizeY;
 	}
 
 	public function getReportPart() {
