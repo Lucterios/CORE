@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 18 April 2011 22:38:55 By  ---
+// --- Last modification: Date 28 April 2011 22:04:25 By  ---
 
 //@BEGIN@
 /**
@@ -167,14 +167,14 @@ class Xfer_Component extends Xfer_Object {
 		//$component;
 		$this->m_value = "";
 		$this->tab = 0;
-		$this->x = "";
-		$this->y = "";
+		$this->x = 0;
+		$this->y = 0;
 		$this->VMin = "";
 		$this->HMin = "";
 		$this->VMax = "";
 		$this->HMax = "";
-		$this->colspan = "";
-		$this->rowspan = "";
+		$this->colspan = 1;
+		$this->rowspan = 1;
 		$this->m_description = "";
 		$this->needed = false;
 	}
@@ -188,10 +188,10 @@ class Xfer_Component extends Xfer_Object {
 	 * @param integer $row
 	 */
 	function setLocation($x,$y,$colspan = 1,$rowspan = 1) {
-		$this->x = $x;
-		$this->y = $y;
-		$this->colspan = $colspan;
-		$this->rowspan = $rowspan;
+		$this->x = (int)$x;
+		$this->y = (int)$y;
+		$this->colspan = (int)$colspan;
+		$this->rowspan = (int)$rowspan;
 	}
 
 	/**
