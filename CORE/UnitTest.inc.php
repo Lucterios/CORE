@@ -136,7 +136,7 @@ class TestItem {
 	function addTests($item) {
 		$this->list[]=$item;
 	}
-	function AllTests() {
+	function AllTests($extendData) {
 		$this->success();
 		$time=$this->timeEnd-$this->timeBegin;
 		$nbTest=count($this->list);
@@ -147,6 +147,7 @@ class TestItem {
 		$string_text="<testsuite errors='$nbError' name='$this->classname' tests='$nbTest' time='$time'>\n";
 		foreach($this->list as $item)
 			$string_text.=$item->toString();
+		$string_text.=$extendData;
   		$string_text.="</testsuite>\n";
 		gc_collect_cycles();
 		return $string_text;

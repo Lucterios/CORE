@@ -1,0 +1,159 @@
+<?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
+// 
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
+// 
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
+// 
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 25 May 2011 2:12:43 By  ---
+
+//@BEGIN@
+class CodeCover {
+
+	var $metrics=array();
+	var $started=false;
+
+	function CodeCover(){
+		if (!function_exists('xdebug_start_code_coverage') || !function_exists('xdebug_stop_code_coverage') || !function_exists('xdebug_get_code_coverage'))
+			throw new Exception('XDebug manquant!');
+	}
+
+	function startCodeCover(){
+		if ($this->started)
+		    stopCodeCover();
+		xdebug_start_code_coverage();
+		$this->started=true;
+	}
+
+	function convertFileName($file_name) {
+		$name=basename($file_name);
+		$root=basename(substr($file_name,0,-1*strlen($name)));
+		return $root."|".$name;
+	}
+
+	function initial($fileName) {
+		$fileId=$this->convertFileName($fileName);
+		if (!isset($this->metrics[$fileId])) {
+			$lineList=array();
+			$begin=false;
+			$source_code = file($fileName);
+			foreach($source_code as $line=>$source) {
+				$source=trim($source);
+				if ($begin && ($source=='//@CODE_ACTION@'))
+					$begin=false;
+				if (($begin) && ($source!='')  && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//'))
+					$lineList[$line]=0;
+				if (!$begin && ($source=='//@CODE_ACTION@'))
+					$begin=true;
+			}
+			$this->metrics[$fileId]=$lineList;
+		}
+		return $this->metrics[$fileId];
+	}
+
+	function stopCodeCover(){
+		if ($this->started) {
+			file_put_contents("tmp/code_coverage.var","<?php \$code_coverage_analysis = ".var_export(xdebug_get_code_coverage(),TRUE)." ?>");
+			xdebug_stop_code_coverage(true);
+			$this->started=false;
+			require_once "tmp/code_coverage.var";
+			foreach($code_coverage_analysis as $file_name=>$lines_executed) {
+				$ext=substr($file_name,-8);
+				if (($ext=='.act.php') || ($ext=='.mth.php')) {
+					$fileId=$this->convertFileName($file_name);
+					$lineList=$this->initial($file_name);
+					foreach($lines_executed as $num=>$val) {
+						if (isset($lineList[$num]))
+							$lineList[$num]=$lineList[$num]+$val;
+					}
+					$this->metrics[$fileId]=$lineList;
+				}
+			}
+		}
+	}
+
+	function AllCover() {
+		if ($this->started)
+		    stopCodeCover();
+		ksort($this->metrics);
+		$string_text="<coverage>\n";
+		$string_text.="<packages>\n";
+
+		$last_ext="";
+		$current_ext="";
+		foreach($this->metrics as $file_name=>$lineList) {
+			$pos=strpos($file_name,'|');
+			$current_ext=substr($file_name,0,$pos);
+			$name=substr($file_name,$pos+1);
+			if ($current_ext!=$last_ext) {
+				if ($last_ext!='') {
+					$class_text.="</classes>\n";
+					$rate=1.0*$total_linesOK/$total_linesNB;
+					$string_text.="<package name='$last_ext' line-rate='$rate' branch-rate='1.0' complexity='1.0'>\n";
+					$string_text.=$class_text;
+					$string_text.="</package>\n";
+				}
+				$total_linesNB=0.0;
+				$total_linesOK=0.0;
+				$class_text="<classes>\n";
+				$last_ext=$current_ext;
+			}
+
+			$line_text="";
+			$linesNB=0.0;
+			$linesOK=0.0;
+			foreach($lineList as $num=>$val) {
+				$line_text.="<line number='$num' hits='$val' branch='false'/>\n";
+				$linesNB=$linesNB+1.0;
+				if ($val>0)
+					$linesOK=$linesOK+1.0;
+			}
+			if ($current_ext=='CORE')
+				$file_name="$current_ext/$name";
+			else
+				$file_name="extensions/$current_ext/$name";
+			if ($linesNB>=1)
+				$rate=$linesOK/$linesNB;
+			else
+				$rate=0.0;
+			$class_text.="<class name='$name' filename='$file_name' line-rate='$rate' branch-rate='1.0' complexity='1.0'>\n";
+			$class_text.="<lines>\n";
+			$class_text.=$line_text;
+			$class_text.="</lines>\n";
+			$class_text.="</class>\n";
+			$total_linesNB=$total_linesNB+$linesNB;
+			$total_linesOK=$total_linesOK+$linesOK;
+		}
+
+		if ($current_ext!='') {
+			$class_text.="</classes>\n";
+			if ($total_linesNB>=1)
+				$rate=$total_linesOK/$total_linesNB;
+			else
+				$rate=0.0;
+			$string_text.="<package name='$current_ext' line-rate='$rate' branch-rate='1.0' complexity='1.0'>\n";
+			$string_text.=$class_text;
+			$string_text.="</package>\n";
+		}
+
+		$string_text.="</packages>\n";
+		$string_text.="</coverage>\n";
+		return $string_text;
+	}
+
+}
+//@END@
+?>

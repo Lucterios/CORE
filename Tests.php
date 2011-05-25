@@ -16,71 +16,32 @@
 //  along with Lucterios; if not, write to the Free Software
 //  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
-//	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+//            Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //
 header('Content-Type: text/xml; charset=UTF-8');
 
-function extractData($ext_name){
-	require_once("CORE/DBSetup.inc.php");
-	require_once("CORE/extensionManager.inc.php");
-	$q = "";
-	$ext_path=Extension::getFolder($ext_name);
-	$ext = new Extension($ext_name,$ext_path);
-	$table_list=$ext->getTableList();
+$dbcnf = array();
+$fileDump="tmp/dump.sql";
 
- 	$table_list=array_reverse($table_list);
-	foreach($table_list as $table) {
-		$q .= "TRUNCATE TABLE ".$ext_name."_".$table.";\n";
-		if ($ext_name!='CORE') {		
-			$q .= "TRUNCATE TABLE CORE_extension_params;\n";
-		}
-	}
-
- 	$table_list=array_reverse($table_list);
-	foreach($table_list as $table) {
-		$class_name = 'DBObj_'.$ext_name.'_'.$table;
-		$tbl = new $class_name;
-		$setup = new DBObj_Setup($tbl);
-		$line=$setup->extractSQLData();
-		if(substr( trim($line),0,2) != '--') {
-			if ( trim($line) != '') {
-				$q .= $line;
-			}
-			$q .= "ALTER TABLE ".$ext_name."_".$table." AUTO_INCREMENT=100;\n";
-		}
-	}
-	if ($ext_name!='CORE') {		
-		require_once('CORE/extension_params.tbl.php');
-		$tbl = new DBObj_CORE_extension_params;
-		$setup = new DBObj_Setup($tbl);
-		$line=$setup->extractSQLData();
-		if(substr( trim($line),0,2) != '--') {
-			if ( trim($line) != '') {
-				$q .= $line;
-			}
-			$q .= "ALTER TABLE CORE_extension_params AUTO_INCREMENT=100;\n";
-		}
-	}
-	return split("\n",$q);
+function dumpMysql(){
+  global $dbcnf;
+  global $fileDump;
+  $ret=array();
+  $cmd="mysqldump -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." > $fileDump";
+  exec($cmd,$ret);
+  //echo "<!-- Dump $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
 }
 
-function importData($queries){
-	global $connect;
-	$connect->begin();
-	try {
-		foreach($queries as $query_txt) {
-			$query_txt=trim($query_txt);
-			if((substr($query_txt,-1) == ';') && ($query_txt != '')) {
-				$connect->execute($query_txt,true);
-			}
-		}
-		$connect->commit();
- 	} catch(Exception $e) {
-		$connect->rollback();
-		throw $e;
-	}
+function restorMysql(){
+  global $dbcnf;
+  global $fileDump;
+  $ret=array();
+  $cmd="mysql -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." < $fileDump";
+  exec($cmd,$ret);
+  //echo "<!-- SQL $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
 }
 
+$erreur="";
 $run=false;
 if (isset($_GET['extensions']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
 	$run=true;
@@ -110,8 +71,23 @@ elseif ((count($argv)==5) || (count($argv)==6)) {
 	$num_test=-1;
 }
 
+$prog_list=array("mysqldump","mysql");
+foreach($prog_list as $prog_item)
+{
+  $ret=array();
+  exec("$prog_item --version",$ret);
+  $begin_ret=substr($ret[0],0,strlen($prog_item));
+  if ($begin_ret!=$prog_item)
+  {
+    $run=false;
+    $erreur.=" - $prog_item inconnu!";
+  }
+}
+
 include_once('CORE/UnitTest.inc.php');
 $GlobalTest=new TestItem($title,"");
+include_once('CORE/CodeCover.inc.php');
+$CODE_COVER=new CodeCover();
 if ($run) {
 	include_once("CORE/extensionManager.inc.php");
 	require_once("CORE/dbcnx.inc.php");
@@ -159,7 +135,7 @@ if ($run) {
 					$ext->upgradeContraintsTable();
 					$msg.=$ext->message;
 				}
-				$queries=extractData($ext_name);
+				dumpMysql();
 				//echo "<!-- ".str_replace(array("{[newline]}","--","<",">"),array("\n","","&#139;","&#155;"),$msg)." -->\n";
 
 				$item->success();
@@ -185,14 +161,25 @@ if ($run) {
 					if (($num_test==-1) || ($num_test==$inc)) {
 						$item=new TestItem($ext_name,sprintf('%02d ',$inc).str_replace('_APAS_','::',$file_name));
 	
-						importData($queries);
-						if (!is_null($setup_item)) {						
+						restorMysql();
+						if (!is_null($setup_item)) {
+							if ($inc==1)
+								$CODE_COVER->startCodeCover();
 							$setup_item->runTest($extDir,$ext_name,'setup');
+							if ($inc==1)
+								$CODE_COVER->stopCodeCover();
 							if (!is_null($setup_item->errorObj))
 								$GlobalTest->addTests($setup_item);
-							}
-	
-						$item->runTest($extDir,$ext_name,$file_name);
+						}
+						
+						$CODE_COVER->startCodeCover();
+						try {
+						  $item->runTest($extDir,$ext_name,$file_name);
+						  $CODE_COVER->stopCodeCover();
+						} catch(Exception $e) {
+						  $CODE_COVER->stopCodeCover();
+						  throw $e;
+						}
 						$GlobalTest->addTests($item);
 					}
 					$inc++;
@@ -212,8 +199,8 @@ if ($run) {
 }
 else {
 	$item_test=new TestItem("AllTest","echec");
-	$item_test->error("Erreur de paramètres");
+	$item_test->error("Erreur de paramètres".$erreur);
 	$GlobalTest->addTests($item_test);
 }
-echo $GlobalTest->AllTests();
+echo $GlobalTest->AllTests($CODE_COVER->AllCover());
 ?> 
