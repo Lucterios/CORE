@@ -31,6 +31,16 @@ class CodeCover {
 			throw new Exception('XDebug manquant!');
 	}
 
+	function load($extDir) {
+		$dh = @opendir($extDir);
+		while(($file = @readdir($dh)) != false)
+			$ext=substr($file,-8);
+			if (($ext=='.act.php') || ($ext=='.mth.php')) {
+				$this->_initial(realpath("$extDir/$file"));
+			}
+		@closedir($dh);
+	}
+
 	function startCodeCover(){
 		if ($this->started)
 		    stopCodeCover();
@@ -44,7 +54,7 @@ class CodeCover {
 		return $root."|".$name;
 	}
 
-	function initial($fileName) {
+	function _initial($fileName) {
 		$fileId=$this->convertFileName($fileName);
 		if (!isset($this->metrics[$fileId])) {
 			$lineList=array();
@@ -74,7 +84,7 @@ class CodeCover {
 				$ext=substr($file_name,-8);
 				if (($ext=='.act.php') || ($ext=='.mth.php')) {
 					$fileId=$this->convertFileName($file_name);
-					$lineList=$this->initial($file_name);
+					$lineList=$this->_initial($file_name);
 					foreach($lines_executed as $num=>$val) {
 						if (isset($lineList[$num]))
 							$lineList[$num]=$lineList[$num]+$val;
@@ -89,7 +99,12 @@ class CodeCover {
 		if ($this->started)
 		    stopCodeCover();
 		ksort($this->metrics);
-		$string_text="<coverage>\n";
+		$global_linesNB=0.0;
+		$global_linesOK=0.0;
+		
+		$string_text="<sources>\n";
+		$string_text.="<source>testing</source>\n";
+		$string_text.="</sources>\n";
 		$string_text.="<packages>\n";
 
 		$last_ext="";
@@ -106,6 +121,8 @@ class CodeCover {
 					$string_text.=$class_text;
 					$string_text.="</package>\n";
 				}
+				$global_linesNB=$global_linesNB+(int)$global_linesOK;
+				$global_linesOK=$global_linesOK+(int)$total_linesOK;
 				$total_linesNB=0.0;
 				$total_linesOK=0.0;
 				$class_text="<classes>\n";
@@ -138,6 +155,8 @@ class CodeCover {
 			$total_linesOK=$total_linesOK+$linesOK;
 		}
 
+		$global_linesNB=$global_linesNB+(int)$global_linesOK;
+		$global_linesOK=$global_linesOK+(int)$total_linesOK;
 		if ($current_ext!='') {
 			$class_text.="</classes>\n";
 			if ($total_linesNB>=1)
@@ -149,6 +168,11 @@ class CodeCover {
 			$string_text.="</package>\n";
 		}
 
+		if ($total_linesNB>=1)
+			$rate=$global_linesOK/$global_linesNB;
+		else
+			$rate=0.0;
+		$string_text="<coverage line-rate='$rate' branch-rate='1' lines-covered='$global_linesOK' lines-valid='$global_linesNB' branches-covered='1' branches-valid='1' complexity='1.0'>\n".$string_text;
 		$string_text.="</packages>\n";
 		$string_text.="</coverage>\n";
 		return $string_text;

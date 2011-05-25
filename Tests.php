@@ -107,6 +107,7 @@ if ($run) {
 	$connect = new DBCNX();
 	$connect->connect($dbcnf);
 	foreach($extensions as $ext_name) {
+		$CODE_COVER->load(Extension::getFolder($ext_name));
 		$testtag_file='conf/testtag.file';
 		$handle = @fopen($testtag_file, "w+");
 		@fwrite($handle,"RUNNING");
