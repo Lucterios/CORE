@@ -57,8 +57,12 @@ if (isset($_GET['extensions']) && isset($_GET['dbuser']) && isset($_GET['dbpass'
 		$num_test=$_GET['num'];
 	else
 		$num_test=-1;
+	if (isset($_GET['cover']))
+		$coveractif=($_GET['cover']=='true');
+	else
+		$coveractif=false;
 }
-elseif ((count($argv)==5) || (count($argv)==6)) {
+elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7)) {
 	$run=true;
 	$extensions=split(';',$argv[1]);
 	$dbuser=$argv[2];
@@ -68,6 +72,10 @@ elseif ((count($argv)==5) || (count($argv)==6)) {
 		$title=$argv[5];
 	else
 		$title="LucteriosTest";
+	if (count($argv)==7)
+		$coveractif=($argv[6]=='true');
+	else
+		$coveractif=false;
 	$num_test=-1;
 }
 
@@ -87,7 +95,7 @@ foreach($prog_list as $prog_item)
 include_once('CORE/UnitTest.inc.php');
 $GlobalTest=new TestItem($title,"");
 include_once('CORE/CodeCover.inc.php');
-$CODE_COVER=new CodeCover();
+$CODE_COVER=new CodeCover($coveractif);
 if ($run) {
 	include_once("CORE/extensionManager.inc.php");
 	require_once("CORE/dbcnx.inc.php");

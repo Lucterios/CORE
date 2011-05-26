@@ -25,13 +25,17 @@ class CodeCover {
 
 	var $metrics=array();
 	var $started=false;
+	var $actif=false;
 
-	function CodeCover(){
+	function CodeCover($actif){
+		$this->actif=$actif;
 		if (!function_exists('xdebug_start_code_coverage') || !function_exists('xdebug_stop_code_coverage') || !function_exists('xdebug_get_code_coverage'))
-			throw new Exception('XDebug manquant!');
+			$this->actif=false;
 	}
 
 	function load($extDir) {
+		if (!$this->actif)
+			return;
 		$dh = @opendir($extDir);
 		while(($currentfile = @readdir($dh)) != false) {
 			if ((substr($currentfile,-8)=='.act.php') || (substr($currentfile,-8)=='.mth.php')) {
@@ -43,6 +47,8 @@ class CodeCover {
 	}
 
 	function startCodeCover(){
+		if (!$this->actif)
+			return;
 		if ($this->started)
 		    stopCodeCover();
 		xdebug_start_code_coverage();
@@ -78,6 +84,8 @@ class CodeCover {
 	}
 
 	function stopCodeCover(){
+		if (!$this->actif)
+			return;
 		if ($this->started) {
 			file_put_contents("tmp/code_coverage.var","<?php \$code_coverage_analysis = ".var_export(xdebug_get_code_coverage(),TRUE)." ?>");
 			xdebug_stop_code_coverage(true);
@@ -99,6 +107,8 @@ class CodeCover {
 	}
 
 	function AllCover() {
+		if (!$this->actif)
+			return "";
 		if ($this->started)
 		    stopCodeCover();
 		ksort($this->metrics);
