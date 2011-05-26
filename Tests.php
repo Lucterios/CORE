@@ -107,14 +107,15 @@ if ($run) {
 	$connect = new DBCNX();
 	$connect->connect($dbcnf);
 	foreach($extensions as $ext_name) {
-		$CODE_COVER->load(Extension::getFolder($ext_name));
+		$extDir=Extension::getFolder($ext_name);
+		$CODE_COVER->load($extDir);
 		$testtag_file='conf/testtag.file';
 		$handle = @fopen($testtag_file, "w+");
 		@fwrite($handle,"RUNNING");
 		@fclose($handle);
 		try {
 			$create_result=createDataBase(true,false);
-			$ext_obj=new Extension($ext_name,Extension::getFolder($ext_name));
+			$ext_obj=new Extension($ext_name,$extDir);
 			$ext_obj->ThrowExcept=true;
 			$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
 			if ($connect->connected) {
@@ -141,7 +142,6 @@ if ($run) {
 
 				$item->success();
 				$GlobalTest->addTests($item);
-				$extDir=Extension::getFolder($ext_name);
 				$fileList=array();
 				$setup_item=null;
 				$dh = @opendir($extDir);

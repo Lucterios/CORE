@@ -33,11 +33,12 @@ class CodeCover {
 
 	function load($extDir) {
 		$dh = @opendir($extDir);
-		while(($file = @readdir($dh)) != false)
-			$ext=substr($file,-8);
-			if (($ext=='.act.php') || ($ext=='.mth.php')) {
-				$this->_initial(realpath("$extDir/$file"));
+		while(($currentfile = @readdir($dh)) != false) {
+			if ((substr($currentfile,-8)=='.act.php') || (substr($currentfile,-8)=='.mth.php')) {
+				$path=realpath("$extDir/$currentfile");
+				$val=$this->_initial($path);
 			}
+		}
 		@closedir($dh);
 	}
 
@@ -48,14 +49,14 @@ class CodeCover {
 		$this->started=true;
 	}
 
-	function convertFileName($file_name) {
+	function _convertFileName($file_name) {
 		$name=basename($file_name);
 		$root=basename(substr($file_name,0,-1*strlen($name)));
 		return $root."|".$name;
 	}
 
 	function _initial($fileName) {
-		$fileId=$this->convertFileName($fileName);
+		$fileId=$this->_convertFileName($fileName);
 		if (!isset($this->metrics[$fileId])) {
 			$lineList=array();
 			$begin=false;
@@ -64,10 +65,12 @@ class CodeCover {
 				$source=trim($source);
 				if ($begin && ($source=='//@CODE_ACTION@'))
 					$begin=false;
-				if (($begin) && ($source!='')  && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//'))
-					$lineList[$line]=0;
-				if (!$begin && ($source=='//@CODE_ACTION@'))
-					$begin=true;
+				else {
+					if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//'))
+						$lineList[$line+1]=0;
+					if (!$begin && ($source=='//@CODE_ACTION@'))
+						$begin=true;
+				}
 			}
 			$this->metrics[$fileId]=$lineList;
 		}
@@ -83,7 +86,7 @@ class CodeCover {
 			foreach($code_coverage_analysis as $file_name=>$lines_executed) {
 				$ext=substr($file_name,-8);
 				if (($ext=='.act.php') || ($ext=='.mth.php')) {
-					$fileId=$this->convertFileName($file_name);
+					$fileId=$this->_convertFileName($file_name);
 					$lineList=$this->_initial($file_name);
 					foreach($lines_executed as $num=>$val) {
 						if (isset($lineList[$num]))
@@ -155,7 +158,7 @@ class CodeCover {
 			$total_linesOK=$total_linesOK+$linesOK;
 		}
 
-		$global_linesNB=$global_linesNB+(int)$global_linesOK;
+		$global_linesNB=$global_linesNB+(int)$total_linesNB;
 		$global_linesOK=$global_linesOK+(int)$total_linesOK;
 		if ($current_ext!='') {
 			$class_text.="</classes>\n";
@@ -168,7 +171,7 @@ class CodeCover {
 			$string_text.="</package>\n";
 		}
 
-		if ($total_linesNB>=1)
+		if ($global_linesNB>=1)
 			$rate=$global_linesOK/$global_linesNB;
 		else
 			$rate=0.0;
