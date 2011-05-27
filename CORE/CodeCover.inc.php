@@ -70,20 +70,27 @@ class CodeCover {
 				$END_TAG='//@CODE_ACTION@';
 			}
 			$fileId=$this->_convertFileName($fileName);
-			if (!isset($this->metrics[$fileId]) && !in_array($fileId,array('CORE|CodeCover.inc.php','CORE|UnitTest.inc.php','applis|application.inc.php')) ) {
+			if (!isset($this->metrics[$fileId]) && !in_array($fileId,array('CORE|CodeCover.inc.php','CORE|UnitTest.inc.php','applis|application.inc.php','applis|setup.inc.php','applis|postInstallation.inc.php')) ) {
 				$lineList=array();
 				$begin=false;
+				$comment=false;
 				$source_code = file($fileName);
 				foreach($source_code as $line=>$source) {
 					$source=trim($source);
-					if ($begin && ($source==$END_TAG))
-						$begin=false;
-					else {
-						if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//') && (substr($source,0,8)!='function'))
-							$lineList[$line+1]=0;
-						if (!$begin && ($source==$BEGIN_TAG))
-							$begin=true;
+					if (!$comment && (substr($source,0,2)=='/*'))
+						$comment=true;
+					if (!$comment) {
+						if ($begin && ($source==$END_TAG))
+							$begin=false;
+						else {
+							if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//') && (substr($source,0,9)!='function ') && (substr($source,0,6)!='class ') && (substr($source,0,4)!='var ') && (substr($source,0,7)!='define(') && (substr($source,0,7)!='public ') && (substr($source,0,8)!='private ') && (substr($source,0,10)!='protected ') && (substr($source,0,7)!='require') && (substr($source,0,7)!='include') && (substr($source,0,7)!='global '))
+								$lineList[$line+1]=0;
+							if (!$begin && ($source==$BEGIN_TAG))
+								$begin=true;
+						}
 					}
+					if ($comment && (substr($source,-2)=='*/'))
+						$comment=false;
 				}
 				$this->metrics[$fileId]=$lineList;
 			}
