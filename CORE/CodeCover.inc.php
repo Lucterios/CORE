@@ -38,10 +38,8 @@ class CodeCover {
 			return;
 		$dh = @opendir($extDir);
 		while(($currentfile = @readdir($dh)) != false) {
-			if ((substr($currentfile,-8)=='.act.php') || (substr($currentfile,-8)=='.mth.php')) {
-				$path=realpath("$extDir/$currentfile");
-				$val=$this->_initial($path);
-			}
+			$path=realpath("$extDir/$currentfile");
+			$val=$this->_initial($path);
 		}
 		@closedir($dh);
 	}
@@ -62,25 +60,37 @@ class CodeCover {
 	}
 
 	function _initial($fileName) {
-		$fileId=$this->_convertFileName($fileName);
-		if (!isset($this->metrics[$fileId])) {
-			$lineList=array();
-			$begin=false;
-			$source_code = file($fileName);
-			foreach($source_code as $line=>$source) {
-				$source=trim($source);
-				if ($begin && ($source=='//@CODE_ACTION@'))
-					$begin=false;
-				else {
-					if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//'))
-						$lineList[$line+1]=0;
-					if (!$begin && ($source=='//@CODE_ACTION@'))
-						$begin=true;
-				}
+		if ((substr($fileName,-8)=='.act.php') || (substr($fileName,-8)=='.mth.php') || (substr($fileName,-8)=='.inc.php')) {
+			if (substr($fileName,-8)=='.inc.php') {
+				$BEGIN_TAG='//@BEGIN@';
+				$END_TAG='//@END@';
 			}
-			$this->metrics[$fileId]=$lineList;
+			else {
+				$BEGIN_TAG='//@CODE_ACTION@';
+				$END_TAG='//@CODE_ACTION@';
+			}
+			$fileId=$this->_convertFileName($fileName);
+			if (!isset($this->metrics[$fileId]) && !in_array($fileId,array('CORE|CodeCover.inc.php','CORE|UnitTest.inc.php','applis|application.inc.php')) ) {
+				$lineList=array();
+				$begin=false;
+				$source_code = file($fileName);
+				foreach($source_code as $line=>$source) {
+					$source=trim($source);
+					if ($begin && ($source==$END_TAG))
+						$begin=false;
+					else {
+						if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//') && (substr($source,0,8)!='function'))
+							$lineList[$line+1]=0;
+						if (!$begin && ($source==$BEGIN_TAG))
+							$begin=true;
+					}
+				}
+				$this->metrics[$fileId]=$lineList;
+			}
+			return $this->metrics[$fileId];
 		}
-		return $this->metrics[$fileId];
+		else
+			return null;
 	}
 
 	function stopCodeCover(){
@@ -92,14 +102,13 @@ class CodeCover {
 			$this->started=false;
 			require_once "tmp/code_coverage.var";
 			foreach($code_coverage_analysis as $file_name=>$lines_executed) {
-				$ext=substr($file_name,-8);
-				if (($ext=='.act.php') || ($ext=='.mth.php')) {
-					$fileId=$this->_convertFileName($file_name);
-					$lineList=$this->_initial($file_name);
+				$lineList=$this->_initial($file_name);
+				if (is_array($lineList)) {
 					foreach($lines_executed as $num=>$val) {
 						if (isset($lineList[$num]))
 							$lineList[$num]=$lineList[$num]+$val;
 					}
+					$fileId=$this->_convertFileName($file_name);
 					$this->metrics[$fileId]=$lineList;
 				}
 			}
@@ -126,10 +135,14 @@ class CodeCover {
 			$pos=strpos($file_name,'|');
 			$current_ext=substr($file_name,0,$pos);
 			$name=substr($file_name,$pos+1);
+			$name="[".strtoupper(substr($name,-7,-4))."] ".str_replace('_APAS_','::',substr($name,0,-8));
 			if ($current_ext!=$last_ext) {
 				if ($last_ext!='') {
 					$class_text.="</classes>\n";
-					$rate=1.0*$total_linesOK/$total_linesNB;
+					if ($total_linesNB>=1)
+						$rate=1.0*$total_linesOK/$total_linesNB;
+					else
+						$rate=0.0;
 					$string_text.="<package name='$last_ext' line-rate='$rate' branch-rate='1.0' complexity='1.0'>\n";
 					$string_text.=$class_text;
 					$string_text.="</package>\n";
@@ -151,10 +164,9 @@ class CodeCover {
 				if ($val>0)
 					$linesOK=$linesOK+1.0;
 			}
-			if ($current_ext=='CORE')
-				$file_name="$current_ext/$name";
-			else
-				$file_name="extensions/$current_ext/$name";
+			$file_name=str_replace('|','/',$file_name);
+			if ($current_ext!='CORE')
+				$file_name="extensions/$file_name";
 			if ($linesNB>=1)
 				$rate=$linesOK/$linesNB;
 			else
