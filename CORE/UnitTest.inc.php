@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 08 March 2011 8:31:31 By  ---
+// --- Last modification: Date 23 June 2011 10:25:57 By  ---
 
 //@BEGIN@
 function microtime_float()
@@ -54,38 +54,33 @@ class TestItem {
 	{
 		gc_collect_cycles();
 		require_once("CORE/Lucterios_Error.inc.php");
+		global $extension;
+		$extension=$extName;
+		require_once("CORE/BoucleReponse.inc.php");
 		try {
-			global $extension;
-			$extension=$extName;
-			require_once("CORE/BoucleReponse.inc.php");
-			try {
-				$xfer_result=callAction($extName,$action,$params,true);
-			} catch (Exception $e) {              
-				require_once "CORE/xfer_exception.inc.php";
-				$xfer_result=new Xfer_Container_Exception("UnitTest","CallAction");
-				$xfer_result->setData($e);
-			}
-			if (method_exists($xfer_result,'getReponse'))
-				$xfer_result=$xfer_result->getReponse();
-			else {
-				echo "<!-- xfer_result:".print_r($xfer_result,true)." -->\n";
-				throw new AssertException("Classe de résultat invalide!");
-			}
-			
-			if ($class_name!='') {
-				$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
-				if (substr($class_name,0,4)!='Xfer')
-					$this->assertEquals($class_name,null,"Exception attendue");
-			}
-			if ('Xfer_Container_Custom'==get_class($xfer_result)) {
-				$xfer_result->m_components=array_values($xfer_result->getSortComponents());
-			}
-			return $xfer_result;
+			$xfer_result=callAction($extName,$action,$params,true);
 		} catch (Exception $e) {
 			if ($class_name==get_class($e))
 				return $e;
-			throw $e;
+			require_once "CORE/xfer_exception.inc.php";
+			$xfer_result=new Xfer_Container_Exception("UnitTest","CallAction");
+			$xfer_result->setData($e);
 		}
+		if (method_exists($xfer_result,'getReponse'))
+			$xfer_result=$xfer_result->getReponse();
+		else {
+			echo "<!-- xfer_result:".print_r($xfer_result,true)." -->\n";
+			throw new AssertException("Classe de résultat invalide!");
+		}
+		if ($class_name!='') {
+			$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
+			if (substr($class_name,0,4)!='Xfer')
+				$this->assertEquals($class_name,null,"Exception attendue");
+		}
+		if ('Xfer_Container_Custom'==get_class($xfer_result)) {
+			$xfer_result->m_components=array_values($xfer_result->getSortComponents());
+		}
+		return $xfer_result;
 	}
     	function assertClass($expected, $actual, $message = '')
 	{
