@@ -326,7 +326,17 @@ class Xfer_Container_Abstract extends Xfer_Object {
 			$this->m_closeaction = $action;
 		}
 	}
-	/**
+
+	 /**
+	 * Retourne l'observer retour à transferer
+	 *
+	 * @return Xfer_Container_Abstract
+	 */
+	function getReponse() {
+		return $this;
+	}
+
+	 /**
 	 * Retourne la chaine XML à transferer
 	 *
 	 * @return string
@@ -491,12 +501,12 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 		return $this->Redirect->getReponseXML();
 	}
 
-	/**
-	 * Retourne la chaine XML à transferer
+	 /**
+	 * Retourne l'observer retour à transferer
 	 *
-	 * @return string
+	 * @return Xfer_Container_Abstract
 	 */
-	function getReponseXML() {
+	function getReponse() {
 		if(($this->Title != "") && (! array_key_exists("CONFIRME",$this->m_context) || ($this->m_context["CONFIRME"] != "YES"))) {
 			require_once'xfer_dialogBox.inc.php';
 			$this->m_context["CONFIRME"] = "YES";
@@ -506,7 +516,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 			$dlg->addAction( new Xfer_Action("Oui","ok.png",$this->m_extension,$this->m_action,FORMTYPE_MODAL,CLOSE_YES));
 			$dlg->addAction( new Xfer_Action("Non","cancel.png"));
 			$dlg->m_closeaction = $this->m_closeaction;
-			return $dlg->getReponseXML();
+			return $dlg;
 		}
 		else if($this->Msg != "") {
 			require_once'xfer_dialogBox.inc.php';
@@ -515,7 +525,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 			$dlg->setTypeAndText($this->Msg,$this->Type);
 			$dlg->addAction( new Xfer_Action("_Ok","ok.png"));
 			$dlg->m_closeaction = $this->m_closeaction;
-			return $dlg->getReponseXML();
+			return $dlg;
 		}
 		else if($this->traitment!=null) {
 			require_once'xfer_custom.inc.php';
@@ -547,10 +557,23 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 				$dlg->addComponent($btn);
 				$dlg->addAction( new Xfer_Action('_Annuler','cancel.png','','', FORMTYPE_MODAL, CLOSE_YES));
 			}
-			return $dlg->getReponseXML();
+			return $dlg;
 		}
 		else
-		return Xfer_Container_Abstract:: getReponseXML();
+			return $this;
+	}
+
+	/**
+	 * Retourne la chaine XML à transferer
+	 *
+	 * @return string
+	 */
+	function getReponseXML() {
+		$dlg=$this->getReponse();
+		if ($dlg!=$this)
+			return $dlg->getReponseXML();
+		else
+			return Xfer_Container_Abstract:: getReponseXML();
 	}
 }
 /**

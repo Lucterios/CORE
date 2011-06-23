@@ -50,13 +50,28 @@ class TestItem {
 		$this->errorObj=null;
 	}
 
-	function CallAction($extension,$action,$params,$class_name='')
+	function CallAction($extName,$action,$params,$class_name='')
 	{
 		gc_collect_cycles();
 		require_once("CORE/Lucterios_Error.inc.php");
 		try {
+			global $extension;
+			$extension=$extName;
 			require_once("CORE/BoucleReponse.inc.php");
-			$xfer_result=callAction($extension,$action,$params,true);
+			try {
+				$xfer_result=callAction($extName,$action,$params,true);
+			} catch (Exception $e) {              
+				require_once "CORE/xfer_exception.inc.php";
+				$xfer_result=new Xfer_Container_Exception("UnitTest","CallAction");
+				$xfer_result->setData($e);
+			}
+			if (method_exists($xfer_result,'getReponse'))
+				$xfer_result=$xfer_result->getReponse();
+			else {
+				echo "<!-- xfer_result:".print_r($xfer_result,true)." -->\n";
+				throw new AssertException("Classe de résultat invalide!");
+			}
+			
 			if ($class_name!='') {
 				$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
 				if (substr($class_name,0,4)!='Xfer')

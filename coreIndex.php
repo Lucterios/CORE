@@ -110,6 +110,32 @@ logAutre("temps total serveur: $t");
 // log de la reponse
 logReponse($REPONSE);
 
+if (isset($XML_SAVING) && ($XML_SAVING!='')) {
+	if (is_file($XML_SAVING)) {
+		$content=implode("\n",file($XML_SAVING));
+		$content=str_replace('</SAVE>','',$content);
+	}
+	else {
+		$content="<?xml version='1.0' encoding='iso-8859-1'?>\n";
+		$content.="<SAVE>\n";
+	}
+	$content.=str_replace("<?xml version='1.0' encoding='utf-8'?>","",utf8_decode($XMLinput));
+	$content.="\n";
+	$content.=str_replace("<?xml version='1.0' encoding='utf-8'?>","",$REPONSE);
+	$content.="\n";
+	$content.="</SAVE>";
+	if ($fh=fopen($XML_SAVING,"w+"))
+	{
+		$lines=explode("\n",$content);
+		foreach($lines as $line) {
+			$line=trim($line);
+			if ($line!='')
+				fwrite($fh,$line."\n");
+		}
+		fclose($fh);
+	}
+}
+
 if ($nourlencode) {
 	print utf8_encode($REPONSE);
 }

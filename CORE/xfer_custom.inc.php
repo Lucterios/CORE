@@ -591,14 +591,13 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 				return "$cmp_idx-$nb";
 		}
 		else if( is_string($cmp_idx)) {
-			$comp_id = '';
-			foreach($this->m_components as $key => $comp)
-				if($comp->m_name == $cmp_idx)
-					$comp_id = $key;
-			if($comp_id != '')
-				return $this->m_components[$comp_id];
-			else
-				return null;
+			$comp_res = null;
+			foreach($this->m_components as $key => $comp) {
+				if($comp->m_name == $cmp_idx) {
+					$comp_res = $comp;
+				}
+			}
+			return $comp_res;
 		}
 		else
 		return null;
