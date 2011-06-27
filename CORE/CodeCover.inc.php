@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 25 May 2011 2:12:43 By  ---
+// --- Last modification: Date 27 June 2011 13:46:58 By  ---
 
 //@BEGIN@
 class CodeCover {
@@ -104,10 +104,11 @@ class CodeCover {
 		if (!$this->actif)
 			return;
 		if ($this->started) {
-			file_put_contents("tmp/code_coverage.var","<?php \$code_coverage_analysis = ".var_export(xdebug_get_code_coverage(),TRUE)." ?>");
+			unset($code_coverage_analysis);
+			file_put_contents("tmp/code_coverage.var","<?php\n\$code_coverage_analysis = ".var_export(xdebug_get_code_coverage(),TRUE)."\n?>");
 			xdebug_stop_code_coverage(true);
 			$this->started=false;
-			require_once "tmp/code_coverage.var";
+			require "tmp/code_coverage.var";
 			foreach($code_coverage_analysis as $file_name=>$lines_executed) {
 				$lineList=$this->_initial($file_name);
 				if (is_array($lineList)) {
@@ -130,7 +131,7 @@ class CodeCover {
 		ksort($this->metrics);
 		$global_linesNB=0.0;
 		$global_linesOK=0.0;
-		
+
 		$string_text="<sources>\n";
 		$string_text.="<source>testing</source>\n";
 		$string_text.="</sources>\n";
