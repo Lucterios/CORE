@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Action file write by SDK tool
-// --- Last modification: Date 28 April 2011 23:10:59 By  ---
+// --- Last modification: Date 04 July 2011 22:44:35 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -93,6 +93,7 @@ if ($xfer_result->Confirme("Etes-vous sûre de vouloir supprimer l'extension '".$
 				deleteDir($ext_dep->Dir);
 		if(is_dir($ext_obj->Dir))
 			deleteDir($ext_obj->Dir);
+		$self->notifyModification(0);
 	}
 	 catch(Exception $e) {
 		$connect->rollback();
