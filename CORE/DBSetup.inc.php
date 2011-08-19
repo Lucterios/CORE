@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 17 May 2011 19:58:52 By  ---
+// --- Last modification: Date 18 August 2011 19:19:39 By  ---
 
 //@BEGIN@
 /**
@@ -153,7 +153,7 @@ class DBObj_Setup {
 						$DBObj->$field_name = $fieldValues[$field_name];
 					}
 				}
-				$nb_find = $DBObj->find();
+				$nb_find = $DBObj->find(false);
 				$DBObj->fetch();
 			}
 		}
