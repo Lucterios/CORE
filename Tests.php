@@ -20,196 +20,223 @@
 //
 header('Content-Type: text/xml; charset=UTF-8');
 
-$dbcnf = array();
-$fileDump="tmp/dump.sql";
+class TestManager {
 
-function dumpMysql(){
-  global $dbcnf;
-  global $fileDump;
-  $ret=array();
-  $cmd="mysqldump -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." > $fileDump";
-  exec($cmd,$ret);
-  //echo "<!-- Dump $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
-}
+	private $extensionObj;
+	private $extensionName;
+	private $numTest;
+	
+	private $GlobalTest;
+	private $CODE_COVER;
 
-function restorMysql(){
-  global $dbcnf;
-  global $fileDump;
-  $ret=array();
-  $cmd="mysql -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." < $fileDump";
-  exec($cmd,$ret);
-  //echo "<!-- SQL $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
-}
+	public function __construct($extensionName,$title,$coveractif) {
+		$this->extensionName=$extensionName;
+		include_once('CORE/UnitTest.inc.php');
+		$this->GlobalTest=new TestItem($title,"");
+		include_once('CORE/CodeCover.inc.php');
+		$this->CODE_COVER=new CodeCover($coveractif);
+	}
 
-$erreur="";
-$run=false;
-if (isset($_GET['extensions']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
-	$run=true;
-	$extensions=split(';',$_GET['extensions']);
-	$dbuser=$_GET['dbuser'];
-	$dbpass=$_GET['dbpass'];
-	$dbname=$_GET['dbname'];
-	if (isset($_GET['title']))
-		$title=$_GET['title'];
-	else
-		$title="LucteriosTest";
-	if (isset($_GET['num']))
-		$num_test=$_GET['num'];
-	else
-		$num_test=-1;
-	if (isset($_GET['cover']))
-		$coveractif=($_GET['cover']=='true');
-	else
-		$coveractif=false;
-}
-elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7)) {
-	$run=true;
-	$extensions=split(';',$argv[1]);
-	$dbuser=$argv[2];
-	$dbpass=$argv[3];
-	$dbname=$argv[4];
-	if (count($argv)==6)
-		$title=$argv[5];
-	else
-		$title="LucteriosTest";
-	if (count($argv)==7)
-		$coveractif=($argv[6]=='true');
-	else
-		$coveractif=false;
-	$num_test=-1;
-}
+	private function dumpMysql(){
+		global $dbcnf;
+		global $fileDump;
+		$ret=array();
+		$cmd="mysqldump -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." > $this->fileDump";
+		exec($cmd,$ret);
+		//echo "<!-- Dump $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
+	}
 
-$prog_list=array("mysqldump","mysql");
-foreach($prog_list as $prog_item)
-{
-  $ret=array();
-  exec("$prog_item --version",$ret);
-  $begin_ret=substr($ret[0],0,strlen($prog_item));
-  if ($begin_ret!=$prog_item)
-  {
-    $run=false;
-    $erreur.=" - $prog_item inconnu!";
-  }
-}
+	private function restorMysql(){
+		global $dbcnf;
+		global $fileDump;
+		$ret=array();
+		$cmd="mysql -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." < $this->fileDump";
+		exec($cmd,$ret);
+		//echo "<!-- SQL $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
+	}
 
-include_once('CORE/UnitTest.inc.php');
-$GlobalTest=new TestItem($title,"");
-include_once('CORE/CodeCover.inc.php');
-$CODE_COVER=new CodeCover($coveractif);
-if ($run) {
-	include_once("CORE/extensionManager.inc.php");
-	require_once("CORE/dbcnx.inc.php");
-	require_once("CORE/rights.inc.php");
-	require_once("CORE/log.inc.php");
-	$dbcnf = array(
-		"dbtype"=>"mysql",
-		"dbhost"=>"localhost",
-		"dbuser"=>$dbuser,
-		"dbpass"=>$dbpass,
-		"dbname"=>$dbname
-	);
-	global $connect;
-	global $dbcnf;
-	global $login;
-	$login='admin';
-	$connect = new DBCNX();
-	$connect->connect($dbcnf);
-	foreach($extensions as $ext_name) {
-		$extDir=Extension::getFolder($ext_name);
-		$CODE_COVER->load($extDir);
-		$testtag_file='conf/testtag.file';
-		$handle = @fopen($testtag_file, "w+");
+	private function installation(){
+		$msg="";
+		$set_of_ext[]=$this->extensionObj;
+		$dep_names=explode(" ",$this->extensionObj->getDepencies());
+		foreach($dep_names as $name)
+			if ($name!='') {
+				$new_ext=new Extension($name,Extension::getFolder($name));
+				$new_ext->ThrowExcept=true;
+				$set_of_ext[]=$new_ext;
+			}
+		$msg='';
+		$set_of_ext = sortExtension($set_of_ext);
+		foreach($set_of_ext as $ext) {
+			$ext->installComplete();
+			$msg.=$ext->message;
+		}
+		foreach($set_of_ext as $ext) {
+			$ext->upgradeContraintsTable();
+			$msg.=$ext->message;
+		}
+		//echo "<!-- ".str_replace(array("{[newline]}","--","<",">"),array("\n","","&#139;","&#155;"),$msg)." -->\n";
+		
+		if (is_file($this->extensionObj->Dir.'/setup.test.php')) {
+			$setup_item=new TestItem($this->extensionObj->Name,"SETUP");
+			$this->CODE_COVER->startCodeCover();
+			$setup_item->runTest($this->extensionObj->Dir,$this->extensionObj->Name,'setup');
+			$this->CODE_COVER->stopCodeCover();
+			if (!is_null($setup_item->errorObj))
+				$this->GlobalTest->addTests($setup_item);
+		}
+	}
+
+	private function getFileTestList(){
+		$fileList=array();
+		$dh = @opendir($this->extensionObj->Dir);
+		while(($file = @readdir($dh)) != false)
+			if(substr($file,-9)=='.test.php') {
+				$file_name=substr($file,0,-9);
+				if ($file_name!='setup')
+					$fileList[]=$file_name;
+			}
+		@closedir($dh);
+		sort($fileList);
+		return $fileList;
+	}
+	
+	public function initial($dbuser,$dbpass,$dbname,$numTest,$deleteDump){
+		$this->numTest=$numTest;
+		include_once("CORE/extensionManager.inc.php");
+		require_once("CORE/dbcnx.inc.php");
+		require_once("CORE/rights.inc.php");
+		require_once("CORE/log.inc.php");
+		global $connect;
+		global $dbcnf;
+		global $login;
+		$dbcnf = array(
+			"dbtype"=>"mysql",
+			"dbhost"=>"localhost",
+			"dbuser"=>$dbuser,
+			"dbpass"=>$dbpass,
+			"dbname"=>$dbname
+		);
+		$login='admin';
+		$connect = new DBCNX();
+		$connect->connect($dbcnf);
+
+		$this->fileDump="tmp/$dbname.sql";
+		if (is_file($this->fileDump) && $deleteDump)
+			unlink($this->fileDump);
+		
+		$this->testtag_file='conf/testtag.file';
+		$handle = @fopen($this->testtag_file, "w+");
 		@fwrite($handle,"RUNNING");
 		@fclose($handle);
-		try {
-			$create_result=createDataBase(true,false);
-			$ext_obj=new Extension($ext_name,$extDir);
-			$ext_obj->ThrowExcept=true;
-			$item=new TestItem($ext_name,"00 Version ".$ext_obj->getPHPVersion());
-			if ($connect->connected) {
-				$set_of_ext[]=$ext_obj;
-				$dep_names=split(" ",$ext_obj->getDepencies());
-				foreach($dep_names as $name)
-					if ($name!='') {
-						$new_ext=new Extension($name,Extension::getFolder($name));
-						$new_ext->ThrowExcept=true;
-						$set_of_ext[]=$new_ext;
-					}
-				$msg='';
-				$set_of_ext = sortExtension($set_of_ext);
-				foreach($set_of_ext as $ext) {
-					$ext->installComplete();
-					$msg.=$ext->message;
-				}
-				foreach($set_of_ext as $ext) {
-					$ext->upgradeContraintsTable();
-					$msg.=$ext->message;
-				}
-				dumpMysql();
-				//echo "<!-- ".str_replace(array("{[newline]}","--","<",">"),array("\n","","&#139;","&#155;"),$msg)." -->\n";
-
-				$item->success();
-				$GlobalTest->addTests($item);
-				$fileList=array();
-				$setup_item=null;
-				$dh = @opendir($extDir);
-				while(($file = @readdir($dh)) != false)
-					if(substr($file,-9)=='.test.php') {
-						$file_name=substr($file,0,-9);
-						if ($file_name!='setup')
-							$fileList[]=$file_name;
-						else
-							$setup_item=new TestItem($ext_name,"SETUP");
-					}
-				@closedir($dh);
-				sort($fileList);
-				if (is_file("$extDir/includes.inc.php"))
-					require_once("$extDir/includes.inc.php");
-				$inc=1;
-				foreach($fileList as $file_name) {
-					if (($num_test==-1) || ($num_test==$inc)) {
-						$item=new TestItem($ext_name,sprintf('%02d ',$inc).str_replace('_APAS_','::',$file_name));
+	}
 	
-						restorMysql();
-						if (!is_null($setup_item)) {
-							if ($inc==1)
-								$CODE_COVER->startCodeCover();
-							$setup_item->runTest($extDir,$ext_name,'setup');
-							if ($inc==1)
-								$CODE_COVER->stopCodeCover();
-							if (!is_null($setup_item->errorObj))
-								$GlobalTest->addTests($setup_item);
-						}
-						
-						$CODE_COVER->startCodeCover();
-						try {
-						  $item->runTest($extDir,$ext_name,$file_name);
-						  $CODE_COVER->stopCodeCover();
-						} catch(Exception $e) {
-						  $CODE_COVER->stopCodeCover();
-						  throw $e;
-						}
-						$GlobalTest->addTests($item);
-					}
-					$inc++;
-				} 
+	private function createDB(){
+		global $connect;
+		$create_result=createDataBase(!is_file($this->fileDump),false);
+		
+		$this->extensionObj=new Extension($this->extensionName,Extension::getFolder($this->extensionName));
+		$this->extensionObj->ThrowExcept=true;
+		$this->CODE_COVER->load($this->extensionObj->Dir);
+		$item=new TestItem($this->extensionName,"00 Version ".$this->extensionObj->getPHPVersion());
+		if ($connect->connected) {
+			if (!is_file($this->fileDump)) {
+				$setup_item=$this->installation();
+				$this->dumpMysql();
 			}
-			else {
-				$item->error($create_result);
-				$GlobalTest->addTests($item);
-			}
-		} catch(Exception $e) {
-			$item=new TestItem($ext_name,"Echec");
-			$item->error($e);
-			$GlobalTest->addTests($item);
+			else if ($this->numTest==0)
+				$this->restorMysql();
+			$item->success();
+			$this->GlobalTest->addTests($item);
+			if (is_file($this->extensionObj->Dir."/includes.inc.php"))
+				  require_once($this->extensionObj->Dir."/includes.inc.php");
 		}
-		unlink($testtag_file);
+		else {
+			$item->error($create_result);
+			$this->GlobalTest->addTests($item);
+		}
+		return $connect->connected;
+	}
+	
+	private function run(){
+		$inc=1;
+		$fileList=$this->getFileTestList();
+		foreach($fileList as $file_name) {
+			if (($this->numTest==-1) || ($this->numTest==$inc)) {
+				$item=new TestItem($this->extensionName,sprintf('%02d ',$inc).str_replace('_APAS_','::',$file_name));
+				$this->restorMysql();
+				$this->CODE_COVER->startCodeCover();
+				try {
+					$item->runTest($this->extensionObj->Dir,$this->extensionName,$file_name);
+					$this->CODE_COVER->stopCodeCover();
+				} catch(Exception $e) {
+					$this->CODE_COVER->stopCodeCover();
+					throw $e;
+				}
+				$this->GlobalTest->addTests($item);
+			}
+			$inc++;
+		} 
+	}
+	
+	public function execute(){
+		if ($this->createDB()) {
+			try {
+			    $this->run();
+			} catch(Exception $e) {
+				$item=new TestItem($extensionName,"Echec");
+				$item->error($e);
+				$this->GlobalTest->addTests($item);
+			}
+		}
+		unlink($this->testtag_file);
+	}
+
+	public function checkValid(){
+		$erreur="";
+		if ($this->extensionName=='') {
+			$erreur.="Erreur de paramètres:".print_r($_GET,true);
+		}
+		$prog_list=array("mysqldump","mysql");
+		foreach($prog_list as $prog_item) {
+			$ret=array();
+			exec("$prog_item --version",$ret);
+			$begin_ret=substr($ret[0],0,strlen($prog_item));
+			if ($begin_ret!=$prog_item) {
+				$erreur.=" - $prog_item inconnu!";
+			}
+		}
+		if ($erreur!='') {
+			$item_test=new TestItem("AllTest","echec");
+			$item_test->error($erreur);
+			$this->GlobalTest->addTests($item_test);
+			return false;
+		}
+		return true;
+	}
+	
+	public function show(){
+		echo $this->GlobalTest->AllTests($this->CODE_COVER->AllCover());
 	}
 }
-else {
-	$item_test=new TestItem("AllTest","echec");
-	$item_test->error("Erreur de paramètres".$erreur);
-	$GlobalTest->addTests($item_test);
+
+$testManager=null;
+if (isset($_GET['extension']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
+	$testManager=new TestManager($_GET['extension'],isset($_GET['title'])?$_GET['title']:"Lucterios Test",
+	      isset($_GET['cover'])?($_GET['cover']=='true'):false);
+	$testManager->initial($_GET['dbuser'],$_GET['dbpass'],$_GET['dbname'],isset($_GET['num'])?$_GET['num']:-1,isset($_GET['delete'])?($_GET['delete']!='false'):true);
 }
-echo $GlobalTest->AllTests($CODE_COVER->AllCover());
+elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7)) {
+	$testManager=new TestManager($argv[1],(count($argv)==6)?$argv[5]:"LucteriosTest",(count($argv)==7)?$argv[6]:false);
+	$testManager->initial($argv[2],$argv[3],$argv[4],-1,true);
+}
+else {
+	$testManager=new TestManager("","",false);
+}
+
+if ($testManager->checkValid()) {
+	$testManager->execute();
+}
+$testManager->show();
+
 ?> 
