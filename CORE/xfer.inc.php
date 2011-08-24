@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 05 February 2010 22:56:27 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 23 August 2011 15:06:03 By  ---
 
 //@BEGIN@
 /**
@@ -111,7 +111,7 @@ class Xfer_Object {
 	 */
 	function checkActionRigth($action) {
 		$ret = false;
-		if( strtolower( get_class($action)) == 'xfer_action') {
+		if ((strtolower(get_class($action)) == 'xfer_action') || (strtolower(get_class($action)) == 'xfer_menu_item')) {
 			if(($action->m_action == "") || ($action->m_extension == ""))$ret = true;
 			else {
 				global $login;

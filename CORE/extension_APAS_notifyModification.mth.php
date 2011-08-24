@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Method file write by SDK tool
-// --- Last modification: Date 04 July 2011 22:47:35 By  ---
+// --- Last modification: Date 23 August 2011 20:08:40 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -35,23 +35,17 @@ function extension_APAS_notifyModification(&$self,$value=0)
 //@CODE_ACTION@
 global $rootPath;
 if(!isset($rootPath)) $rootPath = "";
-$extpath=$rootPath."extensions";
-if ($handle=opendir($extpath))
-{
-	while ($item=readdir($handle))
-	{
-		if (($item != ".") && ($item != "..") && is_dir("$extpath/$item") && is_file("$extpath/$item/extensionNotify.inc.php"))
-		{
+require_once("CORE/extensionManager.inc.php");
+$ExtDirList=getExtensions($rootPath,false,true);
+foreach($ExtDirList as $extName=>$extDir) {
+	if (is_file("$extDir/extensionNotify.inc.php")){
 			$memo.=" file existe ";
-			require_once "$extpath/$item/extensionNotify.inc.php";
-			$function_name=$item."_extensionNotify";
-			if (function_exists($function_name))
-			{
+			require_once "$extDir/extensionNotify.inc.php";
+			$function_name=$extName."_extensionNotify";
+			if (function_exists($function_name)) {
 				$function_name($value);
 			}
-		}
 	}
-	closedir($handle);
 }
 //@CODE_ACTION@
 }

@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // Action file write by SDK tool
-// --- Last modification: Date 03 February 2010 8:29:35 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// Action file write by SDK tool
+// --- Last modification: Date 23 August 2011 15:07:30 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -70,27 +70,21 @@ $menu_tabs=new Xfer_Menu_Item("menu_sup","","");
 $menu_status =new Xfer_Menu_Item("menu_status",'Résumé','status.png','CORE',"status",0,"","");
 $menu_tabs->addSubMenu($menu_status);
 
-$extpath="extensions";
-if ($handle=opendir($extpath))
-{
-	while ($item=readdir($handle))
-	{
-		if (($item != ".") && ($item != "..") && is_dir("$extpath/$item") && is_file("$extpath/$item/menuTab.inc.php"))
+require_once("CORE/extensionManager.inc.php");
+$ExtDirList=getExtensions("",false,true);
+foreach($ExtDirList as $extName=>$extDir) {
+	if (is_file("$extDir/menuTab.inc.php")) {
+		$memo.=" file existe ";
+		require_once "$extDir/menuTab.inc.php";
+		$function_name=$extName."_menuTab";
+		if (function_exists($function_name))
 		{
-			$memo.=" file existe ";
-			require_once "$extpath/$item/menuTab.inc.php";
-			$function_name=$item."_menuTab";
-			if (function_exists($function_name))
-			{
-				$new_Menu=$function_name();
-				if (($new_Menu!=null) && (get_class($new_Menu)=='Xfer_Menu_Item'))
-					$menu_tabs->addSubMenu($new_Menu);
-			}
+			$new_Menu=$function_name();
+			if (($new_Menu!=null) && (get_class($new_Menu)=='Xfer_Menu_Item') && $xfer_result->checkActionRigth($new_Menu))
+				$menu_tabs->addSubMenu($new_Menu);
 		}
 	}
-	closedir($handle);
 }
-
 $xfer_result->addSubMenu($menu_tabs);
 //@CODE_ACTION@
 }catch(Exception $e) {

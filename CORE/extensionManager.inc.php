@@ -18,14 +18,16 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 28 April 2011 23:49:55 By  ---
+// --- Last modification: Date 23 August 2011 14:55:54 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
 require_once("CORE/dbcnx.inc.php");
 require_once("CORE/setup_param.inc.php");
 
-function getExtensions($rootPath = '',$WithClient = false) {
+function getExtensions($rootPath = '',$WithClient = false,$WithDB = false) {
+	if (!$WithClient && $WithDB)
+		return getExtensionsByDB($rootPath);
 	$exts = array();
 	if(is_dir($rootPath.'CORE'))
 		$exts['CORE'] = $rootPath.'CORE/';
@@ -49,6 +51,22 @@ function getExtensions($rootPath = '',$WithClient = false) {
 		}
 		if( is_dir($rootPath.'SDK'))
 			$exts['SDK'] = $rootPath.'SDK/';
+	}
+	return $exts;
+}
+
+function getExtensionsByDB($rootPath = '') {
+	$exts = array();
+	require_once("CORE/extension.tbl.php");
+	$DBExtension=new DBObj_CORE_extension;
+	$DBExtension->validite='o';
+	$DBExtension->find();
+	while ($DBExtension->fetch()) {
+		$extName=$DBExtension->extensionId;
+		if (is_dir($rootPath.$extName))
+			$exts[$extName]=$rootPath.$extName.'/';
+		else if (is_dir($rootPath."extensions/".$extName))
+			$exts[$extName]=$rootPath."extensions/".$extName.'/';
 	}
 	return $exts;
 }
