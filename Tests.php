@@ -227,7 +227,11 @@ if (isset($_GET['extension']) && isset($_GET['dbuser']) && isset($_GET['dbpass']
 	$testManager->initial($_GET['dbuser'],$_GET['dbpass'],$_GET['dbname'],isset($_GET['num'])?$_GET['num']:-1,isset($_GET['delete'])?($_GET['delete']!='false'):true);
 }
 elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7)) {
-	$testManager=new TestManager($argv[1],(count($argv)==6)?$argv[5]:"LucteriosTest",(count($argv)==7)?$argv[6]:false);
+	echo "<!-- Test: ";
+	foreach($argv as $num=>$val)
+		echo "arg($num)='$val' ";
+	echo "-->\n";
+	$testManager=new TestManager($argv[1],(count($argv)==6)?$argv[5]:"LucteriosTest",(count($argv)==7)?$argv[6]=='1':false);
 	$testManager->initial($argv[2],$argv[3],$argv[4],-1,true);
 }
 else {
