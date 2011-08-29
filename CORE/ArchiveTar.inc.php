@@ -323,7 +323,8 @@ class ArchiveTar
     function _warning($p_message)
     {
         // ----- To be completed
-        $this->raiseError($p_message);
+	require_once("CORE/Lucterios_Error.inc.php");
+        throw new LucteriosException(IMPORTANT,$p_message);
     }
     // }}}
 
