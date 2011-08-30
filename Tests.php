@@ -231,7 +231,7 @@ elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7)) {
 	foreach($argv as $num=>$val)
 		echo "arg($num)='$val' ";
 	echo "-->\n";
-	$testManager=new TestManager($argv[1],(count($argv)==6)?$argv[5]:"LucteriosTest",(count($argv)==7)?($argv[5]!='NON'):true);
+	$testManager=new TestManager($argv[1],(count($argv)==6)?$argv[5]:"LucteriosTest",(count($argv)==7)?($argv[6]!='NON'):true);
 	$testManager->initial($argv[2],$argv[3],$argv[4],-1,true);
 }
 else {
