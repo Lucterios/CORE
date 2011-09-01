@@ -36,6 +36,20 @@ if (is_file($appli_dir."/setup.inc.php")) {
 global $dbcnf;
 global $connect;
 
+function convertTime($timeValue) {
+	$result="";
+	$hour=floor($timeValue / 3600);
+	$min=floor(($timeValue - ($hour*60)) / 60);
+	$sec=round($timeValue - ($hour*3600) - ($min*60));
+	if ($hour>0)
+		$result.="$hour h ";
+	if ($min>0)
+		$result.="$min min ";
+	if ($sec>0)
+		$result.="$sec sec";
+	return $result;
+}
+
 function checkAndShowPrerquired()
 {
 	echo "<table width='90%'>
@@ -75,25 +89,40 @@ function checkAndShowPrerquired()
 			$depend_OK=0;
 		echo "<tr><td>Bibliothèque</td><td>$lib_name</td><td>$result</td></tr>\n";
 	}
-	
-	$lib_files=array();
-	
-	$sep=$_SERVER['DOCUMENT_ROOT'][0]=='/'?':':';';
-	$paths = explode($sep,ini_get('include_path'));
-	
-	foreach($lib_files as $lib_file)
-	{
-		$depend_OK2=0;
-		$result="<font color='red'>Non trouvé</font>";
-		foreach($paths as $path)
-			if (is_file($path.DIRECTORY_SEPARATOR.$lib_file)) {
-				$depend_OK2=1; 
-				$result="<font color='blue'>OK</font>";
-			}
-		echo "<tr><td>PEAR</td><td>$lib_file</td><td>$result</td></tr>\n";
-		$depend_OK=$depend_OK && $depend_OK2;
+	echo "<tr><td><br/></td></tr>";
+	$java_path='';
+	$JAVABIN=(DIRECTORY_SEPARATOR=='/')?'/java':'\java.exe';
+	$os_path_list=explode(PATH_SEPARATOR,$_SERVER['PATH']);
+	foreach($os_path_list as $os_path_item) {
+		if (is_file($os_path_item.$JAVABIN))
+			$java_path=$os_path_item.$JAVABIN;
 	}
+	$retVal=-1;
+	if ($java_path!='')
+		@system($java_path." -version", $retVal);
+	$result="<td colspan='2'><font color='yellow'>Impossible - Java non trouvé</font></td>";
+	if ($retVal==0)
+		$result="<td>JAVA</td><td><font color='blue'>OK</font></td>";
+	echo "<tr><td>Impression</td>$result</tr>\n";	
+	include_once("CORE/fichierFonctions.inc.php");
+	$maxsize=taille_max_dl_fichier();
+	$result="<font color='yellow'>faible (<5Mo)</font>";
+	if ($maxsize>5242880)
+		$result="<font color='blue'>OK</font>";
+	echo "<tr><td>Taille fichier max.</td><td>".convert_taille($maxsize)."</td><td>$result</td></tr>\n";
+	
+	$max_execution_time = @ini_get('max_execution_time');
+    if(empty($post_max_size)) {
+      	$max_execution_time = @get_cfg_var('max_execution_time');
+		if(empty($max_execution_time))
+			$max_execution_time = 30;
+	}	
+	$result="<font color='yellow'>faible (<10 min)</font>";
+	if ($max_execution_time>600)
+		$result="<font color='blue'>OK</font>";
+	echo "<tr><td>Temps de réponse max.</td><td>".convertTime($max_execution_time)."</td><td>$result</td></tr>\n";
 	echo "</table>";
+		
 	return $depend_OK;
 }
 
@@ -177,7 +206,7 @@ function showModules()
 ?>
 <html>
 <head>
-  <title><? echo $extention_titre;?> (<? echo $extention_description;?>) - Installation</title>
+  <title><?php echo $extention_titre;?> (<?php echo $extention_description;?>) - Installation</title>
 	<style type="text/css">
 	<!--
 		BODY {
@@ -316,11 +345,11 @@ function showModules()
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                     <td>
-                        <img src='<? echo $appli_dir."/images/logo.gif";?>' alt='logo' />
+                        <img src='<?php echo $appli_dir."/images/logo.gif";?>' alt='logo' />
                     </td>
                     <td align="center">
-                        <h1 class="banniere"><? echo strtoupper($extention_titre);?></h1>
-                        <h2 class="banniere">Installation "<? echo $extention_description;?>"</h2>
+                        <h1 class="banniere"><?php echo strtoupper($extention_titre);?></h1>
+                        <h2 class="banniere">Installation "<?php echo $extention_description;?>"</h2>
                     </td>
                 </tr>
             </table>
@@ -369,22 +398,28 @@ if (array_key_exists('DropDB',$_POST))
 	$is_cnx=$connect->connected;
 	$can_be_change_pass=(!$is_cnx || file_exists(realpath('password.txt'))); 
 
-	require_once "CORE/extensionManager.inc.php";
-	createDataBase();
+	try
+	{
+		require_once "CORE/extensionManager.inc.php";
+		createDataBase();
 
-	$install=refreshDataBase($can_be_change_pass);
-	$install=str_replace("{[newline]}","<br>",$install);
-	$install=str_replace("{[","<",$install);
-	$install=str_replace("]}",">",$install);
+		$install=refreshDataBase($can_be_change_pass);
+		$install=str_replace("{[newline]}","<br>",$install);
+		$install=str_replace("{[","<",$install);
+		$install=str_replace("]}",">",$install);
 
-	$last_error='';
-	$PASSWD='';
-	if ($can_be_change_pass && array_key_exists('PASSWD',$_POST)) {
-		$PASSWD=$_POST['PASSWD'];
-		if ($PASSWD!='') {
-	                $q="UPDATE CORE_users SET pass=PASSWORD('$PASSWD') WHERE login='admin';\n";
-        	        if (!$connect->execute($q)) $last_error=$connect->errorMsg;
+		$last_error='';
+		$PASSWD='';
+		if ($can_be_change_pass && array_key_exists('PASSWD',$_POST)) {
+			$PASSWD=$_POST['PASSWD'];
+			if ($PASSWD!='') {
+				$q="UPDATE CORE_users SET pass=md5('$PASSWD') WHERE login='admin';\n";
+				$connect->execute($q,true);
+			}
 		}
+	}
+	catch(Exception $e){
+		$last_error=$e->getMessage();
 	}
 	if ($last_error=='')
 	{
@@ -393,11 +428,15 @@ if (array_key_exists('DropDB',$_POST))
 			echo "<br><br>Vous pouvez maintenant lancer le logiciel en vous connectant entant qu'administrateur (alias <i>admin</i>, mot de passe <i>".str_replace("''","'",$PASSWD)."</i>). Une aide en ligne est à votre disposition pour vous aider dans l'utilisation de cet outil.";
 		echo "<br><b>Attention:</b>Nous vous conseillons d'effectuer une mise &agrave; jours pour t&eacute;l&eacute;charger sur internet les derni&egrave;res fonctionnalit&eacute;s<br>";	
 	}
-	else
-		echo "<h3>Erreur de configuration : $last_error</h3>";
-	echo "<br><hr>";
-	echo "<h3>Rapport d'installation</h3>";
-	echo $install;
+	else {
+		echo "<h3>Erreur de configuration</h3>";
+		echo "$last_error<br/>";
+	}
+	if ($install!='') {
+		echo "<br><hr>";
+		echo "<h3>Rapport d'installation</h3>";
+		echo $install;
+	}
 }
 else
 {
@@ -451,7 +490,7 @@ echo "		</table>
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                     <td class="pied">
-                        Mise à jour <? echo date ("d/m/Y", filemtime("index.php")); ?>
+                        Mise à jour <?php echo date ("d/m/Y", filemtime("index.php")); ?>
                     </td>
                 </tr>
             </table>
