@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 23 August 2011 14:55:54 By  ---
+// --- Last modification: Date 04 September 2011 15:33:09 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -718,6 +718,7 @@ class Extension {
 
 	public function installComplete() {
 		$nb = 0;
+		$nb += $this->removeAllContraintsTable();
 		$nb += $this->updateTable();
 
 		try {
@@ -727,13 +728,13 @@ class Extension {
 		 catch( Exception$e) {
 			$insert = false;
 		}
-		$nb += $this->upgradeContraintsTable();
 		$nb += $this->upgradeDefaultValueTable();
 		$nb += $this->updateRights();
 		$nb += $this->updateParams();
 		$nb += $this->updateMenu();
 		$nb += $this->checkReportModel();
 		$nb += $this->checkActions();
+		$nb += $this->upgradeContraintsTable();
 		$nb += $this->checkStorageFunctions();
 		if(!$insert)$nb += $this->insertion( false);
 		$nb += $this->postInstall();
