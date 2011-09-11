@@ -36,7 +36,7 @@ if (is_file($appli_dir."/setup.inc.php")) {
 global $dbcnf;
 global $connect;
 
-function convertTime($timeValue) {
+function convertTimeDuration($timeValue) {
 	$result="";
 	$hour=floor($timeValue / 3600);
 	$min=floor(($timeValue - ($hour*60)) / 60);
@@ -120,7 +120,7 @@ function checkAndShowPrerquired()
 	$result="<font color='yellow'>faible (<10 min)</font>";
 	if ($max_execution_time>600)
 		$result="<font color='blue'>OK</font>";
-	echo "<tr><td>Temps de réponse max.</td><td>".convertTime($max_execution_time)."</td><td>$result</td></tr>\n";
+	echo "<tr><td>Temps de réponse max.</td><td>".convertTimeDuration($max_execution_time)."</td><td>$result</td></tr>\n";
 	echo "</table>";
 		
 	return $depend_OK;
