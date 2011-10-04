@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 18 August 2011 19:19:39 By  ---
+// --- Last modification: Date 03 October 2011 22:43:21 By  ---
 
 //@BEGIN@
 /**
@@ -233,6 +233,7 @@ class DBObj_Setup {
 			if (($rep!=false) && ($connect->getNumRows($rep)==1)) {
 				$row = $connect->getRowByName($rep);
 				$resValue=$row['Create Table'];
+				$resValue=str_ireplace('`'.$this->DBObject->__table.'`','`'.$this->DBObject->__table.'`',$resValue);
 			}
 			else
 				$this->RetMsg .= "Erreur SHOW CREATE TABLE : ".$connect->errorMsg;

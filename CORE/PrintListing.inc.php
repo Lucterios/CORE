@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 04 February 2010 21:43:53 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 03 October 2011 21:30:20 By  ---
 
 //@BEGIN@
 require_once 'CORE/ConvertPrintModel.inc.php';
@@ -123,11 +123,16 @@ class PrintListing
 		return $content;
 	}
 
+	private function __convert($text)
+	{
+		return ModelConverter::convertApasFormat($text);
+	}
+
 	private function getListHeader()
 	{
 		$content=sprintf('<header extent="%d.0" name="before">',$this->HeaderFooterHeight);
 		$content.=sprintf('<text height="%1$d.0" width="%2$d.0" top="0.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" text_align="center" line_height="%3$d" font_family="sans-serif" font_weight="" font_size="%4$d">',$this->HeaderFooterHeight,$this->Width-2*$this->MargeHorizontal,$this->SizeHeader+1,$this->SizeHeader);
-		$content.=ModelConverter::convertApasFormat($this->Header);
+		$content.=$this->__convert($this->Header);
 		$content.='</text>';
 		$content.='</header>';
 		return $content;
@@ -140,7 +145,7 @@ class PrintListing
 		foreach($this->GridHeader as $column) {
 			$content.=sprintf('<columns width="%d.0" data="">',$column[1]);
 			$content.=sprintf('<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="center" line_height="%1$d" font_family="sans-serif" font_weight="" font_size="%2$d">',$this->SizeColumn+1,$this->SizeColumn);
-			$content.=ModelConverter::convertApasFormat($column[0]);
+			$content.=$this->__convert($column[0]);
 			$content.='</cell>';
 			$content.='</columns>';
 		}
@@ -149,7 +154,7 @@ class PrintListing
 			foreach($row as $cell) {
 				if (substr($cell,0,20)=="data:image/*;base64,") $img='image="1"'; else $img='image="0"';
 				$content.=sprintf('<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="start" line_height="%1$d" font_family="sans-serif" font_weight="" font_size="%2$d" '.$img.'>',$this->SizeRow+1,$this->SizeRow);
-				$content.=ModelConverter::convertApasFormat($cell);
+				$content.=$this->__convert($cell);
 				$content.='</cell>';
 			}
 			$content.='</rows>';
@@ -166,7 +171,7 @@ class PrintListing
 	{
 		$content=sprintf('<bottom extent="%d.0" name="after">',$this->HeaderFooterHeight);
 		$content.=sprintf('<text height="%1$d.0" width="%2$d.0" top="0.0" left="0.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" text_align="center" line_height="%3$d" font_family="sans-serif" font_weight="" font_size="%4$d">',$this->HeaderFooterHeight,$this->Width-2*$this->MargeHorizontal,$this->SizeHeader+1,$this->SizeHeader);
-		$content.=ModelConverter::convertApasFormat($this->Footer);
+		$content.=$this->__convert($this->Footer);
 		$content.='</text>';
 		$content.='</bottom>';
 		return $content;

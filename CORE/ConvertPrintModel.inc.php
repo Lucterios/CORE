@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 28 February 2011 23:22:56 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// library file write by SDK tool
+// --- Last modification: Date 03 October 2011 22:37:58 By  ---
 
 //@BEGIN@
 class ModelConverter {
@@ -93,8 +93,8 @@ class ModelConverter {
 		return $Xap;
 	}
 
-	function convertApasFormat($xml_text) {
-		$xml_text = str_replace('<b>','<font Font-weight="bold">',$xml_text);
+	function convertApasFormat($xmltext) {
+		$xml_text = str_replace('<b>','<font Font-weight="bold">',$xmltext);
 		$xml_text = str_replace('<i>','<font Font-style="italic">',$xml_text);
 		$xml_text = str_replace('<u>','<font text-decoration="underline">',$xml_text);
 		$xml_text = str_replace('</b>','</font>',$xml_text);
@@ -109,6 +109,7 @@ class ModelConverter {
 		$xml_text = str_replace('{[/underline]}','</font>',$xml_text);
 		$xml_text = str_replace("{[","<",$xml_text);
 		$xml_text = str_replace("]}",">",$xml_text);
+		$xml_text = preg_replace(array('/&(#[0-9]+;)/','/&([a-zA-Z0-9 ])/'),array('&\1','&amp;\1'),$xml_text);
 		return $xml_text;
 	}
 
