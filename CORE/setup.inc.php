@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // setup file write by SDK tool
-// --- Last modification: Date 06 October 2011 19:11:18 By  ---
+// --- Last modification: Date 20 October 2011 22:48:36 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.";
@@ -29,8 +29,8 @@ $extension_libre=true;
 
 $version_max=1;
 $version_min=2;
-$version_release=7;
-$version_build=618;
+$version_release=8;
+$version_build=667;
 
 $depencies=array();
 
@@ -96,39 +96,41 @@ $actions[21] = new Param_Action("Mise à jour", "extension_params_APAS_miseajour"
 $actions[22] = new Param_Action("Modifier un paramètre", "extension_params_APAS_modifier", 3);
 $actions[23] = new Param_Action("Valider une modification de paramètres", "extension_params_APAS_validerModif", 3);
 $actions[24] = new Param_Action("Liste des droits de groupes", "extension_rights_APAS_editer", 2);
-$actions[25] = new Param_Action("Liste des impression", "finalreport_APAS_list", 6);
-$actions[26] = new Param_Action("reimprimer", "finalreport_APAS_reprint", 6);
-$actions[27] = new Param_Action("Modifier un droit", "group_rights_APAS_modify", 2);
-$actions[28] = new Param_Action("Ajouter un groupe", "groups_APAS_ajouter", 2);
-$actions[29] = new Param_Action("Cloner un groupe", "groups_APAS_cloner", 2);
-$actions[30] = new Param_Action("Editer les droits d'un groupe", "groups_APAS_editer", 2);
-$actions[31] = new Param_Action("Liste des groupes", "groups_APAS_liste", 2);
-$actions[32] = new Param_Action("Ajouter/Modifier un groupe", "groups_APAS_modifier", 2);
-$actions[33] = new Param_Action("Supprimer un groupe", "groups_APAS_supprimer", 2);
-$actions[34] = new Param_Action("Import grille", "importGrid", 0);
-$actions[35] = new Param_Action("Menu de l application", "menu", 0);
-$actions[36] = new Param_Action("Impression de la configuration", "printConf", 3);
-$actions[37] = new Param_Action("Editer un modèle", "printmodel_APAS_edit", 6);
-$actions[38] = new Param_Action("Liste des modèles d`impression", "printmodel_APAS_list", 6);
-$actions[39] = new Param_Action("Réinitialiser un modèle", "printmodel_APAS_reinit", 6);
-$actions[40] = new Param_Action("Restauration de données", "restorForm", 11);
-$actions[41] = new Param_Action("Restaurer les données", "restor", 11);
-$actions[42] = new Param_Action("Sauvegarde des données", "selectNewArchive", 11);
-$actions[43] = new Param_Action("Restaurer les données", "selectRestor", 11);
-$actions[44] = new Param_Action("Tuer une session", "sessions_APAS_killsession", 8);
-$actions[45] = new Param_Action("Consultation des session", "sessions_APAS_list", 8);
-$actions[46] = new Param_Action("Résumé", "status", 0);
-$actions[47] = new Param_Action("Gestion des sauvegardes", "toolBackup", 11);
-$actions[48] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
-$actions[49] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
-$actions[50] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
-$actions[51] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
-$actions[52] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
-$actions[53] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
-$actions[54] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
-$actions[55] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
-$actions[56] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
-$actions[57] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
+$actions[25] = new Param_Action("Suppression d'impression", "finalreport_APAS_delete", 3);
+$actions[26] = new Param_Action("Liste des impression", "finalreport_APAS_list", 6);
+$actions[27] = new Param_Action("Regénérer une impression", "finalreport_APAS_regenerer", 3);
+$actions[28] = new Param_Action("reimprimer", "finalreport_APAS_reprint", 6);
+$actions[29] = new Param_Action("Modifier un droit", "group_rights_APAS_modify", 2);
+$actions[30] = new Param_Action("Ajouter un groupe", "groups_APAS_ajouter", 2);
+$actions[31] = new Param_Action("Cloner un groupe", "groups_APAS_cloner", 2);
+$actions[32] = new Param_Action("Editer les droits d'un groupe", "groups_APAS_editer", 2);
+$actions[33] = new Param_Action("Liste des groupes", "groups_APAS_liste", 2);
+$actions[34] = new Param_Action("Ajouter/Modifier un groupe", "groups_APAS_modifier", 2);
+$actions[35] = new Param_Action("Supprimer un groupe", "groups_APAS_supprimer", 2);
+$actions[36] = new Param_Action("Import grille", "importGrid", 0);
+$actions[37] = new Param_Action("Menu de l application", "menu", 0);
+$actions[38] = new Param_Action("Impression de la configuration", "printConf", 3);
+$actions[39] = new Param_Action("Editer un modèle", "printmodel_APAS_edit", 6);
+$actions[40] = new Param_Action("Liste des modèles d`impression", "printmodel_APAS_list", 6);
+$actions[41] = new Param_Action("Réinitialiser un modèle", "printmodel_APAS_reinit", 6);
+$actions[42] = new Param_Action("Restauration de données", "restorForm", 11);
+$actions[43] = new Param_Action("Restaurer les données", "restor", 11);
+$actions[44] = new Param_Action("Sauvegarde des données", "selectNewArchive", 11);
+$actions[45] = new Param_Action("Restaurer les données", "selectRestor", 11);
+$actions[46] = new Param_Action("Tuer une session", "sessions_APAS_killsession", 8);
+$actions[47] = new Param_Action("Consultation des session", "sessions_APAS_list", 8);
+$actions[48] = new Param_Action("Résumé", "status", 0);
+$actions[49] = new Param_Action("Gestion des sauvegardes", "toolBackup", 11);
+$actions[50] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
+$actions[51] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
+$actions[52] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
+$actions[53] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
+$actions[54] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
+$actions[55] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
+$actions[56] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
+$actions[57] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
+$actions[58] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
+$actions[59] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
 
 $params=array();
 

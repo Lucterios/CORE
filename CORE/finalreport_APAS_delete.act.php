@@ -18,52 +18,49 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Action file write by SDK tool
-// --- Last modification: Date 20 October 2011 22:33:59 By  ---
+// --- Last modification: Date 20 October 2011 22:18:27 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
-require_once('CORE/printmodel.tbl.php');
+require_once('CORE/finalreport.tbl.php');
 //@TABLES@
-//@XFER:custom
-require_once('CORE/xfer_custom.inc.php');
-//@XFER:custom@
+//@XFER:acknowledge
+require_once('CORE/xfer.inc.php');
+//@XFER:acknowledge@
 
 
-//@DESC@Liste des modèles d`impression
+//@DESC@Suppression d'impression
 //@PARAM@ 
+//@INDEX:print_report
 
+//@TRANSACTION:
 
 //@LOCK:0
 
-function printmodel_APAS_list($Params)
+function finalreport_APAS_delete($Params)
 {
-$self=new DBObj_CORE_printmodel();
+$self=new DBObj_CORE_finalreport();
+$print_report=getParams($Params,"print_report",-1);
+if ($print_report>=0) $self->get($print_report);
+
+global $connect;
+$connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","printmodel_APAS_list",$Params);
-$xfer_result->Caption="Liste des modèles d`impression";
+$xfer_result=&new Xfer_Container_Acknowledge("CORE","finalreport_APAS_delete",$Params);
+$xfer_result->Caption="Suppression d'impression";
 //@CODE_ACTION@
-$img=new  Xfer_Comp_Image('img');
-$img->setValue('PrintReportModel.png');
-$img->setLocation(0,0);
-$xfer_result->addComponent($img);
-$img=new  Xfer_Comp_LabelForm('title');
-$img->setValue("{[center]}{[underline]}{[bold]}Modèles d'impression{[/bold]}{[/underline]}{[/center]}");
-$img->setLocation(1,0);
-$xfer_result->addComponent($img);
-$self->find();
-
-$DB_grid=new Xfer_Comp_Grid("print_model");
-$DB_grid->setLocation(0,1,2);
-$DB_grid->setDBObject($self,array('extension','titre'));
-$DB_grid->addAction($self->NewAction("_Editer", "edit.png", "edit", FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
-$DB_grid->addAction($self->NewAction("_Réinitialiser", "", "reinit", FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
-
-$xfer_result->addComponent($DB_grid);
-$xfer_result->addAction($self->NewAction("_Fermer",'close.png'));
+if (($res=$self->canBeDelete())!=0) {
+	require_once("CORE/Lucterios_Error.inc.php");
+	throw new LucteriosException(IMPORTANT,"Suppression de ".$self->toText()." impossible");
+}
+if($xfer_result->confirme("Etes vous sûre de vouloir supprimer ce rapport d'impression?{[newline]}Pour le regénérer, vous devez relancer l'impression à l'origine de ce rapport."))
+	$self->deleteCascade();
 //@CODE_ACTION@
+	$connect->commit();
 }catch(Exception $e) {
+	$connect->rollback();
 	throw $e;
 }
 return $xfer_result;
