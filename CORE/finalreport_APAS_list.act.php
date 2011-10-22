@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Action file write by SDK tool
-// --- Last modification: Date 20 October 2011 22:26:59 By  ---
+// --- Last modification: Date 21 October 2011 19:02:50 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -61,7 +61,7 @@ $DB_grid=new Xfer_Comp_Grid("print_report");
 $DB_grid->setLocation(0,1,2);
 $DB_grid->setDBObject($self,array('titre','nature','date','heure'),"",$Params);
 $DB_grid->addAction($self->NewAction("_Réimprimer", "print.png", "reprint", FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
-$DB_grid->addAction($self->NewAction('R_egénérer','refresh.png','regenerer',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
+//$DB_grid->addAction($self->NewAction('R_egénérer','refresh.png','regenerer',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $DB_grid->addAction($self->NewAction('_Suppression','suppr.png','delete',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 
 $xfer_result->addComponent($DB_grid);

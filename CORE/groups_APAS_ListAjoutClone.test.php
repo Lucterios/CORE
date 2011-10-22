@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Test file write by SDK tool
-// --- Last modification: Date 23 June 2011 11:32:40 By  ---
+// --- Last modification: Date 21 October 2011 19:18:57 By  ---
 
 
 //@TABLES@
@@ -190,7 +190,7 @@ $test->assertEquals("Validation{[newline]}Ajouter/Modifier une étiquette{[newlin
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [9,value]");
 $rec=$comp->m_records[$key[10]];
 $test->assertEquals("Modifier les paramètres généraux",$rec["description"],"Valeur de grid [10,description]");
-$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Valider une modification de paramètres{[newline]}Impression de la configuration{[newline]}",$rec["actions"],"Valeur de grid [10,actions]");
+$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Valider une modification de paramètres{[newline]}Suppression d`impression{[newline]}Regénérer une impression{[newline]}Impression de la configuration{[newline]}",$rec["actions"],"Valeur de grid [10,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [10,value]");
 $rec=$comp->m_records[$key[11]];
 $test->assertEquals("Paramètres généraux (avancé)",$rec["description"],"Valeur de grid [11,description]");
@@ -323,7 +323,7 @@ $test->assertEquals("Validation{[newline]}Ajouter/Modifier une étiquette{[newlin
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [9,value]");
 $rec=$comp->m_records[$key[10]];
 $test->assertEquals("Modifier les paramètres généraux",$rec["description"],"Valeur de grid [10,description]");
-$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Valider une modification de paramètres{[newline]}Impression de la configuration{[newline]}",$rec["actions"],"Valeur de grid [10,actions]");
+$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Valider une modification de paramètres{[newline]}Suppression d`impression{[newline]}Regénérer une impression{[newline]}Impression de la configuration{[newline]}",$rec["actions"],"Valeur de grid [10,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [10,value]");
 $rec=$comp->m_records[$key[11]];
 $test->assertEquals("Paramètres généraux (avancé)",$rec["description"],"Valeur de grid [11,description]");
