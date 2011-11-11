@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // setup file write by SDK tool
-// --- Last modification: Date 10 November 2011 20:11:22 By  ---
+// --- Last modification: Date 11 November 2011 10:46:28 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.";
@@ -30,7 +30,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=3;
 $version_release=1;
-$version_build=672;
+$version_build=678;
 
 $depencies=array();
 
@@ -138,15 +138,16 @@ $extend_tables=array();
 $extend_tables["access"] = array("CORE.access","",array());
 $extend_tables["etiquettes"] = array("CORE.etiquettes","",array());
 $extend_tables["extension"] = array("CORE.extension","",array());
-$extend_tables["extension_actions"] = array("CORE.extension_actions","",array());
+$extend_tables["extension_actions"] = array("CORE.extension_actions","",array("CORE_extension"=>"extension","CORE_extension_rights"=>"rights",));
 $extend_tables["extension_params"] = array("CORE.extension_params","",array());
-$extend_tables["extension_rights"] = array("CORE.extension_rights","",array());
+$extend_tables["extension_rights"] = array("CORE.extension_rights","",array("CORE_extension"=>"extension",));
 $extend_tables["finalreport"] = array("CORE.finalreport","",array());
-$extend_tables["group_rights"] = array("CORE.group_rights","",array());
+$extend_tables["group_rights"] = array("CORE.group_rights","",array("CORE_extension_rights"=>"rightref","CORE_groups"=>"groupref",));
 $extend_tables["groups"] = array("CORE.groups","",array());
 $extend_tables["menu"] = array("CORE.menu","",array());
 $extend_tables["printmodel"] = array("CORE.printmodel","",array());
 $extend_tables["sessions"] = array("CORE.sessions","",array());
-$extend_tables["users"] = array("CORE.users","",array());
+$extend_tables["users"] = array("CORE.users","",array("CORE_groups"=>"groupId",));
+$signals=array();
 
 ?>

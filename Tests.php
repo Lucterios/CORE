@@ -231,19 +231,6 @@ class TestManager {
 	}
 }
 
-function showConfig(){
-	include_once("CORE/fichierFonctions.inc.php");
-	$maxsize=taille_max_dl_fichier();
-	echo "<!-- Taille fichier max. (octets):".$maxsize." -->\n";
-	$max_execution_time = @ini_get('max_execution_time');
-	if(empty($post_max_size)) {
-      	$max_execution_time = @get_cfg_var('max_execution_time');
-		if(empty($max_execution_time))
-			$max_execution_time = 30;
-	}	
-	echo "<!-- Temps de réponse max. (sc)!".$max_execution_time." -->\n";
-}
-
 $testManager=null;
 if (isset($_GET['extension']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
 	$testManager=new TestManager($_GET['extension'],isset($_GET['title'])?$_GET['title']:"Lucterios Test",
@@ -255,7 +242,6 @@ elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7) || (count($a
 	foreach($argv as $num=>$val)
 		echo "arg($num)='$val' ";
 	echo "-->\n";
-	showConfig();
 
 	$testManager=new TestManager($argv[1],(count($argv)>=6)?$argv[5]:"LucteriosTest",(count($argv)>=7)?($argv[6]!='NON'):true);
 	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?(int)$argv[7]:-1,true);

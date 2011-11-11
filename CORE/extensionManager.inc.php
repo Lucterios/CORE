@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 04 September 2011 15:33:09 By  ---
+// --- Last modification: Date 11 November 2011 10:46:28 By  ---
 
 //@BEGIN@
 require_once("conf/cnf.inc.php");
@@ -930,13 +930,16 @@ function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$i
 	foreach($ext_list as $current_name => $current_dir) {
 		$current_obj = new Extension($current_name,$current_dir);
 		$current_ret = $current_obj->getDaughterClasses($motherClass);
-		$ret = array_merge($ret,$current_ret);
+		foreach($current_ret as $key=>$val)
+			$ret[$key]=$val;
 	}
 	if($recursif) {
 		$tmp = $ret;
 		foreach($tmp as $key => $item) {
 			$sub_table_list = getDaughterClassesList($key,$rootPath, true);
-			if( count($sub_table_list)>0)$ret = array_merge($ret,$sub_table_list);
+			if( count($sub_table_list)>0)
+				foreach($sub_table_list as $key=>$val) 
+					$ret[$key]=$val;
 		}
 	}
 	return $ret;
