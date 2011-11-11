@@ -59,35 +59,35 @@ class Xfer_Comp_Header extends Xfer_Object {
 	 *
 	 * @var string
 	 */
-	var $m_name = "";
+	public $m_name = "";
 
 	/**
 	 * Description de la colonne
 	 *
 	 * @var string
 	 */
-	var $m_descript = "";
+	public $m_descript = "";
 
 	/**
 	 * type de la colonne
 	 *
 	 * @var string
 	 */
-	var $m_type = "";
+	public $m_type = "";
 
 	/**
 	 * chaine à évaluer pour l'enregistrement
 	 *
 	 * @var string
 	 */
-	var $m_formula = "";
+	public $m_formula = "";
 
 	/**
 	 * Nom de la fonction
 	 *
 	 * @var string
 	 */
-	var $m_functionName = "";
+	public $m_functionName = "";
 
 	/**
 	 * Constructeur
@@ -99,7 +99,8 @@ class Xfer_Comp_Header extends Xfer_Object {
 	 * @param string $functionName nom de la fonction
 	 * @return Xfer_Comp_Header
 	 */
-	function Xfer_Comp_Header($name,$descript,$type = "",$formula="",$functionName="") {
+	function __construct($name,$descript,$type = "",$formula="",$functionName="") {
+		parent::__construct();
 		$this->m_name = $name;
 		$this->m_descript = $descript;
 		$this->m_type = $type;
@@ -133,42 +134,42 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 *
 	 * @var array
 	 */
-	var $m_headers = array();
+	public $m_headers = array();
 
 	/**
 	 * Liste de cellules
 	 *
 	 * @var array
 	 */
-	var $m_records = array();
+	public $m_records = array();
 
 	/**
 	 * Liste d'actions
 	 *
 	 * @var array
 	 */
-	var $m_actions = array();
+	public $m_actions = array();
 
 	/**
 	 * Nombre total de pages
 	 *
 	 * @var int
 	 */
-	var $mPageMax = 0;
+	public $mPageMax = 0;
 
 	/**
 	 * Numéro page courant
 	 *
 	 * @var int
 	 */
-	var $mPageMum = 0;
+	public $mPageMum = 0;
 
 	/**
 	 * Nombre de lignes totales
 	 *
 	 * @var int
 	 */
-	var $mNbLines = 0;
+	public $mNbLines = 0;
 
 
 	/**
@@ -176,7 +177,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 *
 	 * @var int
 	 */
-	var $mMaxGridRecord=MAX_GRID_RECORD;
+	public $mMaxGridRecord=MAX_GRID_RECORD;
 
 	/**
 	 * Constructeur
@@ -184,8 +185,8 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_Grid
 	 */
-	function Xfer_Comp_Grid($name) {
-		$this->Xfer_Component($name);
+	function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "GRID";
 	}
 
@@ -305,7 +306,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 				else {
 					$new_field_name = substr($FieldName,0,$pos);
 					if( array_key_exists($new_field_name,$field_desc)) {
-						$new_FieldNames = split(',', substr($FieldName,$pos+1,-1));
+						$new_FieldNames = explode(',', substr($FieldName,$pos+1,-1));
 						$this->setDBObjectHeader($DBObjs->getField($new_field_name),$new_FieldNames);
 					}
 				}
@@ -332,8 +333,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 			$fct_name=$header->m_functionName;
 			if (($fct_name!='') && function_exists($fct_name))
 				$data = $fct_name($DBObjs);
-			else
-				$data = $DBObjs->evalByText($header->m_formula);
+			else {
+				$row=$DBObjs->getLastRow();
+				if (isset($row[$header->m_formula]))
+					$data = $row[$header->m_formula];
+				else
+					$data = $DBObjs->evalByText($header->m_formula);
+			}
 		}
 		switch($type_fld) {
 		case 3:
@@ -351,7 +357,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 			break;
 		case 6:
 			//Date & time
-			List($date_val,$time_val)=split(' ',$data);
+			List($date_val,$time_val)=explode(' ',$data);
 			$val = convertTime($time_val)." ".convertDate($date_val);
 			break;
 		case 9:
@@ -420,7 +426,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 						$new_field_name = substr($FieldName,0,$pos);
 						if( array_key_exists($new_field_name,$field_desc)) {
 							$new_obj = $DBObjs->getField($new_field_name);
-							$new_FieldNames = split(',', substr($FieldName,$pos+1,-1));
+							$new_FieldNames = explode(',', substr($FieldName,$pos+1,-1));
 							$new_field_desc = $new_obj->__DBMetaDataField;
 							foreach($new_FieldNames as $new_FieldName)
 								$this->setDBObjectData($DBObjs->id,$new_obj,$new_FieldName,$new_field_desc);
@@ -451,7 +457,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 				else if (isset($row[convertFieldCase($FieldKey)]))
 					$id=$row[convertFieldCase($FieldKey)];
 				else
-					throw new LucteriosException(IMPORTANT,"Clé $FieldKey inconnu !");
+					throw new LucteriosException(IMPORTANT,"Clef $FieldKey inconnu !");
 				foreach($this->m_headers as $header) {
 					$field_name=$header->m_name;
 					if (isset($row[$field_name]))

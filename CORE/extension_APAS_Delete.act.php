@@ -1,24 +1,6 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// 	Thanks to have payed a retribution for using this module.
-// 
-// 	Diacamma is free software; you can redistribute it and/or modify
-// 	it under the terms of the GNU General Public License as published by
-// 	the Free Software Foundation; either version 2 of the License, or
-// 	(at your option) any later version.
-// 
-// 	Diacamma is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU General Public License for more details.
-// 
-// 	You should have received a copy of the GNU General Public License
-// 	along with Lucterios; if not, write to the Free Software
-// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Action file write by SDK tool
-// --- Last modification: Date 04 July 2011 22:44:35 By  ---
+// --- Last modification: Date 21 October 2011 5:33:01 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -52,6 +34,9 @@ $xfer_result->m_context['ORIGINE']="extension_APAS_Delete";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;
 $xfer_result->m_context['RECORD_ID']=$self->id;
 //@CODE_ACTION@
+global $SECURITY_LOCK;
+$SECURITY_LOCK->open(true);
+
 if (($self->extensionId=='CORE') || ($self->extensionId=='applis'))
 {
 	require_once "CORE/Lucterios_Error.inc.php";
@@ -93,7 +78,7 @@ if ($xfer_result->Confirme("Etes-vous sûre de vouloir supprimer l'extension '".$
 				deleteDir($ext_dep->Dir);
 		if(is_dir($ext_obj->Dir))
 			deleteDir($ext_obj->Dir);
-		$self->notifyModification(0);
+		$xfer_result->signal("extensionNotify",$xfer_result,0);
 	}
 	 catch(Exception $e) {
 		$connect->rollback();
@@ -106,6 +91,7 @@ if ($xfer_result->Confirme("Etes-vous sûre de vouloir supprimer l'extension '".$
 	}
 	$xfer_result->redirectAction(new Xfer_Action('menu','','CORE','menu'));
 }
+$SECURITY_LOCK->close();
 //@CODE_ACTION@
 	$xfer_result->setCloseAction(new Xfer_Action('unlock','','CORE','UNLOCK',FORMTYPE_MODAL,CLOSE_YES,SELECT_NONE));
 }catch(Exception $e) {

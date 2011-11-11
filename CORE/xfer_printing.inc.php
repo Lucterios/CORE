@@ -47,14 +47,14 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 *
 	 * @var string
 	 */
-	var $ReportTitle;
+	public $ReportTitle;
 
 	/**
 	 * Contenu du raport d'impression
 	 *
 	 * @var string
 	 */
-	var $ReportContent;
+	public $ReportContent;
 
 	/**
 	 * Type d'impression
@@ -63,7 +63,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * 1: Retour au format Lucterios-Print
 	 * @var integer
 	 */
-	var $ReportType;
+	public $ReportType;
 
 	/**
 	 * Mode d'impression
@@ -75,14 +75,14 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * Autre : Selectionneur
 	 * @var integer
 	 */
-	var $ReportMode=0;
+	public $ReportMode=0;
 
 	/**
 	 * Export text autoris�
 	 *
 	 * @var integer
 	 */
-	var $withTextExport=0;
+	public $withTextExport=0;
 
 	/**
 	 * Constructeur
@@ -92,9 +92,9 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param array $context
 	 * @return Xfer_Container_Print
 	 */
-	function Xfer_Container_Print($extension,$action,$context=array())
+	public function __construct($extension,$action,$context=array())
 	{
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name="Core.Print";
 		$this->ReportContent="";
 		$this->ReportType=1;
@@ -106,14 +106,14 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	* @access private
 	* @var string
 	*/
-	var $SelectorDesc='';
+	public $SelectorDesc='';
 	/**
 	* Selector
 	*
 	* @access private
 	* @var string
 	*/
-	var $Selector=null;
+	public $Selector=null;
 
 	/**
 	 * Affiche un choix d'impression.
@@ -122,7 +122,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param array $SelectorDesc : Description du selctionneur
 	 * @return boolean
 	 */
-	function showSelector($SpecialSelector=array(),$SelectorDesc=array('Etiquette','ETIQUETTE'))
+	public function showSelector($SpecialSelector=array(),$SelectorDesc=array('Etiquette','ETIQUETTE'))
 	{
 		$this->Selector=$SpecialSelector;
 		$this->SelectorDesc=$SelectorDesc;
@@ -139,7 +139,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	* @access private
 	 * @return String
 	 */
-	function _ReponseSelector()
+	protected function _ReponseSelector()
 	{
 		if (!is_array($this->Selector) && ($this->Selector!=0))
 			throw new LucteriosException(GRAVE,"Erreur de selecteur d'impression!");
@@ -207,7 +207,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param integer $printRef
 	 * @return boolean reussite
 	 */
-	function selectReport($printmodel,$modelRef,$params,$title,$writeMode=WRITE_MODE_NONE,$printRef=0)
+	public function selectReport($printmodel,$modelRef,$params,$title,$writeMode=WRITE_MODE_NONE,$printRef=0)
 	{
 		$modelRef=(int)$modelRef;
 		$printRef=(int)$printRef;
@@ -229,13 +229,12 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param Int $aType Type de donnée
 	 * @return boolean reussite
 	 */
-	function printData($aTitle,$aData,$aType=0)
+	public function printData($aTitle,$aData,$aType=0)
 	{
 		$this->ReportTitle=$aTitle;
 		$this->ReportType=$aType;
 		if ($this->ReportType==0){
-			$model_converter=new ModelConverter("");
-			$this->ReportContent=$model_converter->TransformXsl($aData,implode("",file('CORE/LucteriosPrintStyleForFo.xsl')));
+			$this->ReportContent=ModelConverter::TransformXsl($aData,implode("",file('CORE/LucteriosPrintStyleForFo.xsl')));
 		}
 		else {
 			$this->ReportContent=$aData;
@@ -250,7 +249,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param array $EtiquetteValues liste des contenus
 	 * @return boolean reussite
 	 */
-	function printEtiquette($aTitle,$EtiquetteValues) {
+	public function printEtiquette($aTitle,$EtiquetteValues) {
 		if (array_key_exists($this->SelectorDesc[1],$this->m_context))
 			$etiquette=(int)$this->m_context[$this->SelectorDesc[1]];
 		else
@@ -273,7 +272,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param PrintListing $aPrintListing listing à imprimer
 	 * @return boolean reussite
 	 */
-	function printListing($aPrintListing)
+	public function printListing($aPrintListing)
 	{
 		$this->printData($aPrintListing->Title,$aPrintListing->generate(),$this->ReportType);
 		return ($this->ReportContent!="");
@@ -285,7 +284,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @access private
 	 * @return string
 	 */
-	function getReponseXML()
+	public function getReponseXML()
 	{
 		if (array_key_exists("PRINT_MODE",$this->m_context))
 			$ReportMode=(int)$this->m_context["PRINT_MODE"];
@@ -305,7 +304,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @access private
 	 * @return string
 	 */
-	function getBodyContent($InBase64=true)
+	public function getBodyContent($InBase64=true)
 	{
 		global $rootPath;
 		if(!isset($rootPath)) $rootPath = "";
@@ -376,7 +375,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML()
+	protected function _ReponseXML()
 	{
 		$content=$this->getBodyContent();
 		$xml_text=sprintf("<PRINT title='%s' type='%d' mode='%d' withTextExport='%d'><![CDATA[%s]]></PRINT>",$this->ReportTitle,$this->ReportType,$this->ReportMode,$this->withTextExport,$content);
@@ -398,20 +397,20 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 *
 	 * @var string
 	 */
-	var $title;
+	public $title;
 	/**
 	 * contenu de l'XML exemple
 	 *
 	 * @var string
 	 */
-	var $m_xml_data;
+	public $m_xml_data;
 
 	/**
 	 * contenu du model
 	 *
 	 * @var string
 	 */
-	var $m_model;
+	public $m_model;
 
 	/**
 	 * model id
@@ -419,7 +418,7 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 * @access private
 	 * @var integer
 	 */
-	var $m_model_id;
+	public $m_model_id;
 
 	/**
 	 * Enter description here...
@@ -429,9 +428,9 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 * @param unknown_type $context
 	 * @return Xfer_Container_Template
 	 */
-	function Xfer_Container_Template($extension,$action,$context=array())
+	public function __construct($extension,$action,$context=array())
 	{
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name="Core.Template";
 		$this->m_xml_data='';
 		$this->m_model='';
@@ -445,7 +444,7 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 * @param string $printmodel
 	 * @return boolean
 	 */
-	function selectModel($extension,$printmodel)
+	public function selectModel($extension,$printmodel)
 	{
 		list($id,$model,$res) = checkDBModel($extension,$printmodel);
 		$printfile="extensions/$extension/$printmodel.prt.php";
@@ -463,7 +462,7 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 * @param string $title
 	 * @return boolean
 	 */
-	function setModel($extension,$printmodel,$id,$model,$title)
+	public function setModel($extension,$printmodel,$id,$model,$title)
 	{
 		if ($id!=0)
 		{
@@ -485,7 +484,7 @@ class Xfer_Container_Template extends Xfer_Container_Abstract
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML()
+	protected function _ReponseXML()
 	{
 		$xml_text=sprintf("<TEMPLATE title='%s' model='%d'>",$this->title,$this->m_idmodel);
 		$xml_text=$xml_text.sprintf("<XMLOBJECT><![CDATA[%s]]></XMLOBJECT>",$this->m_xml_data);

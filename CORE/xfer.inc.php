@@ -1,13 +1,13 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	This file is part of Lucterios/Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
 // 	Thanks to have payed a retribution for using this module.
 // 
-// 	Diacamma is free software; you can redistribute it and/or modify
+// 	Lucterios/Diacamma is free software; you can redistribute it and/or modify
 // 	it under the terms of the GNU General Public License as published by
 // 	the Free Software Foundation; either version 2 of the License, or
 // 	(at your option) any later version.
 // 
-// 	Diacamma is distributed in the hope that it will be useful,
+// 	Lucterios/Diacamma is distributed in the hope that it will be useful,
 // 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 // 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // 	GNU General Public License for more details.
@@ -16,9 +16,8 @@
 // 	along with Lucterios; if not, write to the Free Software
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-// library file write by SDK tool
-// --- Last modification: Date 23 August 2011 15:06:03 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// table file write by SDK tool
+// --- Last modification: Date 21 October 2011 1:30:02 By  ---
 
 //@BEGIN@
 /**
@@ -79,6 +78,13 @@ define('SELECT_SINGLE',0);
 define('SELECT_MULTI',2);
 
 /**
+* EXTENSION_SEP
+* Chaine de séparation entre l'extension et le suffix applicatif (action,method,...)
+*/
+define('EXTENSION_SEP','_APAS_');
+
+
+/**
  * Classe de base de transfert
  *
  * @package Lucterios
@@ -91,7 +97,7 @@ class Xfer_Object {
 	 *
 	 * @return Xfer_Object
 	 */
-	function Xfer_Object() {
+	public function __construct() {
 	}
 
 	/**
@@ -99,7 +105,7 @@ class Xfer_Object {
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		return "";
 	}
 
@@ -109,9 +115,9 @@ class Xfer_Object {
 	 * @param Xfer_Action $action
 	 * @return boolean
 	 */
-	function checkActionRigth($action) {
+	public function checkActionRigth($action) {
 		$ret = false;
-		if ((strtolower(get_class($action)) == 'xfer_action') || (strtolower(get_class($action)) == 'xfer_menu_item')) {
+		if (($action!=null) && (strtolower(get_class($action)) == 'xfer_action') || (strtolower(get_class($action)) == 'xfer_menu_item')) {
 			if(($action->m_action == "") || ($action->m_extension == ""))$ret = true;
 			else {
 				global $login;
@@ -119,6 +125,26 @@ class Xfer_Object {
 			}
 		}
 		return $ret;
+	}
+
+	public function signal($name,&$obj,$val1=null,$val2=null,$val3=null,$val4=null,$val4=null) {
+		$retList=array();
+		global $rootPath;
+		if(!isset($rootPath)) $rootPath = "";
+		require_once("CORE/extensionManager.inc.php");
+		$ExtDirList=getExtensionsSorted($rootPath);
+		foreach($ExtDirList as $extName=>$extDir) {
+			$evtFile=$extDir.$name.".evt.php";
+			if (is_file($evtFile)){
+				require_once($evtFile);
+				$function_name=$extName.EXTENSION_SEP.$name;
+				if (function_exists($function_name)) {
+					$ret=$function_name($obj,$val1,$val2,$val3,$val4,$val4);
+					$retList[$extName]=$ret;
+				}
+			}
+		}
+		return $retList;
 	}
 }
 
@@ -135,28 +161,28 @@ class Xfer_Action extends Xfer_Object {
 	 *
 	 * @var string
 	 */
-	var $m_title = "";
+	public $m_title = "";
 
 	/**
 	 * Nom de l'icone
 	 *
 	 * @var string
 	 */
-	var $m_icon = "";
+	public $m_icon = "";
 
 	/**
 	 * Nom de l'extension
 	 *
 	 * @var string
 	 */
-	var $m_extension = "";
+	public $m_extension = "";
 
 	/**
 	 * Nom de l'action
 	 *
 	 * @var string
 	 */
-	var $m_action = "";
+	public $m_action = "";
 
 	/**
 	 * CLOSE_YES=ferme la fenêtre appelante
@@ -164,7 +190,7 @@ class Xfer_Action extends Xfer_Object {
 	 *
 	 * @var integer
 	 */
-	var $m_close = "";
+	public $m_close = "";
 
 	/**
 	 * FORMTYPE_MODAL=appel une fenêtre modal
@@ -173,7 +199,7 @@ class Xfer_Action extends Xfer_Object {
 	 *
 	 * @var integer
 	 */
-	var $m_modal = "";
+	public $m_modal = "";
 
 	/**
 	 * SELECT_NONE=action à l'ensemble d'une grille
@@ -182,7 +208,7 @@ class Xfer_Action extends Xfer_Object {
 	 *
 	 * @var integer
 	 */
-	var $m_select = "";
+	public $m_select = "";
 
 	/**
 	 * _begin_tag
@@ -190,7 +216,7 @@ class Xfer_Action extends Xfer_Object {
 	 * @access private
 	 * @var string
 	 */
-	var $_begin_tag = "";
+	public $_begin_tag = "";
 
 	/**
 	 * _end_tag
@@ -198,7 +224,7 @@ class Xfer_Action extends Xfer_Object {
 	 * @access private
 	 * @var string
 	 */
-	var $_end_tag = "";
+	public $_end_tag = "";
 
 	/**
 	 * Constructeur
@@ -212,8 +238,8 @@ class Xfer_Action extends Xfer_Object {
 	 * @param integer $select SELECT_NONE=action à l'ensemble d'une grille - SELECT_SINGLE=action associée à une sélection dans une grille - SELECT_MULTI=action associée à une ou plusieurs sélections dans une grille
 	 * @return Xfer_Action
 	 */
-	function Xfer_Action($title,$icon = "",$extension = "",$action = "",$modal = "",$close = "",$select = "") {
-		$this->Xfer_Object();
+	public function __construct($title,$icon = "",$extension = "",$action = "",$modal = "",$close = "",$select = "") {
+		parent::__construct();
 		$this->m_title = $title;
 		$this->m_icon = "";
 
@@ -239,7 +265,7 @@ class Xfer_Action extends Xfer_Object {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return "<![CDATA[".$this->m_title."]]>";
 	}
 	/**
@@ -247,7 +273,7 @@ class Xfer_Action extends Xfer_Object {
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		$xml_attrb = "";
 		if($this->m_icon != "") {
 			$size=filesize($this->m_icon);
@@ -276,32 +302,38 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 * Identifiant de l'observeur
 	 *
 	 * @var string
-	 */var$m_observer_name = '';
+	 */
+	public $m_observer_name = '';
 	/**
 	 * Nom de l'extension appelante
 	 *
 	 * @var string
-	 */var$m_extension = "";
+	 */
+	public $m_extension = "";
 	/**
 	 * Nom de l'action appelante
 	 *
 	 * @var string
-	 */var$m_action = "";
+	 */
+	public $m_action = "";
 	/**
-	 * Contexte d'appéle
+	 * Contexte d'appèle
 	 *
 	 * @var array
-	 */var$m_context = array();
+	 */
+	public $m_context = array();
 	/**
 	 * Titre de l'action
 	 *
 	 * @var string
-	 */var$Caption = "";
+	 */
+	public $Caption = "";
 	/**
 	 * action de fermeture
 	 *
 	 * @var Xfer_Action
-	 */var$m_closeaction = null;
+	 */
+	public $m_closeaction = null;
 	/**
 	 * Constructeur
 	 *
@@ -310,18 +342,18 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 * @param array $context
 	 * @return Xfer_Container_Abstract
 	 */
-	function Xfer_Container_Abstract($extension,$action,$context = array()) {
-		$this->Xfer_Object();
+	public function __construct($extension,$action,$context = array()) {
+		parent::__construct();
 		$this->m_extension = $extension;
 		$this->m_action = $action;
 		$this->m_context = $context;
 	}
 	/**
-	 * change l'action associé au bouton
+	 * change l'action associée au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function setCloseAction($action) {
+	public function setCloseAction($action) {
 		if($this->checkActionRigth($action)) {
 			$this->m_closeaction = $action;
 		}
@@ -332,7 +364,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 *
 	 * @return Xfer_Container_Abstract
 	 */
-	function getReponse() {
+	public function getReponse() {
 		return $this;
 	}
 
@@ -341,7 +373,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		$xml_text = sprintf("\n<REPONSE observer='%s' source_extension='%s' source_action='%s'>\n",$this->m_observer_name,$this->m_extension,$this->m_action);
 		$xml_text .= sprintf("<TITLE><![CDATA[%s]]></TITLE>\n",$this->Caption);
 		$xml_text .= "<CONTEXT>";
@@ -367,7 +399,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 * @access private
 	 * @return string
 	 */
-	function _endXML() {
+	protected function _endXML() {
 		return "</REPONSE>";
 	}
 	/**
@@ -376,12 +408,17 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML() {
+	protected function _ReponseXML() {
 		return "";
+	}
+
+
+	public function getRefreshAction($title="",$icon="") {
+		return new Xfer_Action($title,$icon,$this->m_extension,$this->m_action, FORMTYPE_REFRESH, CLOSE_NO);
 	}
 }
 /**
- * Classe d'accusé de reception
+ * Classe d'accusée de reception
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -393,35 +430,35 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 *
 	 * @var string
 	 */
-	var $Title = "";
+	public $Title = "";
 
 	/**
 	 * Message
 	 *
 	 * @var string
 	 */
-	var $Msg = "";
+	public $Msg = "";
 
 	/**
 	 * traitment
 	 *
 	 * @var array
 	 */
-	var $traitment=null;
+	public $traitment=null;
 
 	/**
 	* Type de message
 	*
 	* @var integer
 	*/
-	var $Type = 1;
+	public $Type = 1;
 
 	/**
 	 * Action de redirection
 	 *
 	 * @var Xfer_Action
 	 */
-      var $Redirect = null;
+	public $Redirect = null;
 
 	/**
 	 * Constructeur
@@ -431,8 +468,8 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 * @param string $context
 	 * @return Xfer_Container_Acknowledge
 	 */
-	function Xfer_Container_Acknowledge($extension,$action,$context = array()) {
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+	public function __construct($extension,$action,$context = array()) {
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name = "Core.Acknowledge";
 	}
 
@@ -442,7 +479,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 * @param string $title
 	 * @return boolean true=confirmé - false=pas confirmé
 	 */
-	function confirme($title) {
+	public function confirme($title) {
 		$this->Title = $title;
 		if($title != "") {
 			if( array_key_exists("CONFIRME",$this->m_context))
@@ -459,7 +496,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 *
 	 * @param string $title
 	 */
-	function message($title,$type = 1) {
+	public function message($title,$type = 1) {
 		$this->Msg = $title;
 		$this->Type = $type;
 	}
@@ -471,7 +508,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 * @param string $waitingMessage
 	 * @param string $finishMessage
 	 */
-	function traitment($icon,$waitingMessage,$finishMessage) {
+	public function traitment($icon,$waitingMessage,$finishMessage) {
 		$this->traitment=array($icon,$waitingMessage,$finishMessage);
 		if( array_key_exists("RELOAD",$this->m_context))
 			return ($this->m_context["RELOAD"] != "");
@@ -484,7 +521,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function redirectAction($action) {
+	public function redirectAction($action) {
 		if($this->checkActionRigth($action))$this->Redirect = $action;
 	}
 
@@ -494,7 +531,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML() {
+	protected function _ReponseXML() {
 		if($this->Redirect == null)
 		return "";
 		else
@@ -506,7 +543,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 *
 	 * @return Xfer_Container_Abstract
 	 */
-	function getReponse() {
+	public function getReponse() {
 		if(($this->Title != "") && (! array_key_exists("CONFIRME",$this->m_context) || ($this->m_context["CONFIRME"] != "YES"))) {
 			require_once'xfer_dialogBox.inc.php';
 			$this->m_context["CONFIRME"] = "YES";
@@ -550,7 +587,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 				$btn = new Xfer_Comp_Button("Next");
 				$btn->setLocation(1,1);
 				$btn->setSize(50,300);
-				$btn->setAction( new Xfer_Action('Traitement...','',$this->m_extension,$this->m_action, FORMTYPE_REFRESH, CLOSE_NO));
+				$btn->setAction($this->getRefreshAction('Traitement...'));
 				$btn->JavaScript = "
 					parent.refresh();
 				";
@@ -568,7 +605,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		$dlg=$this->getReponse();
 		if ($dlg!=$this)
 			return $dlg->getReponseXML();
@@ -583,7 +620,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
  * @return string
  */
 function convertTime($time) {
-	list($hour,$minute,$sec) = split(':',"$time");
+	list($hour,$minute,$sec) = explode(':',"$time");
 	//$val=mktime($hour,$minute,$sec,0,0,0);
 	//return date("H:i:s",$val);;
 	return $hour.":".$minute;
@@ -599,7 +636,7 @@ function convertDate($date,$long = false) {
 	$year = 2000;
 	$mouth = 1;
 	$day = 1;
-	$d = split('-',$date);
+	$d = explode('-',$date);
 	if( count($d) == 3)list($year,$mouth,$day) = $d;
 	elseif ( count($d) == 2)list($year,$mouth) = $d;
 	else

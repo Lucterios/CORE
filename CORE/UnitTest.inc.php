@@ -35,14 +35,15 @@ class AssertException extends Exception {
 }
 
 class TestItem {
-	var $classname;
-	var $name;
-	var $timeBegin;
-	var $timeEnd;
-	var $errorObj;
-	var $list=array();
 
-	function TestItem($classname,$name) {
+	private $classname;
+	private $name;
+	private $timeBegin;
+	private $timeEnd;
+	private $list=array();
+	private $errorObj;
+
+	public function TestItem($classname,$name) {
 		$this->classname=$classname;
 		$this->name=$name;
 		$this->timeBegin=microtime_float();
@@ -50,7 +51,7 @@ class TestItem {
 		$this->errorObj=null;
 	}
 
-	function CallAction($extName,$action,$params,$class_name='')
+	public function CallAction($extName,$action,$params,$class_name='')
 	{
 		gc_collect_cycles();
 		require_once("CORE/Lucterios_Error.inc.php");
@@ -73,7 +74,15 @@ class TestItem {
 			throw new AssertException("Classe de résultat invalide!");
 		}
 		if ($class_name!='') {
-			$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
+			if (($class_name!="Xfer_Container_Exception") && (get_class($xfer_result)=="Xfer_Container_Exception")) {
+				if( is_string($xfer_result->m_error))
+					$errorMsg=$xfer_result->m_error;
+				if( is_subclass_of($xfer_result->m_error,'Exception') || ( get_class($xfer_result->m_error) == 'Exception'))
+					$errorMsg=$xfer_result->m_error->getMessage();
+				throw new AssertException('Xfer_Container_Exception retourné non attendue - Erreur:"'.$errorMsg.'"');
+			}
+			else
+				$this->assertEquals($class_name,get_class($xfer_result),"Mauvaise classe retournée");
 			if (substr($class_name,0,4)!='Xfer')
 				$this->assertEquals($class_name,null,"Exception attendue");
 		}
@@ -82,11 +91,11 @@ class TestItem {
 		}
 		return $xfer_result;
 	}
-    	function assertClass($expected, $actual, $message = '')
+    	public function assertClass($expected, $actual, $message = '')
 	{
 		$this->assertEquals(strtolower($expected),strtolower(get_class($actual)),$message);
 	}
-    	function assertEquals($expected, $actual, $message = '')
+    	public function assertEquals($expected, $actual, $message = '')
 	{
 		if (strcmp(gettype($expected),gettype($actual))!=0)
 			throw new AssertException($message.' Type différent - Attendu "'.gettype($expected).'" mais "'.gettype($actual).'" retourné');
@@ -103,7 +112,7 @@ class TestItem {
 			throw new AssertException($message.' Attendu "'.print_r($expected,true).'" mais "'.print_r($actual,true).'" retourné');
 	}
 
-	function runTest($extDir,$extName,$fileName) {
+	public function runTest($extDir,$extName,$fileName) {
 		gc_collect_cycles();
 		try {
 			$file_to_include="$extDir/$fileName.test.php";
@@ -116,14 +125,14 @@ class TestItem {
 			$this->error($e);
 		}
 	}
-	function success() {
+	public function success() {
 		$this->timeEnd=microtime_float();
 	}
-	function error($errorObj) {
+	public function error($errorObj) {
 		$this->success();
 		$this->errorObj=$errorObj;
 	}
-	function toString() {
+	public function toString() {
 		$time=$this->timeEnd-$this->timeBegin;
 		$string_text="\t<testcase classname='$this->classname' name='$this->name' time='$time'>\n";
 		if (is_string($this->errorObj))
@@ -143,10 +152,10 @@ class TestItem {
   		$string_text.="\t</testcase>\n";
 		return $string_text;
 	}
-	function addTests($item) {
+	public function addTests($item) {
 		$this->list[]=$item;
 	}
-	function AllTests($extendData) {
+	public function AllTests($extendData) {
 		$this->success();
 		$time=$this->timeEnd-$this->timeBegin;
 		$nbTest=count($this->list);
@@ -161,6 +170,10 @@ class TestItem {
   		$string_text.="</testsuite>\n";
 		gc_collect_cycles();
 		return $string_text;
+	}
+
+	public function hasErrorObj(){
+		return !is_null($this->errorObj);
 	}
 }
 //@END@

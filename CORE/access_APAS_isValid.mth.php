@@ -52,7 +52,7 @@ if ($pos!==FALSE)
      return "masque='$mask'";
 }
 
-$cls=split("\\.",$inetAddr);
+$cls=explode("\\.",$inetAddr);
 $Addr_txt="";
 foreach($cls as $cl)
 	$Addr_txt.="$cl,";

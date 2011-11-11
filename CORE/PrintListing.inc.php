@@ -63,7 +63,7 @@ class PrintListing
 	 */
 	public $Title="";
 	/**
-	 * EntÃªte du listing
+	 * Entête du listing
 	 *
 	 * @var string
 	 */
@@ -125,7 +125,7 @@ class PrintListing
 
 	private function __convert($text)
 	{
-		return ModelConverter::convertApasFormat($text);
+		return ModelConverter::ConvertApasFormat($text);
 	}
 
 	private function getListHeader()

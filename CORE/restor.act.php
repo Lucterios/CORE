@@ -47,6 +47,8 @@ try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","restor",$Params);
 $xfer_result->Caption="Restaurer les données";
 //@CODE_ACTION@
+global $SECURITY_LOCK;
+$SECURITY_LOCK->open(true);
 $file_path = $path.$filename;
 if (!is_file($file_path))
 	$xfer_result->message('Fichier non trouvé.', XFER_DBOX_WARNING);
@@ -54,6 +56,7 @@ else if($xfer_result->confirme("Voulez-vous réaliser une restauration du fichier
 	$xfer_result->m_context['file_path'] = $file_path;
 	$xfer_result->redirectAction( new Xfer_Action('_Restaurer','','CORE','restorForm', FORMTYPE_MODAL, CLOSE_YES));
 }
+$SECURITY_LOCK->close();
 //@CODE_ACTION@
 }catch(Exception $e) {
 	throw $e;

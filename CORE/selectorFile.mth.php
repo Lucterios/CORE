@@ -91,7 +91,7 @@ $select->simple = true;
 $select->setValue('.');
 $select->setLocation(1,4,2);
 $select->setSize(250,250);
-$select->setAction( new Xfer_Action('','',$self->m_extension,$self->m_action, FORMTYPE_REFRESH, CLOSE_NO));
+$select->setAction($self->getRefreshAction());
 $self->addComponent($select);
 //
 $lb_name = new Xfer_Comp_LabelForm('lblfiles');

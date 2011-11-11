@@ -37,22 +37,33 @@ class TestManager {
 		$this->CODE_COVER=new CodeCover($coveractif);
 	}
 
+	private function execCmd($cmd){
+		$out=array();
+		exec($cmd,$out,$ret);
+		if ($ret!=0) {
+		      echo "<!-- cmd : '$cmd' \n";
+		      foreach($out as $line)
+			  echo "\t".trim($line)."\n";
+		      echo "-->\n";
+		}
+		return $out;
+	}
+
 	private function dumpMysql(){
 		global $dbcnf;
 		global $fileDump;
 		$ret=array();
 		$cmd="mysqldump -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." > $this->fileDump";
-		exec($cmd,$ret);
-		//echo "<!-- Dump $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
+		$this->execCmd($cmd);
 	}
 
 	private function restorMysql(){
 		global $dbcnf;
 		global $fileDump;
 		$ret=array();
+
 		$cmd="mysql -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." < $this->fileDump";
-		exec($cmd,$ret);
-		//echo "<!-- SQL $cmd :".print_r($ret,true)." - ".print_r($dbcnf,true)." -->\n";
+		$this->execCmd($cmd);
 	}
 
 	private function installation(){
@@ -75,14 +86,13 @@ class TestManager {
 			$ext->upgradeContraintsTable();
 			$msg.=$ext->message;
 		}
-		//echo "<!-- ".str_replace(array("{[newline]}","--","<",">"),array("\n","","&#139;","&#155;"),$msg)." -->\n";
 		
 		if (is_file($this->extensionObj->Dir.'/setup.test.php')) {
 			$setup_item=new TestItem($this->extensionObj->Name,"SETUP");
 			$this->CODE_COVER->startCodeCover();
 			$setup_item->runTest($this->extensionObj->Dir,$this->extensionObj->Name,'setup');
 			$this->CODE_COVER->stopCodeCover();
-			if (!is_null($setup_item->errorObj))
+			if ($setup_item->hasErrorObj())
 				$this->GlobalTest->addTests($setup_item);
 		}
 	}
@@ -120,6 +130,8 @@ class TestManager {
 		$login='admin';
 		$connect = new DBCNX();
 		$connect->connect($dbcnf);
+		global $GLOBAL;
+		$GLOBAL['ses']=posix_getpid().'@'.time();
 
 		$this->fileDump="tmp/$dbname.sql";
 		if (is_file($this->fileDump) && $deleteDump)
@@ -199,8 +211,7 @@ class TestManager {
 		}
 		$prog_list=array("mysqldump","mysql");
 		foreach($prog_list as $prog_item) {
-			$ret=array();
-			exec("$prog_item --version",$ret);
+			$ret=$this->execCmd("$prog_item --version");
 			$begin_ret=substr($ret[0],0,strlen($prog_item));
 			if ($begin_ret!=$prog_item) {
 				$erreur.=" - $prog_item inconnu!";
@@ -220,25 +231,42 @@ class TestManager {
 	}
 }
 
+function showConfig(){
+	include_once("CORE/fichierFonctions.inc.php");
+	$maxsize=taille_max_dl_fichier();
+	echo "<!-- Taille fichier max. (octets):".$maxsize." -->\n";
+	$max_execution_time = @ini_get('max_execution_time');
+	if(empty($post_max_size)) {
+      	$max_execution_time = @get_cfg_var('max_execution_time');
+		if(empty($max_execution_time))
+			$max_execution_time = 30;
+	}	
+	echo "<!-- Temps de réponse max. (sc)!".$max_execution_time." -->\n";
+}
+
 $testManager=null;
 if (isset($_GET['extension']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
 	$testManager=new TestManager($_GET['extension'],isset($_GET['title'])?$_GET['title']:"Lucterios Test",
 	      isset($_GET['cover'])?($_GET['cover']=='true'):false);
 	$testManager->initial($_GET['dbuser'],$_GET['dbpass'],$_GET['dbname'],isset($_GET['num'])?$_GET['num']:-1,isset($_GET['delete'])?($_GET['delete']!='false'):true);
 }
-elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7)) {
+elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7) || (count($argv)==8)) {
 	echo "<!-- Test: ";
 	foreach($argv as $num=>$val)
 		echo "arg($num)='$val' ";
 	echo "-->\n";
-	$testManager=new TestManager($argv[1],(count($argv)==6)?$argv[5]:"LucteriosTest",(count($argv)==7)?($argv[6]!='NON'):true);
-	$testManager->initial($argv[2],$argv[3],$argv[4],-1,true);
+	showConfig();
+
+	$testManager=new TestManager($argv[1],(count($argv)>=6)?$argv[5]:"LucteriosTest",(count($argv)>=7)?($argv[6]!='NON'):true);
+	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?(int)$argv[7]:-1,true);
 }
 else {
 	$testManager=new TestManager("","",false);
 }
 
 if ($testManager->checkValid()) {
+	require_once("CORE/securityLock.inc.php");
+	$SECURITY_LOCK=new SecurityLock();
 	$testManager->execute();
 }
 $testManager->show();

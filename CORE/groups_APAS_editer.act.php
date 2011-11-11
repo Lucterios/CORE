@@ -83,7 +83,7 @@ $sel=new Xfer_Comp_Select('extension');
 $sel->setSelect($list);
 $sel->setValue($extension);
 $sel->setLocation(2,3,2);
-$sel->setAction($self->NewAction('','','editer',FORMTYPE_REFRESH,CLOSE_NO));
+$sel->setAction($xfer_result->getRefreshAction());
 $xfer_result->addComponent($sel);
 
 $Q="SELECT CORE_group_rights.*

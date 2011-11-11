@@ -31,7 +31,7 @@
 
  */
 
-require_once'xfer.inc.php';
+require_once ('CORE/xfer.inc.php');
 
 /**
 * Configuration du lien mail
@@ -62,97 +62,97 @@ class Xfer_Component extends Xfer_Object {
 	 * @access public
 	 * @var string
 	 */
-	var $_component;
+	protected $_component;
 
 	/**
 	 * Identifiant du composant
 	 *
 	 * @var string
 	 */
-	var $m_name;
+	public $m_name;
 
 	/**
 	 * Valeur véhiculée par le composant
 	 *
 	 * @var unknown_type
 	 */
-	var $m_value;
+	public $m_value;
 
 	/**
 	 * Identifiant de l'onglet associé. 0=Hors onglet
 	 *
 	 * @var integer
 	 */
-	var $tab;
+	public $tab;
 
 	/**
 	 * position horizontal
 	 *
 	 * @var integer
 	 */
-	var $x;
+	public $x;
 
 	/**
 	 * position vertical
 	 *
 	 * @var integer
 	 */
-	var $y;
+	public $y;
 	/**
 	 * Encombrement horizontal. 1 par defaut
 	 *
 	 * @var integer
 	 */
-	var $colspan;
+	public $colspan;
 
 	/**
 	 * Encombrement vertical. 1 par defaut.
 	 *
 	 * @var integer
 	 */
-	var $rowspan;
+	public $rowspan;
 
 	/**
 	 * Description du composant
 	 *
 	 * @var string
 	 */
-	var $m_description;
+	public $m_description;
 
 	/**
 	 * Précise si le champ est obligatoire. False par defaut.
 	 *
 	 * @var boolean
 	 */
-	var $needed;
+	public $needed;
 
 	/**
 	 * Taille vertical minimum
 	 *
 	 * @var integer
 	 */
-	var $VMin;
+	public $VMin;
 
 	/**
 	 * Taille horizontal minimum
 	 *
 	 * @var integer
 	 */
-	var $HMin;
+	public $HMin;
 
 	/**
 	 * Taille vertical maximum
 	 *
 	 * @var integer
 	 */
-	var $VMax;
+	public $VMax;
 
 	/**
 	 * Taille horizontal maximum
 	 *
 	 * @var integer
 	 */
-	var $HMax;
+	public $HMax;
 
 	/**
 	 * Constructeur
@@ -160,8 +160,8 @@ class Xfer_Component extends Xfer_Object {
 	 * @param string $name identifiant du composant
 	 * @return Xfer_Component
 	 */
-	function Xfer_Component($name) {
-		$this->Xfer_Object();
+	public function __construct($name) {
+		parent::__construct();
 		$this->m_name = $name;
 		$this->_component = "";
 		//$component;
@@ -187,7 +187,7 @@ class Xfer_Component extends Xfer_Object {
 	 * @param integer $colspan
 	 * @param integer $row
 	 */
-	function setLocation($x,$y,$colspan = 1,$rowspan = 1) {
+	public function setLocation($x,$y,$colspan = 1,$rowspan = 1) {
 		$this->x = (int)$x;
 		$this->y = (int)$y;
 		$this->colspan = (int)$colspan;
@@ -202,7 +202,7 @@ class Xfer_Component extends Xfer_Object {
 	* @param integer $VMax
 	* @param integer $HMax
 	*/
-	function setSize($VMin,$HMin,$VMax = "",$HMax = "") {
+	public function setSize($VMin,$HMin,$VMax = "",$HMax = "") {
 		$this->VMin = $VMin;
 		$this->HMin = $HMin;
 		$this->VMax = $VMax;
@@ -214,7 +214,7 @@ class Xfer_Component extends Xfer_Object {
 	 *
 	 * @param unknown_type $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = $value;
 	}
 
@@ -223,7 +223,7 @@ class Xfer_Component extends Xfer_Object {
 	 *
 	 * @param boolean $needed
 	 */
-	function setNeeded($needed) {
+	public function setNeeded($needed) {
 		$this->needed = $needed;
 	}
 
@@ -233,7 +233,7 @@ class Xfer_Component extends Xfer_Object {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return $this->m_value;
 	}
 
@@ -242,7 +242,7 @@ class Xfer_Component extends Xfer_Object {
 	 *
 	 * @return string
 	 */
-	function getId() {
+	public function getId() {
 		$text = "";
 		if( is_int($this->tab))
 			$text.= sprintf("tab=%4d",(int)$this->tab);
@@ -265,7 +265,7 @@ class Xfer_Component extends Xfer_Object {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$description = urlencode($this->m_description);
 		$xml_attr = sprintf("name='%s' description='%s' ",$this->m_name,$description);
 		if( is_int($this->tab))$xml_attr .= sprintf(" tab='%s'",$this->tab);
@@ -287,7 +287,7 @@ class Xfer_Component extends Xfer_Object {
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		$xml_text = sprintf("\t<%s %s>",$this->_component,$this->_attributs());
 		$xml_text = $xml_text.$this->_getContent();
 		$xml_text = $xml_text. sprintf("</%s>\n",$this->_component);
@@ -308,8 +308,8 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	 *
 	 * @return Xfer_Comp_Tab
 	 */
-	function Xfer_Comp_Tab() {
-		$this->Xfer_Component("");
+	public function __construct() {
+		parent::__construct("");
 		$this->_component = "TAB";
 	}
 
@@ -318,7 +318,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	*
 	* @param string $value
 	*/
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
@@ -327,7 +327,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	 *
 	 * @return string
 	 */
-	/*	function getReponseXML()
+	/*	public function getReponseXML()
 	{
 		$xml_text=sprintf("\t<%s>",$this->_component);
 		$xml_text=$xml_text.$this->_getContent();
@@ -341,7 +341,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -359,8 +359,8 @@ class Xfer_Comp_Label extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_Label
 	 */
-	function Xfer_Comp_Label($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "LABEL";
 	}
 
@@ -369,7 +369,7 @@ class Xfer_Comp_Label extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
@@ -379,7 +379,7 @@ class Xfer_Comp_Label extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -396,7 +396,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 *
 	 * @var string
 	 */
-	var $m_type = "";
+	public $m_type = "";
 
 	/**
 	 * Constructeur
@@ -404,8 +404,8 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_Label
 	 */
-	function Xfer_Comp_Image($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "IMAGE";
 	}
 
@@ -414,7 +414,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setValue($icon,$type = "") {
+	public function setValue($icon,$type = "") {
 		$this->m_type = $type;
 		if($type == "") {
 			global $extension;
@@ -440,7 +440,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		$size = filesize($this->m_value);
 		$image_info = getImageSize($this->m_value);
@@ -455,7 +455,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<TYPE><![CDATA[%s]]></TYPE><![CDATA[%s]]>",$this->m_type,$this->m_value);
 	}
 }
@@ -472,7 +472,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 *
 	 * @var string
 	 */
-	var $Link = "";
+	public $m_Link = "";
 
 	/**
 	 * Constructeur
@@ -480,8 +480,8 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_Label
 	 */
-	function Xfer_Comp_LinkLabel($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "LINK";
 		global $LINK_LABEL_MANAGER;
 		if ($LINK_LABEL_MANAGER!="")
@@ -493,7 +493,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
@@ -502,7 +502,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setEmailFromGrid($grid,$FieldName) {
+	public function setEmailFromGrid($grid,$FieldName) {
 		$mails = "";
 		foreach($grid->m_records as $rec) {
 			$rec[$FieldName] = trim($rec[$FieldName]);
@@ -530,7 +530,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setFileToLoad($filename) {
+	public function setFileToLoad($filename) {
 		$http_referer=$_SERVER["HTTP_REFERER"];
 		$protocol=substr($http_referer,0,strpos($http_referer,'://'));
 		$protocol=($protocol=='')?'http':$protocol;
@@ -547,7 +547,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setLink($value) {
+	public function setLink($value) {
 		$this->m_Link = trim($value);
 	}
 
@@ -557,7 +557,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>\n<LINK><![CDATA[%s]]></LINK>\n",$this->m_value,$this->m_Link);
 	}
 }
@@ -575,8 +575,8 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_LabelForm
 	 */
-	function Xfer_Comp_LabelForm($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "LABELFORM";
 	}
 
@@ -585,7 +585,7 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
@@ -595,7 +595,7 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -625,8 +625,8 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_Button
 	 */
-	function Xfer_Comp_Button($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "BUTTON";
 	}
 	/**
@@ -634,7 +634,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function setAction($action) {
+	public function setAction($action) {
 		if($this->checkActionRigth($action)) {
 			$this->m_action = $action;
 		}
@@ -645,7 +645,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getActionContent() {
+	protected function _getActionContent() {
 		$xml_text = "<ACTIONS>";
 		if($this->m_action != null) {
 			$action = $this->m_action;
@@ -661,21 +661,21 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 *
 	 * @var unknown_type
 	 */
-	var $m_clickvalue="";
+	public $m_clickvalue="";
 
 	/**
 	 * Nom retourné par un clique button
 	 *
 	 * @var unknown_type
 	 */
-	var $m_clickname="";
+	public $m_clickname="";
 
 	/**
 	 * change l'action associé au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function setClickInfo($clickname,$clickvalue) {
+	public function setClickInfo($clickname,$clickvalue) {
 		$this->m_clickname = "$clickname";
 		$this->m_clickvalue = "$clickvalue";
 	}
@@ -685,14 +685,14 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 *
 	 * @var unknown_type
 	 */
-	var $m_isMini=false;
+	public $m_isMini=false;
 
 	/**
 	 * change l'action associé au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function setIsMini($isMini) {
+	public function setIsMini($isMini) {
 		if ($isMini)
 			$this->m_isMini = true;
 		else
@@ -705,7 +705,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent::_attributs();
 		if ($this->m_clickname!='')
 			$xml_attr = sprintf("%s clickname='%s' clickvalue='%s' ",$xml_attr,$this->m_clickname,$this->m_clickvalue);
@@ -719,7 +719,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		$xml_text = sprintf("\t<%s %s>",$this->_component,$this->_attributs());
 		$xml_text = $xml_text.$this->_getContent();
 		$xml_text = $xml_text.$this->_getActionContent();
@@ -745,8 +745,8 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Edit
 	 */
-	function Xfer_Comp_Edit($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "EDIT";
 	}
 	/**
@@ -754,7 +754,7 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
@@ -764,7 +764,7 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		if( is_int($this->StringSize) && ($this->StringSize != 0))
 			$xml_attr .= " stringSize='".$this->StringSize."'";
@@ -777,7 +777,7 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$content = sprintf("<![CDATA[%s]]>",$this->m_value);
 		if( is_string($this->ExprReg) && ($this->ExprReg != ""))
 			$content .= sprintf("<REG_EXPR><![CDATA[%s]]></REG_EXPR>",$this->ExprReg);
@@ -798,8 +798,8 @@ class Xfer_Comp_Date extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Date
 	 */
-	function Xfer_Comp_Date($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "DATE";
 	}
 	/**
@@ -807,7 +807,7 @@ class Xfer_Comp_Date extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 	/**
@@ -816,7 +816,7 @@ class Xfer_Comp_Date extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -834,8 +834,8 @@ class Xfer_Comp_Time extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Time
 	 */
-	function Xfer_Comp_Time($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "TIME";
 	}
 	/**
@@ -843,7 +843,7 @@ class Xfer_Comp_Time extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 	/**
@@ -852,7 +852,7 @@ class Xfer_Comp_Time extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -870,8 +870,8 @@ class Xfer_Comp_DateTime extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_DateTime
 	 */
-	function Xfer_Comp_DateTime($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "DATETIME";
 	}
 	/**
@@ -879,7 +879,7 @@ class Xfer_Comp_DateTime extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 	/**
@@ -888,7 +888,7 @@ class Xfer_Comp_DateTime extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -906,8 +906,8 @@ class Xfer_Comp_Passwd extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Passwd
 	 */
-	function Xfer_Comp_Passwd($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "PASSWD";
 	}
 	/**
@@ -915,7 +915,7 @@ class Xfer_Comp_Passwd extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 	/**
@@ -924,7 +924,7 @@ class Xfer_Comp_Passwd extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -946,8 +946,8 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Memo
 	 */
-	function Xfer_Comp_Memo($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "MEMO";
 		$this->HMin = 200;
 		$this->VMin = 50;
@@ -958,7 +958,7 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 	/**
@@ -968,7 +968,7 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @param string $value
 	 */
-	function addSubMenu($type,$name,$value) {
+	public function addSubMenu($type,$name,$value) {
 		$this->SubMenu[] = array($type,$name,$value);
 	}
 	/**
@@ -977,7 +977,7 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		$xml_attr .= " FirstLine='".$this->FirstLine."'";
 		if($this->Encode != false)$xml_attr .= " Encode='1'";
@@ -991,7 +991,7 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$content = sprintf("<![CDATA[%s]]>\n",$this->m_value);
 		foreach($this->SubMenu as $menu) {
 			$content .= "<SUBMENU>
@@ -1018,8 +1018,8 @@ class Xfer_Comp_MemoForm extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_MemoForm
 	 */
-	function Xfer_Comp_MemoForm($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "MEMOFORM";
 		$this->HMin = 250;
 	}
@@ -1028,7 +1028,7 @@ class Xfer_Comp_MemoForm extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 	/**
@@ -1037,7 +1037,7 @@ class Xfer_Comp_MemoForm extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -1058,8 +1058,8 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Float
 	 */
-	function Xfer_Comp_Float($name,$min = 0.00,$max = 10000.00,$prec = 2) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name,$min = 0.00,$max = 10000.00,$prec = 2) {
+		parent::__construct($name);
 		$this->_component = "FLOAT";
 		$this->m_min = (double)$min;
 		$this->m_max = (double)$max;
@@ -1070,7 +1070,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 *
 	 * @param real $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$value = (double)$value;
 		$this->m_value = $value;
 	}
@@ -1080,7 +1080,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getFormat() {
+	protected function _getFormat() {
 		return "%.".$this->m_prec."f";
 	}
 	/**
@@ -1089,7 +1089,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$value = Max($this->m_min,$this->m_value);
 		$value = Min($this->m_max,$value);
 		$xml_text = "";
@@ -1103,7 +1103,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		$xml_attr = sprintf("%s min='".$this->_getFormat()."' max='".$this->_getFormat()."' prec='%d'",$xml_attr,$this->m_min,$this->m_max,$this->m_prec);
 		return $xml_attr;
@@ -1123,8 +1123,8 @@ class Xfer_Comp_Check extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_Float
 	 */
-	function Xfer_Comp_Check($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "CHECK";
 	}
 	/**
@@ -1132,7 +1132,7 @@ class Xfer_Comp_Check extends Xfer_Comp_Button {
 	 *
 	 * @param boolean $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = $value;
 	}
 	/**
@@ -1141,7 +1141,7 @@ class Xfer_Comp_Check extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		return sprintf("<![CDATA[%s]]>",$this->m_value);
 	}
 }
@@ -1157,15 +1157,16 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 * Liste de la selection
 	 *
 	 * @var array
-	 */var$m_select = array();
+	 */
+	public $m_select = array();
 	/**
 	 * Constructeur
 	 *
 	 * @param string $name
 	 * @return Xfer_Comp_Select
 	 */
-	function Xfer_Comp_Select($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "SELECT";
 	}
 	/**
@@ -1173,7 +1174,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 *
 	 * @param integer $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = $value;
 	}
 	/**
@@ -1181,7 +1182,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 *
 	 * @param array $select
 	 */
-	function setSelect($select = array()) {
+	public function setSelect($select = array()) {
 		$this->m_select = $select;
 	}
 	/**
@@ -1191,7 +1192,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 * @param string $ClassName
 	 * @param bool $IncludeMother
 	 */
-	function fillByDaughterList($MotherClassName,$ClassName,$IncludeMother) {
+	public function fillByDaughterList($MotherClassName,$ClassName,$IncludeMother) {
 		require_once('CORE/extensionManager.inc.php');
 		$select = getDaughterClassesList($MotherClassName,'', true,$IncludeMother);
 		if(! array_key_exists($ClassName,$select)) {
@@ -1210,7 +1211,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$xml_text = sprintf("%s",$this->m_value);
 		foreach($this->m_select as $key => $value)
 			$xml_text = $xml_text.sprintf("<CASE id='%s'><![CDATA[%s]]></CASE>",$key,$value);
@@ -1230,14 +1231,14 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 *
 	 * @var array
 	 */
-	var $m_select = array();
+	public $m_select = array();
 
 	/**
 	 * La selection est unique
 	 *
 	 * @var boolean
 	 */
-	var $simple = false;
+	public $simple = false;
 
 	/**
 	 * Constructeur
@@ -1245,8 +1246,8 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_CheckList
 	 */
-	function Xfer_Comp_CheckList($name) {
-		$this->Xfer_Comp_Button($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "CHECKLIST";
 	}
 	/**
@@ -1254,7 +1255,7 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 *
 	 * @param array $select
 	 */
-	function setSelect($select = array()) {
+	public function setSelect($select = array()) {
 		$this->m_select = $select;
 	}
 	/**
@@ -1263,7 +1264,7 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		$xml_attr = sprintf("%s simple='%d'",$xml_attr,$this->simple);
 		return $xml_attr;
@@ -1274,7 +1275,7 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$xml_text = "";
 		foreach($this->m_select as $key => $value) {
 			$att_checked = " checked='0'";
@@ -1301,28 +1302,28 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 *
 	 * @var array
 	 */
-	var $m_fitre = array();
+	public $m_fitre = array();
 
 	/**
 	 * Le fichier est transmis compressé
 	 *
 	 * @var string
 	 */
-	var $compress=false;
+	public $compress=false;
 
 	/**
 	 * Le fichier n'est pas transmis en Base64
 	 *
 	 * @var boolean
 	 */
-	var $HttpFile=false;
+	public $HttpFile=false;
 
 	/**
 	 * Taille maximal à télécharger
 	 *
 	 * @var int
 	 */
-	var $maxsize=1048576;
+	public $maxsize=1048576;
 
 	/**
 	 * Constructeur
@@ -1330,8 +1331,8 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_UpLoad
 	 */
-	function Xfer_Comp_UpLoad($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "UPLOAD";
 	}
 	/**
@@ -1339,11 +1340,11 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
-	function addFilter($newfiltre) {
+	public function addFilter($newfiltre) {
 		$this->m_fitre[] = $newfiltre;
 	}
 
@@ -1353,7 +1354,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		if($this->compress==true)
 			$xml_attr .= " Compress='".$this->compress."'";
@@ -1369,7 +1370,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$content = sprintf("<![CDATA[%s]]>",$this->m_value);
 		foreach($this->m_fitre as $current_fitre)
 			$content .= sprintf("<FILTER><![CDATA[%s]]></FILTER>",$current_fitre);
@@ -1391,28 +1392,28 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 *
 	 * @var string
 	 */
-	var $m_FileName="";
+	public $m_FileName="";
 
 	/**
 	 * Le fichier est transmis compressé
 	 *
 	 * @var boolean
 	 */
-	var $compress=false;
+	public $compress=false;
 
 	/**
 	 * Le fichier n'est pas transmis en Base64
 	 *
 	 * @var boolean
 	 */
-	var $HttpFile=false;
+	public $HttpFile=false;
 
 	/**
 	 * Taille maximal à télécharger
 	 *
 	 * @var int
 	 */
-	var $maxsize=1048576;
+	public $maxsize=1048576;
 
 	/**
 	 * Constructeur
@@ -1420,8 +1421,8 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 * @param string $name
 	 * @return Xfer_Comp_DownLoad
 	 */
-	function Xfer_Comp_DownLoad($name) {
-		$this->Xfer_Component($name);
+	public function __construct($name) {
+		parent::__construct($name);
 		$this->_component = "DOWNLOAD";
 	}
 
@@ -1430,7 +1431,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 *
 	 * @param string $value
 	 */
-	function setValue($value) {
+	public function setValue($value) {
 		$this->m_value = trim($value);
 	}
 
@@ -1439,7 +1440,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 *
 	 * @param string $filename
 	 */
-	function setFileName($filename) {
+	public function setFileName($filename) {
 		$this->m_FileName = trim($filename);
 	}
 
@@ -1449,7 +1450,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		if($this->compress==true)
 			$xml_attr .= " Compress='".$this->compress."'";
@@ -1465,7 +1466,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	protected function _getContent() {
 		$content = sprintf("<![CDATA[%s]]>",$this->m_value);
 		$content.= sprintf("<FILENAME><![CDATA[%s]]></FILENAME>",$this->m_FileName);
 		return $content;

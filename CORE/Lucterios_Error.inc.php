@@ -22,13 +22,10 @@
 
 //@BEGIN@
 
-define('PHP',0)
-;
-define('CRITIC',1)
-;
+define('PHP',0);
+define('CRITIC',1);
 define('GRAVE',2);
-define('IMPORTANT',3)
-;
+define('IMPORTANT',3);
 define('MINOR',4);
 
 /**

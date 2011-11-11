@@ -23,44 +23,44 @@
 //@BEGIN@
 class CodeCover {
 
-	var $metrics=array();
-	var $started=false;
-	var $actif=false;
+	private $mMetrics=array();
+	private $mStarted=false;
+	private $mActif=false;
 
-	function CodeCover($actif){
-		$this->actif=$actif;
+	public function __construct($pActif){
+		$this->mActif=$pActif;
 		if (!function_exists('xdebug_start_code_coverage') || !function_exists('xdebug_stop_code_coverage') || !function_exists('xdebug_get_code_coverage'))
-			$this->actif=false;
+			$this->mActif=false;
 	}
 
-	function load($extDir) {
-		if (!$this->actif)
+	public function load($extDir) {
+		if (!$this->mActif)
 			return;
 		$dh = @opendir($extDir);
 		while(($currentfile = @readdir($dh)) != false) {
 			$path=realpath("$extDir/$currentfile");
-			$val=$this->_initial($path);
+			$val=$this->initial($path);
 		}
 		@closedir($dh);
 	}
 
-	function startCodeCover(){
-		if (!$this->actif)
+	public function startCodeCover(){
+		if (!$this->mActif)
 			return;
-		if ($this->started)
+		if ($this->mStarted)
 		    stopCodeCover();
 		xdebug_start_code_coverage();
-		$this->started=true;
+		$this->mStarted=true;
 	}
 
-	function _convertFileName($file_name) {
+	private function convertFileName($file_name) {
 		$name=basename($file_name);
 		$root=basename(substr($file_name,0,-1*strlen($name)));
 		return $root."|".$name;
 	}
 
-	function _initial($fileName) {
-		if ((substr($fileName,-8)=='.act.php') || (substr($fileName,-8)=='.mth.php') || (substr($fileName,-8)=='.inc.php')) {
+	private function initial($fileName) {
+		if ((substr($fileName,-8)=='.act.php') || (substr($fileName,-8)=='.mth.php') || (substr($fileName,-8)=='.inc.php') || (substr($fileName,-8)=='.evt.php')) {
 			if (substr($fileName,-8)=='.inc.php') {
 				$BEGIN_TAG='//@BEGIN@';
 				$END_TAG='//@END@';
@@ -69,8 +69,8 @@ class CodeCover {
 				$BEGIN_TAG='//@CODE_ACTION@';
 				$END_TAG='//@CODE_ACTION@';
 			}
-			$fileId=$this->_convertFileName($fileName);
-			if (!isset($this->metrics[$fileId]) && !in_array($fileId,array('CORE|CodeCover.inc.php','CORE|UnitTest.inc.php','applis|application.inc.php','applis|setup.inc.php','applis|postInstallation.inc.php')) ) {
+			$fileId=$this->convertFileName($fileName);
+			if (!isset($this->mMetrics[$fileId]) && !in_array($fileId,array('CORE|CodeCover.inc.php','CORE|UnitTest.inc.php','applis|application.inc.php','applis|setup.inc.php','applis|postInstallation.inc.php')) ) {
 				$lineList=array();
 				$begin=false;
 				$comment=false;
@@ -83,7 +83,7 @@ class CodeCover {
 						if ($begin && ($source==$END_TAG))
 							$begin=false;
 						else {
-							if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//') && (substr($source,0,9)!='function ') && (substr($source,0,6)!='class ') && (substr($source,0,4)!='var ') && (substr($source,0,7)!='define(') && (substr($source,0,7)!='public ') && (substr($source,0,8)!='private ') && (substr($source,0,10)!='protected ') && (substr($source,0,7)!='require') && (substr($source,0,7)!='include') && (substr($source,0,7)!='global '))
+							if (($begin) && ($source!='')  && ($source!='else') && ($source!='{')  && ($source!='}') && (substr($source,0,2)!='//') && (substr($source,0,9)!='public function ') && (substr($source,0,6)!='class ') && (substr($source,0,4)!='var ') && (substr($source,0,7)!='define(') && (substr($source,0,7)!='public ') && (substr($source,0,8)!='private ') && (substr($source,0,10)!='protected ') && (substr($source,0,7)!='require') && (substr($source,0,7)!='include') && (substr($source,0,7)!='global '))
 								$lineList[$line+1]=0;
 							if (!$begin && ($source==$BEGIN_TAG))
 								$begin=true;
@@ -92,43 +92,43 @@ class CodeCover {
 					if ($comment && (substr($source,-2)=='*/'))
 						$comment=false;
 				}
-				$this->metrics[$fileId]=$lineList;
+				$this->mMetrics[$fileId]=$lineList;
 			}
-			return $this->metrics[$fileId];
+			return $this->mMetrics[$fileId];
 		}
 		else
 			return null;
 	}
 
-	function stopCodeCover(){
-		if (!$this->actif)
+	public function stopCodeCover(){
+		if (!$this->mActif)
 			return;
-		if ($this->started) {
+		if ($this->mStarted) {
 			unset($code_coverage_analysis);
 			file_put_contents("tmp/code_coverage.var","<?php\n\$code_coverage_analysis = ".var_export(xdebug_get_code_coverage(),TRUE)."\n?>");
 			xdebug_stop_code_coverage(true);
-			$this->started=false;
+			$this->mStarted=false;
 			require "tmp/code_coverage.var";
 			foreach($code_coverage_analysis as $file_name=>$lines_executed) {
-				$lineList=$this->_initial($file_name);
+				$lineList=$this->initial($file_name);
 				if (is_array($lineList)) {
 					foreach($lines_executed as $num=>$val) {
 						if (isset($lineList[$num]))
 							$lineList[$num]=$lineList[$num]+$val;
 					}
-					$fileId=$this->_convertFileName($file_name);
-					$this->metrics[$fileId]=$lineList;
+					$fileId=$this->convertFileName($file_name);
+					$this->mMetrics[$fileId]=$lineList;
 				}
 			}
 		}
 	}
 
-	function AllCover() {
-		if (!$this->actif)
+	public function AllCover() {
+		if (!$this->mActif)
 			return "";
-		if ($this->started)
+		if ($this->mStarted)
 		    stopCodeCover();
-		ksort($this->metrics);
+		ksort($this->mMetrics);
 		$global_linesNB=0.0;
 		$global_linesOK=0.0;
 
@@ -139,7 +139,7 @@ class CodeCover {
 
 		$last_ext="";
 		$current_ext="";
-		foreach($this->metrics as $file_name=>$lineList) {
+		foreach($this->mMetrics as $file_name=>$lineList) {
 			$pos=strpos($file_name,'|');
 			$current_ext=substr($file_name,0,$pos);
 			$name=substr($file_name,$pos+1);

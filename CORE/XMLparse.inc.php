@@ -24,123 +24,123 @@
 
 class XmlElement
 {
-  var $tagName;
-  var $cdata;
-  var $attribs;
-  var $childs;
-  var $father;
+	protected $tagName;
+	protected $cdata;
+	protected $attribs;
+	protected $childs;
+	protected $father;
+	protected $num_cdata=0;
 
-  function XmlElement($tagName) {
-    $this->tagName = $tagName;
-    $this->attribs = array();
-    $this->childs = array();
-    $this->cdata='';
-  }
+	public function __construct($tagName) {
+		$this->tagName = $tagName;
+		$this->attribs = array();
+		$this->childs = array();
+		$this->cdatas=array("");
+	}
 
-  function father(&$father) {
-    if("xmlelement" == strtolower(get_class($father))) {
-      $this->father =& $father;
-      return true;
-    }
-    else return false;
-  }
+	public function father(&$father) {
+		if("xmlelement" == strtolower(get_class($father))) {
+			$this->father =& $father;
+			return true;
+		}
+		else return false;
+	}
 
-  function setCData($cdata) {
-    $this->cdata.=$cdata;
-    return true;
-  }
+	public function setCData($cdata) {
+		if (!isset($this->cdatas[$this->num_cdata]))
+		    $this->cdatas[$this->num_cdata]="";
+		$this->cdatas[$this->num_cdata]=$this->cdatas[$this->num_cdata].$cdata;
+		return true;
+	}
 
-  function addAttribute($attrName, $attrVal) {
-    $this->attribs[strtolower($attrName)] = $attrVal;
-    //$this->attribs[$attrName] = $attrVal;
-    return true;
-  }
+	public function addAttribute($attrName, $attrVal) {
+		$this->attribs[strtolower($attrName)] = $attrVal;
+		//$this->attribs[$attrName] = $attrVal;
+		return true;
+	}
 
-  function addAttributeArray($attribs) {
-    foreach($attribs as $attr_name=>$attr_value)
-      $this->addAttribute($attr_name,$attr_value);
-    return true;
-  }
+	public function addAttributeArray($attribs) {
+		foreach($attribs as $attr_name=>$attr_value)
+			$this->addAttribute($attr_name,$attr_value);
+		return true;
+	}
 
-  function addChild(&$child) {
-    if("xmlelement" == strtolower(get_class($child))) {
-      $nb = count($this->childs);
-      $child->father($this);
-      $this->childs[$nb] =& $child;
-      return true;
-    }
-    else return false;
-  }
+	public function addChild(&$child) {
+		if("xmlelement" == strtolower(get_class($child))) {
+			$nb = count($this->childs);
+			$child->father($this);
+			$this->childs[$nb] =& $child;
+			$this->num_cdata++;
+			return true;
+		}
+		else return false;
+	}
 
-  function getTagName() {
-    return $this->tagName;
-  }
+	public function getTagName() {
+		return $this->tagName;
+	}
 
-  function &getParent() {
-    return $this->father;
-  }
+	public function &getParent() {
+		return $this->father;
+	}
 
-  function getCDataOfChild($tagName) 
-  {
-    $childs=$this->getChildsByTagName($tagName);
-    if (count($childs)==1)
-    {
-      $child=$childs[0];
-      return $child->getCData();
-    }
-    else
-      return "";
-  }
+	public function getCDataOfChild($tagName) {
+		$childs=$this->getChildsByTagName($tagName);
+		if (count($childs)==1) {
+			$child=$childs[0];
+			return $child->getCData();
+		}
+		else
+			return "";
+	}
 
-  function getCData() {
-    return $this->cdata;
-  }
+	public function getCData() {
+		return implode('',$this->cdatas);
+	}
 
-  function getAttributeValue($attrName) {
-    if(array_key_exists(strtolower($attrName), $this->attribs))
-	    return $this->attribs[strtolower($attrName)];
-    //if(array_key_exists($attrName, $this->attribs))
-    //	return $this->attribs[$attrName];
-    else return false;
-  }
+	public function getAttributeValue($attrName) {
+		if(array_key_exists(strtolower($attrName), $this->attribs))
+			return $this->attribs[strtolower($attrName)];
+		//if(array_key_exists($attrName, $this->attribs))
+		//	return $this->attribs[$attrName];
+		else return false;
+	}
 
-  function getChildsByTagName($tagName) {
-    $result = array();
-    foreach($this->childs as $child) {
-	    if(strtolower($tagName) == strtolower($child->getTagName())) {
-		    array_push($result, $child);
-	    }
-	    $result = array_merge($result, $child->getChildsByTagName($tagName));
-    }
-    return $result;
-  }
+	public function getChildsByTagName($tagName) {
+		$result = array();
+		foreach($this->childs as $child) {
+			if(strtolower($tagName) == strtolower($child->getTagName())) {
+				array_push($result, $child);
+			}
+			$result = array_merge($result, $child->getChildsByTagName($tagName));
+		}
+		return $result;
+	}
 
-  function getChilds() {
-      return $this->childs;
-  }
+	public function getChilds() {
+		return $this->childs;
+	}
 }
 
 class COREParser
 {
-  var $content="";
+	protected $content="";
+	protected $document;
+	protected $opentags;
 
-  var $document;
-  var $opentags;
+	public function __construct() {
+		$this->opentags = "empty";
+		$this->document = "empty";
+	}
 
-  function __construct()
-  {
-    $this->opentags = "empty";
-    $this->document = "empty";
-  }
-
-  function debug($msg) {
-    //printf("%s: %s<br>\n", $this->id, $msg/*, $this->nbopentags*/);
-    //print_r($this->document);
-    //print "opentags: ";
-    //print_r($this->opentags);
-    //print "<br>\n";
-  //if("xmlelement" == strtolower(get_class($this->opentags))) print "objet actuel: ".$this->opentags->getTagName()."<br>\n";
-  }
+	public function debug($msg) {
+		//printf("%s: %s<br>\n", $this->id, $msg/*, $this->nbopentags*/);
+		/*print_r($this->document);
+		print "opentags: ";
+		print_r($this->opentags);
+		print "<br>\n";
+		if("xmlelement" == strtolower(get_class($this->opentags))) print "objet actuel: ".$this->opentags->getTagName()."<br>\n";*/
+	}
 
 
  /**
@@ -151,22 +151,21 @@ class COREParser
   * @param  string    nom de l'élément
   * @param  array     attributs
   */
-  function startHandler($xp, $name, $attribs)
-  {
-    if(!is_object($this->document) || ("xmlelement" != strtolower(get_class($this->document)))) {
-      $this->document =new XmlElement($name);
-      $this->document->addAttributeArray($attribs);
-      $this->opentags =& $this->document;
-      $this->debug("creation du doc");
-    }
-    else {
-      $newElem =new XmlElement($name);
-      $newElem->addAttributeArray($attribs);
-      $this->opentags->addChild($newElem);
-      $this->opentags =& $newElem;
-      $this->debug("ouverture de balise $name");
-    }
-  }
+	public function startHandler($xp, $name, $attribs) {
+		if(!is_object($this->document) || ("xmlelement" != strtolower(get_class($this->document)))) {
+			$this->document =new XmlElement($name);
+			$this->document->addAttributeArray($attribs);
+			$this->opentags =& $this->document;
+			$this->debug("creation du doc");
+		}
+		else {
+			$newElem =new XmlElement($name);
+			$newElem->addAttributeArray($attribs);
+			$this->opentags->addChild($newElem);
+			$this->opentags =& $newElem;
+			$this->debug("ouverture de balise $name");
+		}
+	}
 
  /**
   * gestion de l'élément fermant
@@ -175,66 +174,59 @@ class COREParser
   * @param  resource  ressource de l'analyseur XML
   * @param  string    nom de l'élément
   */
-  function endHandler($xp, $name)
-  {
-    $this->opentags =& $this->opentags->getParent();
-    $this->debug("fermeture de balise $name");
-  }
+	public function endHandler($xp, $name) {
+		$this->opentags =& $this->opentags->getParent();
+		$this->debug("fermeture de balise $name");
+	}
 
-  function cdataHandler($xp, $cdata)
-  {
-    $this->opentags->setCData($cdata);
-  }
+	public function cdataHandler($xp, $cdata) {
+		$this->opentags->setCData($cdata);
+	}
 
-  function affich() {
-    print_r($this->document);
-  }
+	public function affich() {
+		print_r($this->document);
+	}
 
-  function getResult() {
-    return $this->document;
-  }
+	public function getResult() {
+		return $this->document;
+	}
 
-  function getByTagName($tagName) {
-    return $this->document->getChildsByTagName($tagName);
-  }
+	public function getByTagName($tagName) {
+		return $this->document->getChildsByTagName($tagName);
+	}
 
-  function getComment()
-  {
-    $comment=array();
-    $xml_input=$this->fp;
-    $pos1=strpos($xml_input,'<!--');
-    $pos2=strpos($xml_input,'-->');
-    while (($pos1 >= 0) && ($pos2 > $pos1))
-    {
-      $line=trim(substr($xml_input,$pos1+4,$pos2-$pos1-8));
-      $comment[]=$line;
-      $xml_input=substr($xml_input,$pos2+3);
-      $pos1=strpos($xml_input,'<!--');
-      $pos2=strpos($xml_input,'-->');
-    }
-    return $comment;
-  }
+	public function getComment() {
+		$comment=array();
+		$xml_input=$this->fp;
+		$pos1=strpos($xml_input,'<!--');
+		$pos2=strpos($xml_input,'-->');
+		while (($pos1 >= 0) && ($pos2 > $pos1)) {
+			$line=trim(substr($xml_input,$pos1+4,$pos2-$pos1-8));
+			$comment[]=$line;
+			$xml_input=substr($xml_input,$pos2+3);
+			$pos1=strpos($xml_input,'<!--');
+			$pos2=strpos($xml_input,'-->');
+		}
+		return $comment;
+	}
   
-  function setInputString($content)
-  {
-    $this->setInput($content);
-  }
+	public function setInputString($content) {
+		$this->setInput($content);
+	}
  
-  function setInput($content)
-  {
-    $this->content=$content;
-  }
+	public function setInput($content) {
+		$this->content=$content;
+	}
 
-  function parse()
-  {
-      $parser=@xml_parser_create();
-      xml_set_object($parser, $this);
-      xml_set_element_handler($parser, 'startHandler', 'endHandler');
-      xml_set_character_data_handler($parser, 'cdataHandler');
-      xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
-      xml_parse($parser, $this->content, false);
-      xml_parser_free($parser);
-  }
+	public function parse() {
+		$parser=@xml_parser_create();
+		xml_set_object($parser, $this);
+		xml_set_element_handler($parser, 'startHandler', 'endHandler');
+		xml_set_character_data_handler($parser, 'cdataHandler');
+		xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, true);
+		xml_parse($parser, $this->content, false);
+		xml_parser_free($parser);
+	}
   
 }
 

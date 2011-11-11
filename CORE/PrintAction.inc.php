@@ -100,7 +100,7 @@ abstract class PrintItem {
 		$sizeX = 0;
 		$sizeY = 0;
 		$text = str_replace(array('{[newline]}'),"\n",$text);
-		$text_lines = split("\n",$text);
+		$text_lines = explode("\n",$text);
 		foreach($text_lines as $line) {
 			$sizeX = max($sizeX, strlen($this->removeFormat($line)));
 			$sizeY = $sizeY+1;
@@ -123,7 +123,7 @@ abstract class PrintItem {
 	public function convertValue($value) {
 		if($value == '---')
 			$value = '';
-		$value = str_replace('%','°/o',$value);
+		$value = str_replace('%','°/.',$value);
 		return $value;
 	}
 
@@ -145,7 +145,7 @@ class PrintLabel extends PrintItem {
 	public function getReportPart() {
 		$value = $this->convertValue($this->value);
 		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.2f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$this->height,$this->width,$this->top,$this->Left,$this->getspacing());
-		$content .= ModelConverter:: convertApasFormat($value);
+		$content .= ModelConverter::ConvertApasFormat($value);
 		$content .= '</text>';
 		return $content;
 	}
@@ -178,7 +178,7 @@ class PrintTab extends PrintItem {
 
 	public function getReportPart() {
 		$content = sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="%.2f" border_color="black" border_style="" border_width="0.2" xdisplay_align="left" text_align="left" line_height="13" font_family="sans-serif" font_weight="" font_size="13">',$this->height,$this->width,$this->top+$sep_height,$this->Left,$this->getspacing());
-		$content .= ModelConverter:: convertApasFormat($this->value);
+		$content .= ModelConverter::ConvertApasFormat($this->value);
 		$content .= '</text>';
 		return $content;
 	}
@@ -215,7 +215,7 @@ class PrintImage extends PrintItem {
 		$file_size = filesize($this->value);
 		$handle = fopen($this->value,'r');
 		$img = fread($handle,$file_size);
-		$img = chunk_split( base64_encode($img));
+		$img = chunk_explode( base64_encode($img));
 		$f = fclose($handle);
 		return "data:image/*;base64,$img";
 	}
@@ -294,7 +294,7 @@ class PrintTable extends PrintItem {
 			$size_col = (int)($this->width*$column[1]/$this->sizeX);
 			$content .= sprintf('<columns width="%d.0" data=""><cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="center" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$size_col);
 			$value = $this->convertValue($column[0]);
-			$content .= ModelConverter:: convertApasFormat($value);
+			$content .= ModelConverter::ConvertApasFormat($value);
 			$content .= '</cell></columns>';
 		}
 		foreach($this->rows as $row) {
@@ -302,7 +302,7 @@ class PrintTable extends PrintItem {
 			foreach($row as $value) {
 				if (substr($value,0,20)=="data:image/*;base64,") $img='image="1"'; else $img='image="0"';
 				$content .= '<cell data="" display_align="center" border_color="black" border_style="solid" border_width="0.2" text_align="start" line_height="10" font_family="sans-serif" font_weight="" font_size="9" '.$img.'>';
-				$content .= ModelConverter::convertApasFormat($value);
+				$content .= ModelConverter::ConvertApasFormat($value);
 				$content .= '</cell>';
 			}
 			$content .= '</rows>';
@@ -356,7 +356,7 @@ class PrintAction {
 	 */
 	public $TabChangePage = false;
 	/**
-	 * Grille en mode étendu
+	 * Grille en mode ï¿½tendu
 	 */
 	public $Extended = false;
 	/**
@@ -405,7 +405,7 @@ class PrintAction {
 		if($this->Title != "") {
 			$content .= '<header extent="12.0" name="before">';
 			$content .= sprintf('<text height="12.0" width="%d.0" top="0.0" left="0.0" padding="1.0" spacing="0.00" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="15" font_family="sans-serif" font_weight="" font_size="12">',$this->largeur_page-2*$this->marge_horizontal);
-			$content .= ModelConverter:: convertApasFormat("{[bold]}{[underline]}".$this->Title."{[/underline]}{[/bold]}");
+			$content .= ModelConverter::ConvertApasFormat("{[bold]}{[underline]}".$this->Title."{[/underline]}{[/bold]}");
 			$content .= '</text>';
 			$content .= '</header>';
 		}

@@ -395,7 +395,7 @@ class DBObj_Abstract {
 	 * @param string $tbl_select
 	 * @return string
 	 */
-	public function getTableName($tbl_select,$ByLeft = false,$sep = '_') {
+	public static function getTableName($tbl_select,$ByLeft = false,$sep = '_') {
 		global $rootPath;
 		if(!isset($rootPath)) $rootPath = "";
 		if($ByLeft)
@@ -427,7 +427,7 @@ class DBObj_Abstract {
 	 * @param string $Heritage
 	 * @return array(string,string)
 	 */
-	public function getTableAndClass($Heritage) {
+	public static function getTableAndClass($Heritage) {
 		$file_class_name = DBObj_Abstract::getTableName($Heritage, true,'/');
 		$class_name = 'DBObj_'. str_replace('/','_',$Heritage);
 		return array($file_class_name,$class_name);
@@ -601,6 +601,12 @@ class DBObj_Abstract {
 		return $result;
 	}
 
+
+	private $lastRow=null;
+	public function getLastRow() {
+		return $this->lastRow;
+	}
+
 	/**
 	 * fetch
 	 *
@@ -611,11 +617,11 @@ class DBObj_Abstract {
 		foreach($this->__DBMetaDataField as $col_name => $item)
 			$this->$col_name = null;
 		global $connect;
-		$row=$connect->getRowByName($this->lastQuery);
-		if ($row) {
+		$this->lastRow=$connect->getRowByName($this->lastQuery);
+		if ($this->lastRow) {
 			$this->__super = null;
-			$result=$this->setFrom($row);
-			$this->debug("fetch:row=".print_r($row,true)." \n result=$result ",5);
+			$result=$this->setFrom($this->lastRow);
+			$this->debug("fetch:row=".print_r($this->lastRow,true)." \n result=$result ",5);
 			return $result;
 		}
 		else
@@ -661,7 +667,9 @@ class DBObj_Abstract {
 		$fields = $this->table();
 		unset($fields['id']);
 		foreach($fields as $field_name => $field_item) {
-			$type=$this->__DBMetaDataField[$field_name]['type'];
+			$type=-1;
+			if (isset($this->__DBMetaDataField[$field_name]))
+				$type=$this->__DBMetaDataField[$field_name]['type'];
 			if(!is_null($this->$field_name)) {
 				$value = $this->$field_name;
 				if ($field_item==DBOBJ_STR) {
@@ -720,7 +728,7 @@ class DBObj_Abstract {
 		unset($fields['id']);
 		unset($fields['superId']);
 		foreach($fields as $field_name => $field_item)
-			if(!is_null($this->$field_name)) {
+			if(!is_null($this->$field_name) && isset($this->__DBMetaDataField[$field_name])) {
 				$type=$this->__DBMetaDataField[$field_name]['type'];
 				$value = $this->$field_name;
 				if ($field_item==DBOBJ_STR) {
@@ -729,10 +737,7 @@ class DBObj_Abstract {
 				}
 				else if (($type!=10) || (((int)$value)!=0))
 					$fied_eq_value="$field_name=$value";
-				if ($withTable)
-					$set[]=$this->__table.'.'.$fied_eq_value;
-				else
-					$set[]=$fied_eq_value;
+				$set[]=$fied_eq_value;
 			}
 		$q = "UPDATE ".$this->__table;
 		$q .= " SET ".implode(' ,',$set);

@@ -23,7 +23,7 @@
 //@BEGIN@
 
 function ConvertCVSLigne($line,$first_line = null) {
-	$CVSline = split(";",$line);
+	$CVSline = explode(";",$line);
 	if( count($CVSline)>1) {
 		if($first_line != null) {
 			$cvs_line = array();
@@ -35,7 +35,7 @@ function ConvertCVSLigne($line,$first_line = null) {
 				$value = $CVSline[$i];
 				if($value[0] == '"')$value = substr($value,1,-1);
 				$value = trim($value);
-				$date_value = split('/',$value);
+				$date_value = explode('/',$value);
 				if(( strpos( strtolower($col_name),"date") !== false) && ( count($date_value) == 3)) {
 					list($dd,$mm,$yyyy) = $date_value;
 					$value = "$yyyy-$mm-$dd";
@@ -54,7 +54,7 @@ function ConvertCVSLigne($line,$first_line = null) {
 function ConvertTextToCVS($textCVS) {
 	$CVS_array = array();
 	$textCVS = str_replace("{[newline]}","\n",$textCVS);
-	$arrayCVS = split("\n",$textCVS);
+	$arrayCVS = explode("\n",$textCVS);
 	if( count($arrayCVS)>0) {
 		$first_line = ConvertCVSLigne($arrayCVS[0]);
 		unset($arrayCVS[0]);

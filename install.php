@@ -90,7 +90,16 @@ function checkAndShowPrerquired()
 		echo "<tr><td>Bibliothèque</td><td>$lib_name</td><td>$result</td></tr>\n";
 	}
 	echo "<tr><td><br/></td></tr>";
-	@system("java -version", $retVal);
+	$java_path='';
+	$JAVABIN=(DIRECTORY_SEPARATOR=='/')?'/java':'\java.exe';
+	$os_path_list=explode(PATH_SEPARATOR,$_SERVER['PATH']);
+	foreach($os_path_list as $os_path_item) {
+		if (is_file($os_path_item.$JAVABIN))
+			$java_path=$os_path_item.$JAVABIN;
+	}
+	$retVal=-1;
+	if ($java_path!='')
+		@system($java_path." -version", $retVal);
 	$result="<td colspan='2'><font color='yellow'>Impossible - Java non trouvé</font></td>";
 	if ($retVal==0)
 		$result="<td>JAVA</td><td><font color='blue'>OK</font></td>";

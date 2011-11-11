@@ -67,19 +67,19 @@ class Xfer_Container_DialogBox extends Xfer_Container_Abstract
 	 *
 	 * @var integer
 	 */
-	var $m_type=0;
+	public $m_type=0;
 	/**
 	 * Message du dialogue
 	 *
 	 * @var string
 	 */
-	var $m_text="";
+	public $m_text="";
 	/**
 	 * Liste de actions
 	 *
 	 * @var array
 	 */
-	var $m_actions=array();
+	public $m_actions=array();
 	/**
 	 * Constructor
 	 *
@@ -88,9 +88,9 @@ class Xfer_Container_DialogBox extends Xfer_Container_Abstract
 	 * @param array $context
 	 * @return Xfer_Container_DialogBox
 	 */
-	function Xfer_Container_DialogBox($extension,$action,$context=array())
+	public function __construct($extension,$action,$context=array())
 	{
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name="Core.DialogBox";
 	}
 	/**
@@ -99,7 +99,7 @@ class Xfer_Container_DialogBox extends Xfer_Container_Abstract
 	 * @param string $text
 	 * @param integer $type
 	 */
-	function setTypeAndText($text,$type)
+	public function setTypeAndText($text,$type)
 	{
 		$this->m_type=$type;
 		$this->m_text=$text;
@@ -109,17 +109,17 @@ class Xfer_Container_DialogBox extends Xfer_Container_Abstract
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function addAction($action)
+	public function addAction($action)
 	{
 		array_push($this->m_actions,$action);
 	}
 	/**
 	 * _ReponseXML
 	 *
-	 * @access private
+	 * @access protected
 	 * @return string
 	 */
-	function _ReponseXML()
+	protected function _ReponseXML()
 	{
 		$xml_text=sprintf("<TEXT type='%d'><![CDATA[%s]]></TEXT>",$this->m_type,$this->m_text);
 		if (count($this->m_actions)!=0)

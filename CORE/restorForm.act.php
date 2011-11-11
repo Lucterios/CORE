@@ -45,6 +45,8 @@ try {
 $xfer_result=&new Xfer_Container_Custom("CORE","restorForm",$Params);
 $xfer_result->Caption="Restauration de données";
 //@CODE_ACTION@
+global $SECURITY_LOCK;
+$SECURITY_LOCK->open(true);
 if(isset($xfer_result->m_context['RESTOR'])) {
 	$img_title = new Xfer_Comp_Image('img_title');
 	$img_title->setLocation(0,0,1,2);
@@ -155,13 +157,14 @@ else {
 	$xfer_result->addComponent($lbl);
 	$btn = new Xfer_Comp_Button("Next");
 	$btn->setLocation(1,1);
-	$btn->setAction( new Xfer_Action('Restaurer','','CORE','restorForm', FORMTYPE_REFRESH, CLOSE_NO));
+	$btn->setAction($xfer_result->getRefreshAction('Restaurer'));
 	$btn->JavaScript = "
 	parent.refresh();
 ";
 	$xfer_result->addComponent($btn);
 	$xfer_result->addAction( new Xfer_Action('_Annuler','cancel.png','','', FORMTYPE_MODAL, CLOSE_YES));
 }
+$SECURITY_LOCK->close();
 //@CODE_ACTION@
 }catch(Exception $e) {
 	throw $e;

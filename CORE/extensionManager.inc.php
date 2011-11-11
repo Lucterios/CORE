@@ -71,6 +71,19 @@ function getExtensionsByDB($rootPath = '') {
 	return $exts;
 }
 
+function getExtensionsSorted($rootPath = '') {
+	$extlist=getExtensionsByDB($rootPath);
+	$set_of_ext = array();
+	foreach($extlist as $name => $path) {
+		$set_of_ext[] = new Extension($name,$path);
+	}
+	$set_of_ext = sortExtension($set_of_ext,"");
+	$exts = array();
+	foreach($set_of_ext as $ext)
+		$exts[$ext->Name]=$extlist[$ext->Name];
+	return $exts;
+}
+
 function deleteDir($dirPath) {
 	if( is_dir($dirPath)) {
 		$dh = opendir($dirPath);
@@ -158,10 +171,10 @@ class Extension {
 	private function convertID($text) {
 		$text = str_replace(array("'"," ",'"'),"",$text);
 		$text = str_replace(array("é","è","ê","ë"),"e",$text);
-		$text = str_replace(array("à","â","_APAS_"),"a",$text);
-		$text = str_replace(array("î","ï"),"i",$text);
+		$text = str_replace(array("à","â","ä","@","_APAS_"),"a",$text);
+		$text = str_replace(array("ï","î"),"i",$text);
 		$text = str_replace(array("ô","ö"),"o",$text);
-		$text = str_replace(array("û","ü"),"u",$text);
+		$text = str_replace(array("ù","ü","û"),"u",$text);
 		return $text;
 	}
 
@@ -183,7 +196,7 @@ class Extension {
 		return $res;
 	}
 
-	public function getFolder($ext,$root = "",$isClient = false) {
+	public static function getFolder($ext,$root = "",$isClient = false) {
 		if($isClient) {
 			if($ext == 'SDK')$pathext = $root.$ext."/";
 			else $pathext = $root."UpdateClients/$ext/";
@@ -266,7 +279,7 @@ class Extension {
 		foreach($this->depencies as $dep) {
 			if (strpos($exclude_txt,$dep->name) === false) {
 				$current_obj = new Extension($dep->name, Extension:: getFolder($dep->name,$rootPath));
-				$text.=$current_obj->getDepencies($rootPath,$exclude_txt.$this->Name,$ignoreOptionel)." ";
+				$text.=$current_obj->getDepencies($rootPath,$exclude_txt.$this->Name)." ";
 				if( strpos($text,$dep->name) === false)
 					$text.= $dep->name." ";
 			}
@@ -904,7 +917,7 @@ function refreshDataBase($noVersionControl = false) {
 function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$includeMother = false) {
 	$ret = array();
 	if($includeMother) {
-		list($ext_name,$table_name) = split('/',$motherClass);
+		list($ext_name,$table_name) = explode('/',$motherClass);
 		$table_name = trim($table_name);
 		$path = Extension:: getFolder($ext_name,$rootPath);
 		$current_obj = new Extension($ext_name,$path);
@@ -931,7 +944,7 @@ function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$i
 
 function getReferenceTablesList($tableName,$rootPath="") {
 	$ret = array();
-	$ext_list = getExtensions($rootPath);
+	$ext_list = getExtensionsByDB($rootPath);
 	foreach($ext_list as $current_name => $current_dir) {
 		$current_obj = new Extension($current_name,$current_dir);
 		$current_ret = $current_obj->getReferenceTables($tableName);

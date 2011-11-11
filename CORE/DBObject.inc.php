@@ -45,12 +45,12 @@ define('SEP_SEARCH','%');
 define('SEP_SHOW','#|#');
 
 /**
-* Classe mère au DBObject Luctèrios
+* Classe mère au DBObject Luctérios
 *
-* Classe principale de manipulation des tables utilisèes par Luctérios. Repose sur PEAR/DB_DataObject
+* Classe principale de manipulation des tables utilisées par Luctérios. Repose sur PEAR/DB_DataObject
 *
-* Cette classe permet diffèrentes manipulations des tables:
-* 1. Déscription, crèation et mise à jour des tables de l'application
+* Cette classe permet différentes manipulations des tables:
+* 1. Déscription, création et mise à jour des tables de l'application
 * 2. Abstraction d'un enregistrement sous forme d'un objet : insertion, selection, modification, suppression.
 * 3. Recherche simple et complexe d'enregistrement.
 * 4. Association de traitements (actions, methdes) à une table.
@@ -87,7 +87,7 @@ class DBObj_Basic extends DBObj_Abstract {
 			}
 		}
 		if($this->lockRecord != "") {
-			list($lock_session,$lock_origine) = split('@',$this->lockRecord);
+			list($lock_session,$lock_origine) = explode('@',$this->lockRecord);
 			global $connect;
 			$res = $connect->execute("SELECT sid FROM CORE_sessions WHERE valid='o' AND sid='$lock_session'");
 			list($sid) = $connect->getRow($res);
@@ -117,7 +117,8 @@ class DBObj_Basic extends DBObj_Abstract {
 		$this->checkLockRecord();
 		global $GLOBAL;
 		$session = $GLOBAL["ses"];
-		list($lock_session,$lock_origine) = split('@',$this->lockRecord);
+		if (strpos($session,'@')!==false) $session="";
+		list($lock_session,$lock_origine) = explode('@',$this->lockRecord);
 		if($lock_session == $session)
 			return LOCKRECORD_THIS;
 		else {
@@ -152,6 +153,7 @@ class DBObj_Basic extends DBObj_Abstract {
 		else if($lock == LOCKRECORD_NO) {
 			global $GLOBAL;
 			$session = $GLOBAL["ses"];
+			if (strpos($session,'@')!==false) $session="";
 			$this->lockRecord = "$session@$origine";
 			if($this->Heritage != "")
 				$this->Super->lockRecord($origine);
@@ -177,7 +179,8 @@ class DBObj_Basic extends DBObj_Abstract {
 		$this->checkLockRecord();
 		global $GLOBAL;
 		$session = $GLOBAL["ses"];
-		list($lock_session,$lock_origine) = split('@',$this->lockRecord);
+		if (strpos($session,'@')!==false) $session="";
+		list($lock_session,$lock_origine) = explode('@',$this->lockRecord);
 		if($lock_session == $session) {
 			if($lock_origine = $origine) {
 				$this->lockRecord = "";
@@ -604,19 +607,46 @@ class DBObj_Basic extends DBObj_Abstract {
 	 * Lance une recherche d'enregistrement
 	 *
 	 * Permet de rechercher des enregistrements.
-	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencé dans $Params
+	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencées dans $Params
 	 * _select: référence l'operateur de comparaison
 	 * _value1: valeur à comparer
 	 * @param array $Params
 	 * @param string $OrderBy
 	 */
-	public function setForSearch($Params,$OrderBy = '',$searchQuery = "",$searchTable=array()) {
-		require_once"DBSearch.inc.php";
-		$search = new DB_Search($this);
-		$query = $search->Execute($Params,$OrderBy,$searchQuery,$searchTable);
+	public function setForSearch($Params,$OrderBy = '',$searchQuery = "",$searchTable=array(),$extraFields=array()) {
+		$query="";
+		if (isset($Params['CRITERIA'])) {
+			include_once("CORE/DBFind.inc.php");
+			$newFind= new DBFind($this);
+			$query=$newFind->Execute($Params,$OrderBy,$searchQuery,$searchTable,$extraFields);
+		}
+		logAutre("FIND QUERY=$query");
 		if($query != "")
 			$this->query($query);
 		return $query;
+	}
+
+	/**
+	 * Construit des part de requettes pour lier les tables héritées.
+	 *
+	 */
+	public function getSubSearchWithHeritage() {
+		$search_tbl=array($this->__table);
+		$search_query = "";
+		$current_obj=$this;
+		while($current_obj!=null) {
+			$super_class=$current_obj->Super;
+			if ($super_class!=null) {
+				$super_obj=new $super_class();
+				$search_tbl[]=$super_obj->__table;
+				if ($search_query!='') $search_query.=" AND ";
+				$search_query.=$current_obj->__table.".superId=".$super_obj->__table.".id";
+				$current_obj=$super_obj;
+			}
+			else
+				$current_obj=null;
+		}
+		return array($search_query,$search_tbl);
 	}
 }
 //@END@

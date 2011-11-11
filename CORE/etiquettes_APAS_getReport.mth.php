@@ -69,7 +69,7 @@ foreach($etiquette_values as $ettiquetteValue)
 	$left=$col_num*$self->ecart_horizontal;
 	$top=$row_num*$self->ecart_vertical;
 	$content.=sprintf('<text height="%d.0" width="%d.0" top="%d.0" left="%d.0" padding="1.0" spacing="0.0" border_color="black" border_style="" border_width="0.2" xdisplay_align="center" text_align="center" line_height="10" font_family="sans-serif" font_weight="" font_size="9">',$self->hauteur,$self->largeur,$top,$left);
-	$content.=ModelConverter::convertApasFormat("&#160;{[newline]}".$ettiquetteValue);
+	$content.=ModelConverter::ConvertApasFormat("&#160;{[newline]}".$ettiquetteValue);
 	$content.='</text>';
 	$index++;
 }

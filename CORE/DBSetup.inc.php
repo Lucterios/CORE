@@ -33,9 +33,9 @@
 require_once("DBObject.inc.php");
 
 /**
-* Classe de gestion de setup au DBObject Luctèrios
+* Classe de gestion de setup au DBObject Luctérios
 *
-* Classe principale de manipulation de creation et modification dess tables utilisèes par Luctérios.
+* Classe principale de manipulation de creation et modification dess tables utilisées par Luctérios.
 *
 * @package Lucterios
 * @subpackage DBObject
@@ -125,7 +125,9 @@ class DBObj_Setup {
 
 		$field_Values=$fieldValues;
 		foreach($field_Values as $field_name=>$field_value) {
-			$type=$this->DBObject->__DBMetaDataField[$field_name]['type'];
+			$type=-1;
+			if (isset($this->DBObject->__DBMetaDataField[$field_name]))
+				$type=$this->DBObject->__DBMetaDataField[$field_name]['type'];
 			if (($type==10) && (empty($field_value)))
 				unset($fieldValues[$field_name]);
 		}
@@ -256,7 +258,7 @@ class DBObj_Setup {
 				$this->RetMsg .= "DB::query - creation DB : '".$connect->errorMsg."' dans '$q'{[newline]}";
 				return false;
 			}
-			$this->RetMsg .= "Table '".$this->DBObject->__table."' crèe dans la base de donnèe.{[newline]}";
+			$this->RetMsg .= "Table '".$this->DBObject->__table."' crée dans la base de donnée.{[newline]}";
 		}
 		else {
 			if (method_exists($connect,'getRowByName')) {
@@ -274,7 +276,7 @@ class DBObj_Setup {
 						$this->RetMsg .= "DB::alter - creation DB : '".$connect->errorMsg."' dans '$q'{[newline]}";
 						return false;
 					}
-					$this->RetMsg .= "Table '".$this->DBObject->__table."' modifié (InnoDB) dans la base de donnèe.{[newline]}";
+					$this->RetMsg .= "Table '".$this->DBObject->__table."' modifié (InnoDB) dans la base de donnée.{[newline]}";
 				}
 				else
 					$this->RetMsg .= "Controle de la table '".$this->DBObject->__table."'.{[newline]}";
@@ -292,7 +294,7 @@ class DBObj_Setup {
 		if (empty($connect->dbh))
 			return "";
 
-		$rep=$connect->res[$qId];
+		$rep=$connect->getRecord($qId);
 		$field_info = $connect->dbh->tableInfo($rep);
 		$engine_id = 0;
 		$idx = 0;
@@ -361,7 +363,7 @@ class DBObj_Setup {
 			return array();
 
 		global $connect;
-		$rep=$connect->res[$qId];
+		$rep=$connect->getRecord($qId);
 		$field_info = $connect->dbh->tableInfo($rep);
 		$name_id = 0;
 		$type_id = 1;
@@ -418,7 +420,7 @@ class DBObj_Setup {
 				$this->RetMsg .= "DB::query - creation DB : '".$connect->errorMsg."' dans '$q'{[newline]}";
 				$success = false;
 			}
-			else $this->RetMsg .= "Champ '$columnName' ajoutè ou modifier. ($q){[newline]}";
+			else $this->RetMsg .= "Champ '$columnName' ajouté ou modifier. ($q){[newline]}";
 		}
 		return $success;
 	}
@@ -518,7 +520,7 @@ class DBObj_Setup {
 				$this->RetMsg .= "DB::query - creation DB : '".$connect->errorMsg."' dans '$q'{[newline]}";
 				$success = false;
 			}
-			else $this->RetMsg .= "Champ id ajoutè ou modifier ('".$currentFields['id']."'->'id ". DBObj_Setup:: ID_KEY_TYPE."'). {[newline]}";
+			else $this->RetMsg .= "Champ id ajouté ou modifier ('".$currentFields['id']."'->'id ". DBObj_Setup:: ID_KEY_TYPE."'). {[newline]}";
 		}
 		$success = $this->alterTableByField($currentFields,'lockRecord','lockRecord '. DBObj_Setup:: LOCK_TYPE);
 		$success = $this->alterTableByField($currentFields,'superId','superId '. DBObj_Setup:: SUPERID_KEY_TYPE);
@@ -584,7 +586,7 @@ class DBObj_Setup {
 			return array();
 
 		global $connect;
-		$rep=$connect->res[$qId];
+		$rep=$connect->getRecord($qId);
 
 		$field_info = $connect->dbh->tableInfo($rep);
 		$Key_name_id = 0;
@@ -661,7 +663,7 @@ class DBObj_Setup {
 				//$this->RetMsg.="### Index '$index_name' remove ".$current_indexes[$index_name]." ###{[newline]}";
 			}
 			global $connect;
-			$q_list = split(';',$q);
+			$q_list = explode(';',$q);
 			foreach($q_list as $item)
 				if( trim($item) != "") {
 					$rep=$connect->execute($item,$this->throwExcept);
@@ -670,7 +672,7 @@ class DBObj_Setup {
 						return false;
 					}
 					else
-						$this->RetMsg .= "Index '$index_name' modifiè.{[newline]}";
+						$this->RetMsg .= "Index '$index_name' modifié.{[newline]}";
 				}
 		}
 		return true;
@@ -727,7 +729,7 @@ class DBObj_Setup {
 				$success = false;
 			}
 			else
-				$this->RetMsg .= "Index '$Key_name' supprimè.{[newline]}";
+				$this->RetMsg .= "Index '$Key_name' supprimé.{[newline]}";
 		}
 		return true;
 	}
@@ -739,7 +741,7 @@ class DBObj_Setup {
 	*/
 	public function CurrentContraints() {
 		$current_contraints = array();
-		$lines=split("\n",$this->__showCreateTable());
+		$lines=explode("\n",$this->__showCreateTable());
 		foreach($lines as $line) {
 			$line=trim($line);
 			if (substr($line,0,11)=="CONSTRAINT ") {
@@ -776,7 +778,7 @@ class DBObj_Setup {
 		$table_file_name=$this->DBObject->getTableName($ref_table);
 
 		// Vérification d'un dépendance optionnel non assurée
-		$table_file_splited=split('/',$table_file_name);
+		$table_file_splited=explode('/',$table_file_name);
 		if ((count($table_file_splited)!=3) || is_dir("extensions/".$table_file_splited[1])) {
 			$create_contraint = "CONSTRAINT `$contraintName` FOREIGN KEY (`".$fieldName."`) REFERENCES `".$ref_table."` (`id`) ON DELETE ";
 			if ($referenceParams['notnull']) {
@@ -842,7 +844,7 @@ class DBObj_Setup {
 				$currentcontraints[$contraintName] = "";
 			}
 			global $connect;
-			$q_list = split(';',$q);
+			$q_list = explode(';',$q);
 			foreach($q_list as $item)
 				if( trim($item) != "") {
 					$rep=$connect->execute($item,$this->throwExcept);
@@ -851,7 +853,7 @@ class DBObj_Setup {
 						return false;
 					}
 					else
-						$this->RetMsg .= "Contrainte '$contraintName' modifiè.{[newline]}";
+						$this->RetMsg .= "Contrainte '$contraintName' modifié.{[newline]}";
 				}
 		}
 		return true;
@@ -893,7 +895,7 @@ class DBObj_Setup {
 					$success = false;
 				}
 				else
-					$this->RetMsg .= "contraint '$contraintName' supprimè.{[newline]}";
+					$this->RetMsg .= "contraint '$contraintName' supprimé.{[newline]}";
 			}
 		global $connect;
 		$connect->printDebug("Contrainte Msg:".$this->RetMsg);

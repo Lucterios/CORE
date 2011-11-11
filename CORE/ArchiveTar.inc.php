@@ -29,51 +29,51 @@ class ArchiveTar
     /**
     * @var string Name of the Tar
     */
-    var $_tarname='';
+    private $mTarname='';
 
     /**
     * @var boolean if true, the Tar file will be gzipped
     */
-    var $_compress=false;
+    private $mCompress=false;
 
     /**
     * @var string Explode separator
     */
-    var $_separator=' ';
+    private $mSeparator=' ';
 
     /**
     * @var file descriptor
     */
-    var $_file=0;
+    private $mFile=0;
 
     /**
     * @var string Local Tar name of a remote Tar (http:// or ftp://)
     */
-    var $_temp_tarname='';
+    private $_temp_tarname='';
 
-    function __construct($p_tarname, $p_compress = false)
+    public function __construct($pTarname, $pCompress = false)
     {
-        $this->_compress = false;
-        if (!$p_compress) {
-            if (@file_exists($p_tarname)) {
-                if ($fp = @fopen($p_tarname, "rb")) {
+        $this->mCompress = false;
+        if (!$pCompress) {
+            if (@file_exists($pTarname)) {
+                if ($fp = @fopen($pTarname, "rb")) {
                     // look for gzip magic cookie
                     $data = fread($fp, 2);
                     fclose($fp);
                     if ($data == "\37\213") {
-                        $this->_compress = true;
+                        $this->mCompress = true;
                     }
                 }
             } else {
-                if (substr($p_tarname, -2) == 'gz') {
-                    $this->_compress = true;
+                if (substr($pTarname, -2) == 'gz') {
+                    $this->mCompress = true;
                 }
             }
         } else {
-            $this->_compress = true;
+            $this->mCompress = true;
         }
-        $this->_tarname = $p_tarname;
-        if ($this->_compress) { // assert zlib or bz2 extension support
+        $this->mTarname = $pTarname;
+        if ($this->mCompress) { // assert zlib or bz2 extension support
             if (!extension_loaded('zlib')) {
                 $this->_error('zlib library unknown!');
 		return false;
@@ -83,7 +83,7 @@ class ArchiveTar
     // }}}
 
     // {{{ destructor
-    function __destruct()
+    public function __destruct()
     {
         $this->_close();
         // ----- Look for a local copy to delete
@@ -91,28 +91,28 @@ class ArchiveTar
             @unlink($this->_temp_tarname);
     }
 
-    function create($p_filelist)
+    public function create($p_filelist)
     {
         return $this->createModify($p_filelist, '', '');
     }
     // }}}
 
     // {{{ add()
-    function add($p_filelist)
+    public function add($p_filelist)
     {
         return $this->addModify($p_filelist, '', '');
     }
     // }}}
 
     // {{{ extract()
-    function extract($p_path='')
+    public function extract($p_path='')
     {
         return $this->extractModify($p_path, '');
     }
     // }}}
 
     // {{{ listContent()
-    function listContent()
+    public function listContent()
     {
         $v_list_detail = array();
 
@@ -129,7 +129,7 @@ class ArchiveTar
     // }}}
 
     // {{{ createModify()
-    function createModify($p_filelist, $p_add_dir, $p_remove_dir='')
+    public function createModify($p_filelist, $p_add_dir, $p_remove_dir='')
     {
         $v_result = true;
 
@@ -140,7 +140,7 @@ class ArchiveTar
             if (is_array($p_filelist))
                 $v_list = $p_filelist;
             elseif (is_string($p_filelist))
-                $v_list = explode($this->_separator, $p_filelist);
+                $v_list = explode($this->mSeparator, $p_filelist);
             else {
                 $this->_cleanFile();
                 $this->_error('Invalid file list');
@@ -161,7 +161,7 @@ class ArchiveTar
     // }}}
 
     // {{{ addModify()
-    function addModify($p_filelist, $p_add_dir, $p_remove_dir='')
+    public function addModify($p_filelist, $p_add_dir, $p_remove_dir='')
     {
         $v_result = true;
 
@@ -172,7 +172,7 @@ class ArchiveTar
             if (is_array($p_filelist))
                 $v_list = $p_filelist;
             elseif (is_string($p_filelist))
-                $v_list = explode($this->_separator, $p_filelist);
+                $v_list = explode($this->mSeparator, $p_filelist);
             else {
                 $this->_error('Invalid file list');
                 return false;
@@ -186,7 +186,7 @@ class ArchiveTar
     // }}}
 
     // {{{ addString()
-    function addString($p_filename, $p_string)
+    public function addString($p_filename, $p_string)
     {
         $v_result = true;
 
@@ -212,7 +212,7 @@ class ArchiveTar
     // }}}
 
     // {{{ extractModify()
-    function extractModify($p_path, $p_remove_path)
+    public function extractModify($p_path, $p_remove_path)
     {
         $v_result = true;
         $v_list_detail = array();
@@ -228,7 +228,7 @@ class ArchiveTar
     // }}}
 
     // {{{ extractInString()
-    function extractInString($p_filename)
+    public function extractInString($p_filename)
     {
         if ($this->_openRead()) {
             $v_result = $this->_extractInString($p_filename);
@@ -242,7 +242,7 @@ class ArchiveTar
     // }}}
 
     // {{{ extractList()
-    function extractList($p_filelist, $p_path='', $p_remove_path='')
+    public function extractList($p_filelist, $p_path='', $p_remove_path='')
     {
         $v_result = true;
         $v_list_detail = array();
@@ -250,7 +250,7 @@ class ArchiveTar
         if (is_array($p_filelist))
             $v_list = $p_filelist;
         elseif (is_string($p_filelist))
-            $v_list = explode($this->_separator, $p_filelist);
+            $v_list = explode($this->mSeparator, $p_filelist);
         else {
             $this->_error('Invalid string list');
             return false;
@@ -267,7 +267,7 @@ class ArchiveTar
     // }}}
 
     // {{{ setAttribute()
-    function setAttribute()
+    public function setAttribute()
     {
         $v_result = true;
 
@@ -294,7 +294,7 @@ class ArchiveTar
                     }
 
                     // ----- Get the value
-                    $this->_separator = $v_att_list[$i+1];
+                    $this->mSeparator = $v_att_list[$i+1];
                     $i++;
                 break;
 
@@ -312,7 +312,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _error()
-    function _error($p_message)
+    private function _error($p_message)
     {
 	require_once("CORE/Lucterios_Error.inc.php");
 	throw new LucteriosException(CRITIC,$p_message);
@@ -320,7 +320,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _warning()
-    function _warning($p_message)
+    private function _warning($p_message)
     {
         // ----- To be completed
 	require_once("CORE/Lucterios_Error.inc.php");
@@ -329,10 +329,10 @@ class ArchiveTar
     // }}}
 
     // {{{ _isArchive()
-    function _isArchive($p_filename=NULL)
+    private function _isArchive($p_filename=NULL)
     {
         if ($p_filename == NULL) {
-            $p_filename = $this->_tarname;
+            $p_filename = $this->mTarname;
         }
         clearstatcache();
         return @is_file($p_filename);
@@ -340,14 +340,14 @@ class ArchiveTar
     // }}}
 
     // {{{ _openWrite()
-    function _openWrite()
+    private function _openWrite()
     {
-        if ($this->_compress)
-            $this->_file = @gzopen($this->_tarname, "wb9");
+        if ($this->mCompress)
+            $this->mFile = @gzopen($this->mTarname, "wb9");
         else
-            $this->_file = @fopen($this->_tarname, "wb");
-        if ($this->_file == 0) {
-            $this->_error("Unable to open in write mode '".$this->_tarname."'");
+            $this->mFile = @fopen($this->mTarname, "wb");
+        if ($this->mFile == 0) {
+            $this->_error("Unable to open in write mode '".$this->mTarname."'");
             return false;
         }
 
@@ -356,20 +356,20 @@ class ArchiveTar
     // }}}
 
     // {{{ _openRead()
-    function _openRead()
+    private function _openRead()
     {
-        if (strtolower(substr($this->_tarname, 0, 7)) == 'http://') {
+        if (strtolower(substr($this->mTarname, 0, 7)) == 'http://') {
 
           // ----- Look if a local copy need to be done
           if ($this->_temp_tarname == '') {
               $this->_temp_tarname = uniqid('tar').'.tmp';
-              if (!$v_file_from = @fopen($this->_tarname, 'rb')) {
-                $this->_error("Unable to open in read mode '".$this->_tarname."'");
+              if (!$v_file_from = @fopen($this->mTarname, 'rb')) {
+                $this->_error("Unable to open in read mode '".$this->mTarname."'");
                 $this->_temp_tarname = '';
                 return false;
               }
               if (!$v_file_to = @fopen($this->_temp_tarname, 'wb')) {
-                $this->_error("Unable to open in write mode '".$this->_tarname."'");
+                $this->_error("Unable to open in write mode '".$this->mTarname."'");
                 $this->_temp_tarname = '';
                 return false;
               }
@@ -384,13 +384,13 @@ class ArchiveTar
 
         } else
           // ----- File to open if the normal Tar file
-          $v_filename = $this->_tarname;
+          $v_filename = $this->mTarname;
 
-        if ($this->_compress)
-            $this->_file = @gzopen($v_filename, "rb");
+        if ($this->mCompress)
+            $this->mFile = @gzopen($v_filename, "rb");
         else
-	    $this->_file = @fopen($v_filename, "rb");
-        if ($this->_file == 0) {
+	    $this->mFile = @fopen($v_filename, "rb");
+        if ($this->mFile == 0) {
             $this->_error("Unable to open in read mode '".$v_filename."'");
             return false;
         }
@@ -400,15 +400,15 @@ class ArchiveTar
     // }}}
 
     // {{{ _openReadWrite()
-    function _openReadWrite()
+    private function _openReadWrite()
     {
-        if ($this->_compress)
-            $this->_file = @gzopen($this->_tarname, "r+b");
+        if ($this->mCompress)
+            $this->mFile = @gzopen($this->mTarname, "r+b");
         else
-	    $this->_file = @fopen($this->_tarname, "r+b");
+	    $this->mFile = @fopen($this->mTarname, "r+b");
 
-        if ($this->_file == 0) {
-            $this->_error("Unable to open in read/write mode '".$this->_tarname."'");
+        if ($this->mFile == 0) {
+            $this->_error("Unable to open in read/write mode '".$this->mTarname."'");
             return false;
         }
 
@@ -417,16 +417,16 @@ class ArchiveTar
     // }}}
 
     // {{{ _close()
-    function _close()
+    private function _close()
     {
-        //if (isset($this->_file)) {
-        if (is_resource($this->_file)) {
-            if ($this->_compress)
-                @gzclose($this->_file);
+        //if (isset($this->mFile)) {
+        if (is_resource($this->mFile)) {
+            if ($this->mCompress)
+                @gzclose($this->mFile);
             else
-                @fclose($this->_file);
+                @fclose($this->mFile);
 
-            $this->_file = 0;
+            $this->mFile = 0;
         }
 
         // ----- Look if a local copy need to be erase
@@ -441,7 +441,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _cleanFile()
-    function _cleanFile()
+    private function _cleanFile()
     {
         $this->_close();
 
@@ -452,28 +452,28 @@ class ArchiveTar
             $this->_temp_tarname = '';
         } else {
             // ----- Remove the local tarname file
-            @unlink($this->_tarname);
+            @unlink($this->mTarname);
         }
-        $this->_tarname = '';
+        $this->mTarname = '';
 
         return true;
     }
     // }}}
 
     // {{{ _writeBlock()
-    function _writeBlock($p_binary_data, $p_len=null)
+    private function _writeBlock($p_binary_data, $p_len=null)
     {
-      if (is_resource($this->_file)) {
+      if (is_resource($this->mFile)) {
           if ($p_len === null) {
-              if ($this->_compress)
-                  @gzputs($this->_file, $p_binary_data);
+              if ($this->mCompress)
+                  @gzputs($this->mFile, $p_binary_data);
               else
-                  @fputs($this->_file, $p_binary_data);
+                  @fputs($this->mFile, $p_binary_data);
           } else {
-              if ($this->_compress)
-                  @gzputs($this->_file, $p_binary_data, $p_len);
+              if ($this->mCompress)
+                  @gzputs($this->mFile, $p_binary_data, $p_len);
               else
-                  @fputs($this->_file, $p_binary_data, $p_len);
+                  @fputs($this->mFile, $p_binary_data, $p_len);
           }
       }
       return true;
@@ -481,31 +481,31 @@ class ArchiveTar
     // }}}
 
     // {{{ _readBlock()
-    function _readBlock()
+    private function _readBlock()
     {
       $v_block = null;
-      if (is_resource($this->_file)) {
-          if ($this->_compress)
-              $v_block = @gzread($this->_file, 512);
+      if (is_resource($this->mFile)) {
+          if ($this->mCompress)
+              $v_block = @gzread($this->mFile, 512);
           else
-              $v_block = @fread($this->_file, 512);
+              $v_block = @fread($this->mFile, 512);
       }
       return $v_block;
     }
     // }}}
 
     // {{{ _jumpBlock()
-    function _jumpBlock($p_len=null)
+    private function _jumpBlock($p_len=null)
     {
-      if (is_resource($this->_file)) {
+      if (is_resource($this->mFile)) {
           if ($p_len === null)
               $p_len = 1;
 
-          if ($this->_compress) {
-              @gzseek($this->_file, gztell($this->_file)+($p_len*512));
+          if ($this->mCompress) {
+              @gzseek($this->mFile, gztell($this->mFile)+($p_len*512));
           }
           else
-              @fseek($this->_file, ftell($this->_file)+($p_len*512));
+              @fseek($this->mFile, ftell($this->mFile)+($p_len*512));
 
       }
       return true;
@@ -513,9 +513,9 @@ class ArchiveTar
     // }}}
 
     // {{{ _writeFooter()
-    function _writeFooter()
+    private function _writeFooter()
     {
-      if (is_resource($this->_file)) {
+      if (is_resource($this->mFile)) {
           // ----- Write the last 0 filled block for end of archive
           $v_binary_data = pack('a1024', '');
           $this->_writeBlock($v_binary_data);
@@ -525,7 +525,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _addList()
-    function _addList($p_list, $p_add_dir, $p_remove_dir)
+    private function _addList($p_list, $p_add_dir, $p_remove_dir)
     {
       $v_result=true;
       $v_header = array();
@@ -534,7 +534,7 @@ class ArchiveTar
       $p_add_dir = $this->_translateWinPath($p_add_dir);
       $p_remove_dir = $this->_translateWinPath($p_remove_dir, false);
 
-      if (!$this->_file) {
+      if (!$this->mFile) {
           $this->_error('Invalid file descriptor');
           return false;
       }
@@ -548,7 +548,7 @@ class ArchiveTar
           }
 
         // ----- Skip the current tar name
-        if ($v_filename == $this->_tarname)
+        if ($v_filename == $this->mTarname)
             continue;
 
         if ($v_filename == '')
@@ -592,9 +592,9 @@ class ArchiveTar
     // }}}
 
     // {{{ _addFile()
-    function _addFile($p_filename, &$p_header, $p_add_dir, $p_remove_dir)
+    private function _addFile($p_filename, &$p_header, $p_add_dir, $p_remove_dir)
     {
-      if (!$this->_file) {
+      if (!$this->mFile) {
           $this->_error('Invalid file descriptor');
           return false;
       }
@@ -655,9 +655,9 @@ class ArchiveTar
     // }}}
 
     // {{{ _addString()
-    function _addString($p_filename, $p_string)
+    private function _addString($p_filename, $p_string)
     {
-      if (!$this->_file) {
+      if (!$this->mFile) {
           $this->_error('Invalid file descriptor');
           return false;
       }
@@ -685,7 +685,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _writeHeader()
-    function _writeHeader($p_filename, $p_stored_filename)
+    private function _writeHeader($p_filename, $p_stored_filename)
     {
         if ($p_stored_filename == '')
             $p_stored_filename = $p_filename;
@@ -764,7 +764,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _writeHeaderBlock()
-    function _writeHeaderBlock($p_filename, $p_size, $p_mtime=0, $p_perms=0,
+    private function _writeHeaderBlock($p_filename, $p_size, $p_mtime=0, $p_perms=0,
 	                           $p_type='', $p_uid=0, $p_gid=0)
     {
         $p_filename = $this->_pathReduction($p_filename);
@@ -838,7 +838,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _writeLongHeader()
-    function _writeLongHeader($p_filename)
+    private function _writeLongHeader($p_filename)
     {
         $v_size = sprintf("%11s ", DecOct(strlen($p_filename)));
 
@@ -902,7 +902,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _readHeader()
-    function _readHeader($v_binary_data, &$v_header)
+    private function _readHeader($v_binary_data, &$v_header)
     {
         if (strlen($v_binary_data)==0) {
             $v_header['filename'] = '';
@@ -981,7 +981,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _maliciousFilename()
-    function _maliciousFilename($file)
+    private function _maliciousFilename($file)
     {
         if (strpos($file, '/../') !== false) {
             return true;
@@ -994,7 +994,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _readLongHeader()
-    function _readLongHeader(&$v_header)
+    private function _readLongHeader(&$v_header)
     {
       $v_filename = '';
       $n = floor($v_header['size']/512);
@@ -1025,7 +1025,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _extractInString()
-    function _extractInString($p_filename)
+    private function _extractInString($p_filename)
     {
         $v_result_str = "";
 
@@ -1070,7 +1070,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _extractList()
-    function _extractList($p_path, &$p_list_detail, $p_mode,
+    private function _extractList($p_path, &$p_list_detail, $p_mode,
 	                      $p_file_list, $p_remove_path)
     {
     $v_result=true;
@@ -1260,10 +1260,10 @@ class ArchiveTar
       }
 
       /* TBC : Seems to be unused ...
-      if ($this->_compress)
-        $v_end_of_file = @gzeof($this->_file);
+      if ($this->mCompress)
+        $v_end_of_file = @gzeof($this->mFile);
       else
-        $v_end_of_file = @feof($this->_file);
+        $v_end_of_file = @feof($this->mFile);
         */
 
       if ($v_listing || $v_extract_file || $v_extraction_stopped) {
@@ -1286,28 +1286,28 @@ class ArchiveTar
     // }}}
 
     // {{{ _openAppend()
-    function _openAppend()
+    private function _openAppend()
     {
-        if (filesize($this->_tarname) == 0)
+        if (filesize($this->mTarname) == 0)
           return $this->_openWrite();
 
-        if ($this->_compress) {
+        if ($this->mCompress) {
             $this->_close();
 
-            if (!@rename($this->_tarname, $this->_tarname.".tmp")) {
-                $this->_error("Error while renaming '".$this->_tarname."' to temporary file '".$this->_tarname.".tmp'");
+            if (!@rename($this->mTarname, $this->mTarname.".tmp")) {
+                $this->_error("Error while renaming '".$this->mTarname."' to temporary file '".$this->mTarname.".tmp'");
                 return false;
             }
 
-            $v_temp_tar = @gzopen($this->_tarname.".tmp", "rb");
+            $v_temp_tar = @gzopen($this->mTarname.".tmp", "rb");
             if ($v_temp_tar == 0) {
-                $this->_error("Unable to open file '".$this->_tarname.".tmp' in binary read mode");
-                @rename($this->_tarname.".tmp", $this->_tarname);
+                $this->_error("Unable to open file '".$this->mTarname.".tmp' in binary read mode");
+                @rename($this->mTarname.".tmp", $this->mTarname);
                 return false;
             }
 
             if (!$this->_openWrite()) {
-                @rename($this->_tarname.".tmp", $this->_tarname);
+                @rename($this->mTarname.".tmp", $this->mTarname);
                 return false;
             }
 
@@ -1322,8 +1322,8 @@ class ArchiveTar
 		$this->_writeBlock($v_binary_data);
 	    }
 	    @gzclose($v_temp_tar);
-            if (!@unlink($this->_tarname.".tmp")) {
-                $this->_error("Error while deleting temporary file '".$this->_tarname.".tmp'");
+            if (!@unlink($this->mTarname.".tmp")) {
+                $this->_error("Error while deleting temporary file '".$this->mTarname.".tmp'");
             }
 
         } else {
@@ -1333,17 +1333,17 @@ class ArchiveTar
                return false;
 
             clearstatcache();
-            $v_size = filesize($this->_tarname);
+            $v_size = filesize($this->mTarname);
 
             // We might have zero, one or two end blocks.
             // The standard is two, but we should try to handle
             // other cases.
-            fseek($this->_file, $v_size - 1024);
-            if (fread($this->_file, 512) == ARCHIVE_TAR_END_BLOCK) {
-                fseek($this->_file, $v_size - 1024);
+            fseek($this->mFile, $v_size - 1024);
+            if (fread($this->mFile, 512) == ARCHIVE_TAR_END_BLOCK) {
+                fseek($this->mFile, $v_size - 1024);
             }
-            elseif (fread($this->_file, 512) == ARCHIVE_TAR_END_BLOCK) {
-                fseek($this->_file, $v_size - 512);
+            elseif (fread($this->mFile, 512) == ARCHIVE_TAR_END_BLOCK) {
+                fseek($this->mFile, $v_size - 512);
             }
         }
 
@@ -1352,7 +1352,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _append()
-    function _append($p_filelist, $p_add_dir='', $p_remove_dir='')
+    private function _append($p_filelist, $p_add_dir='', $p_remove_dir='')
     {
         if (!$this->_openAppend())
             return false;
@@ -1367,7 +1367,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _dirCheck()
-    function _dirCheck($p_dir)
+    private function _dirCheck($p_dir)
     {
         clearstatcache();
         if ((@is_dir($p_dir)) || ($p_dir == ''))
@@ -1391,7 +1391,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _pathReduction()
-    function _pathReduction($p_dir)
+    private function _pathReduction($p_dir)
     {
         $v_result = '';
 
@@ -1429,7 +1429,7 @@ class ArchiveTar
     // }}}
 
     // {{{ _translateWinPath()
-    function _translateWinPath($p_path, $p_remove_disk_letter=true)
+    private function _translateWinPath($p_path, $p_remove_disk_letter=true)
     {
       if (defined('OS_WINDOWS') && OS_WINDOWS) {
           // ----- Look for potential disk letter

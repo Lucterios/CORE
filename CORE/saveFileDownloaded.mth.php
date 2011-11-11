@@ -35,22 +35,20 @@ require_once('CORE/rights.inc.php');
 function saveFileDownloaded(&$self,$Params,$Name,$PathFile,$httpFile)
 {
 //@CODE_ACTION@
-echo "<!-- Name:$Name => PathFile:$PathFile -->\n";
 if ($httpFile) {
 	if (is_array($_FILES[$Name])) {
 		@move_uploaded_file($_FILES[$Name]['tmp_name'],$PathFile);
 		return is_file($PathFile);
 	}
 	else
-		throw new LucteriosException(IMPORTANT,"fichier $Name non transfèré!");
+		throw new LucteriosException(IMPORTANT,"fichier $Name non transfèré");
 }
 else {
 	$uploadfile = $Params[$Name];
-	list($name_upload,$value_upload) = split(';',$uploadfile);
+	list($name_upload,$value_upload) = explode(';',$uploadfile);
 	if($name_upload != '') {
 		require_once "CORE/Lucterios_Error.inc.php";
 		$value_upload=str_replace(array("\n"," ","\t"),"",$value_upload);
-		echo "\n\n<!-- VALUE=||$value_upload|| -->\n\n";
 		$content = base64_decode($value_upload);
 		@unlink($PathFile);
 		if($handle = @fopen($PathFile,'a')) {

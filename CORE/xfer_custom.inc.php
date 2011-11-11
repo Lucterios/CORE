@@ -22,7 +22,7 @@
 
 //@BEGIN@
 /**
- * fichier gérant une fenÃªtre personnalisÃ©e
+ * fichier gérant une fenêtre personnalisée
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -48,14 +48,14 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 *
 	 * @var array
 	 */
-	var $m_actions = array();
+	public $m_actions = array();
 
 	/**
 	 * Liste des composants
 	 *
 	 * @var array
 	 */
-	var $m_components = array();
+	public $m_components = array();
 
 	/**
 	 * tabulation courante
@@ -63,7 +63,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 * @access private
 	 * @var integer
 	 */
-	var $m_tab = 0;
+	public $m_tab = 0;
 
 	/**
 	 * Constructor
@@ -73,8 +73,8 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 * @param array $context
 	 * @return Xfer_Container_Custom
 	 */
-	function Xfer_Container_Custom($extension,$action,$context = array()) {
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+	public function __construct($extension,$action,$context = array()) {
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name = "Core.Custom";
 	}
 
@@ -88,7 +88,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	 * @param integer $posX position en horizontal
 	 * @param integer $colspan encombrement horizontal
 	 */
-	function setDBObject($DBObjs,$FieldNames = null,$ReadOnly = false,$posY = 0,$posX = 0,$colspan = 1) {
+	public function setDBObject($DBObjs,$FieldNames = null,$ReadOnly = false,$posY = 0,$posX = 0,$colspan = 1) {
 		$field_desc = $DBObjs->getDBMetaDataField();
 		if(is_int($FieldNames))
 			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
@@ -143,7 +143,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				case 6:
 					//Date & time
 					$comp = new Xfer_Comp_Label($FieldName);
-					List($date_val,$time_val)=split(' ',$field_val);
+					List($date_val,$time_val)=explode(' ',$field_val);
 					$comp->setValue(convertDate($date_val, true)." ".convertTime($time_val));
 					break;
 				case 9:
@@ -263,231 +263,193 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 		}
 	}
 
-	var 	$FULL_TEXT_SELECTOR = array("contient","commence par","fini par","égal");
-	var $testSelector=0;
+	public $testSelector=0;
+
+	private function buildSelectAndScript($FieldDescList) {
+		include_once("CORE/DBFind.inc.php");
+
+		$selector=array();
+		$script_ref="findFields=new Array();\n";
+		$script_ref.="findLists=new Array();\n";
+		foreach($FieldDescList as $FieldDescItem) {
+			if (isset($FieldDescItem['fieldname'])) {
+				$selector[$FieldDescItem['fieldname']]=$FieldDescItem['description'];
+				$script_ref.="findFields['".$FieldDescItem['fieldname']."']='".$FieldDescItem['type']."';\n";
+				if (($FieldDescItem['type']=='list') || ($FieldDescItem['type']=='listmult') || ($FieldDescItem['type']=='float'))
+					$script_ref.="findLists['".$FieldDescItem['fieldname']."']='".$FieldDescItem['list']."';\n";
+			}
+		}
+		$script_ref.="
+var name=current.getValue();
+var type=findFields[name];
+parent.get('searchValueFloat').setVisible(type=='float');
+parent.get('searchValueStr').setVisible(type=='str');
+parent.get('searchValueBool').setVisible(type=='bool');
+parent.get('searchValueDate').setVisible(type=='date' || type=='datetime');
+parent.get('searchValueTime').setVisible(type=='time' || type=='datetime');
+parent.get('searchValueList').setVisible(type=='list' || type=='listmult');
+var new_operator='';
+".DBFind::getScriptForOperator('type','new_operator')."
+parent.get('searchOperator').setValue('<SELECT>'+new_operator+'</SELECT>');
+if (type=='float') {
+    var prec=findLists[name].split(';');
+    parent.get('searchValueFloat').setValue('<FLOAT min=\"'+prec[0]+'\" max=\"'+prec[1]+'\" prec=\"'+prec[2]+'\"></FLOAT>');
+}
+if (type=='str') {
+    parent.get('searchValueStr').setValue('<STR></STR>');
+}
+if (type=='bool') {
+    parent.get('searchValueBool').setValue('<BOOL>n</BOOL>');
+}
+if (type=='date' || type=='datetime') {
+    parent.get('searchValueDate').setValue('<DATE>1900/01/01</DATE>');
+}
+if (type=='time' || type=='datetime') {
+    parent.get('searchValueTime').setValue('<DATE>00:00:00</DATE>');
+}
+if ((type=='list') || (type=='listmult')) {
+    var list=findLists[name].split(';');
+    var list_txt='';
+    for(i=0;i<list.length;i++) {
+	var val=list[i].split('||');
+	if (val.length>1)
+		list_txt+='<CASE id=\"'+val[0]+'\">'+val[1]+'</CASE>';
+    }
+    parent.get('searchValueList').setValue('<SELECT>'+list_txt+'</SELECT>');
+}
+";
+		return array($selector,$script_ref);
+	}
+
+
+	private function manageFindAction(&$currentCriteria,$FieldDescList) {
+		if ($this->m_context['ACT']=='ADD') {
+			$new_name=$this->m_context['searchSelector'];
+			$new_type=$FieldDescList[$new_name]['type'];
+			if ($new_type!='') {
+				$new_op=$this->m_context['searchOperator'];
+				$new_val='';
+				if ($new_type=='float')
+					$new_val=$this->m_context['searchValueFloat'];
+				if ($new_type=='str')
+					$new_val=$this->m_context['searchValueStr'];
+				if ($new_type=='bool')
+					$new_val=$this->m_context['searchValueBool'];
+				if ($new_type=='date')
+					$new_val=$this->m_context['searchValueDate'];
+				if ($new_type=='time')
+					$new_val=$this->m_context['searchValueTime'];
+				if ($new_type=='datetime')
+					$new_val=$this->m_context['searchValueDate'].' '.$this->m_context['searchValueTime'];
+				if (($new_type=='list') || ($new_type=='listmult'))
+					$new_val=$this->m_context['searchValueList'];
+				if ($new_val!='')
+					$currentCriteria[]=array($new_name,$new_op,$new_val,$FieldDescList[$new_name]);
+			}
+		}
+		else if (isset($this->m_context['ACT'])) {
+			unset($currentCriteria[$this->m_context['ACT']]);
+		}
+	}
 
 	/**
 	 * Remplire une fenêtre avec des controle de selection de recherche
 	 *
 	 * @param DBObj_Basic $DBObjs
-	 * @param null|string|array $FieldNames champ ou liste des champs
-	 * @param integer $posY position initial
-	 * @param string $SubSearch
-	 * @param string $SubTitle
-	 * @return integer position final
+	 * @param null|string|array $SearchFieldDescList champ ou liste des champs ou liste de descriptifs de recherche
+	 * @param integer $posY position en vertical
+	 * @param integer $posX position en horizontal
 	 */
-	function setDBSearch($DBObjs,$FieldNames = null,$posY = 0,$SubSearch = "",$SubTitle = "",$SubFieldOfChield = false) {
-		$field_desc = $DBObjs->getDBMetaDataField();
-		if(is_int($FieldNames))
-			$FieldNames = $DBObjs->getFieldEditable($RefTableName,(int)$FieldNames);
-		else if($FieldNames == null)
-			$FieldNames = $DBObjs->getFieldEditable($RefTableName);
-		elseif (!is_array($FieldNames)) {
-			$FieldNames = array($FieldNames);
+	public function setSearchGUI($DBObjs,$SearchFieldDescList = null,$posY = 0,$posX = 0) {
+		// $FieldDescItem : array('fieldname'=>'','description'=>'','type'=>'xxx','list'=>'xxx||yyyy;xxx||yyyy;xxx||yyyy')
+		// type:float,str,bool,date,time,datetime,list,listmult
+		include_once("CORE/DBFind.inc.php");
+		$newFind= new DBFind($DBObjs);
+		$FieldDescList=$newFind->convertFieldDesc($SearchFieldDescList);
+		list($selector,$script_ref)=$this->buildSelectAndScript($FieldDescList);
+
+		$label = new Xfer_Comp_LabelForm('labelsearchSelector');
+		$label->setValue("{[bold]}Nouveau critère{[/bold]}");
+		$label->setLocation($posX,$posY,1,7);
+		$this->addComponent($label);
+		$comp = new Xfer_Comp_Select("searchSelector");
+		$comp->setSelect($selector);
+		$comp->setValue("");
+		$comp->setLocation($posX+1,$posY,1,7);
+		$comp->setSize(20,200);
+		$comp->JavaScript=$script_ref;
+		$this->addComponent($comp);
+
+		$comp = new Xfer_Comp_Select("searchOperator");
+		$comp->setSelect(array());
+		$comp->setValue("");
+		$comp->setSize(20,200);
+		$comp->setLocation($posX+2,$posY,1,7);
+		$this->addComponent($comp);
+
+		$comp = new Xfer_Comp_Button("searchButtonAdd");
+		$comp->setIsMini(true);
+		$comp->setClickInfo('ACT','ADD');
+		$comp->setLocation($posX+4,$posY,1,7);
+		$comp->setAction($this->getRefreshAction("","add.png"));
+		$this->addComponent($comp);
+
+		$comp = new Xfer_Comp_Float("searchValueFloat");
+		$comp->setLocation($posX+3,$posY++);
+		$comp->setSize(20,200);
+		$this->addComponent($comp);
+		$comp = new Xfer_Comp_Edit("searchValueStr");
+		$comp->setLocation($posX+3,$posY++);
+		$comp->setSize(20,200);
+		$this->addComponent($comp);
+		$comp = new Xfer_Comp_Check("searchValueBool");
+		$comp->setLocation($posX+3,$posY++);
+		$comp->setSize(20,200);
+		$this->addComponent($comp);
+		$comp = new Xfer_Comp_Date("searchValueDate");
+		$comp->setLocation($posX+3,$posY++);
+		$comp->setSize(20,200);
+		$this->addComponent($comp);
+		$comp = new Xfer_Comp_Time("searchValueTime");
+		$comp->setLocation($posX+3,$posY++);
+		$comp->setSize(20,200);
+		$this->addComponent($comp);
+		$comp = new Xfer_Comp_CheckList("searchValueList");
+		$comp->setLocation($posX+3,$posY++);
+		$comp->setSize(80,200);
+		$this->addComponent($comp);
+		$label = new Xfer_Comp_LabelForm('labelsearchSep');
+		$label->setValue("");
+		$label->setSize(1,200);
+		$label->setLocation($posX+3,$posY++);
+		$this->addComponent($label);
+
+		$current_criteria=$newFind->extractCriteria($this->m_context);
+		$this->manageFindAction($current_criteria,$FieldDescList);
+		$newFind->reinjectCriteria($this->m_context,$current_criteria,$FieldDescList);
+		$criteriaDesc=$newFind->getCriteriaDescription($current_criteria,$FieldDescList);
+
+		$label = new Xfer_Comp_LabelForm('labelsearchDescTitle');
+		if (count($criteriaDesc)>0) {
+			$label->setValue("{[bold]}{[underline]}Vos critères de recherche:{[/underline]}{[/bold]}");
+			$label->setLocation($posX,$posY,2,4);
 		}
-		foreach($FieldNames as $FieldName) {
-			$SubField = null;
-			if(($pos = strpos($FieldName,"[")) !== false) {
-				$tmp_names = substr($FieldName,$pos+1,-1);
-				$SubField = array();
-				while(($comma_pos = strpos($tmp_names,",")) !== false) {
-					$new_field = substr($tmp_names,0,$comma_pos);
-					$tmp_names = substr($tmp_names,$comma_pos+1);
-					if(( strpos($new_field,"[")>0) && ( strpos($new_field,"]") === false) && (($sep_pos = strpos($tmp_names,"]"))>0)) {
-						$new_field .= ",". substr($tmp_names,0,$sep_pos+1);
-						$tmp_names = substr($tmp_names,$sep_pos+1);
-					}
-					if($new_field != "")
-						$SubField[] = $new_field;
-				}
-				if($tmp_names != "")
-					$SubField[] = $tmp_names;
-				$FieldName = substr($FieldName,0,$pos);
-			}
-			$field_name = $FieldName;
-			if($SubSearch != "")
-				$field_name = $SubSearch. SEP_SEARCH.$field_name;
-			$field_item = $field_desc[$FieldName];
-			$type_fld = $field_item['type'];
-			$select_list = null;
-			$line = array();
-			$param_fld = $field_item['params'];
-			switch($type_fld) {
-			case 0:
-				//int
-				$comp = new Xfer_Comp_Float($field_name."_value1",$param_fld['Min'],$param_fld['Max'],0);
-				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("égal","inférieur","suppérieur");
-				$line[] = $comp;
-				break;
-			case 1:
-				//float
-				$comp = new Xfer_Comp_Float($field_name."_value1",$param_fld['Min'],$param_fld['Max'],$param_fld['Prec']);
-				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("égal","inférieur","suppérieur");
-				$line[] = $comp;
-				break;
-			case 2:
-				//text
-				if(array_key_exists('Multi',$param_fld) && $param_fld['Multi'])
-					$comp = new Xfer_Comp_Memo($field_name."_value1");
-				else
-					$comp = new Xfer_Comp_Edit($field_name."_value1");
-				$comp->setValue($DBObjs->getField($FieldName));
-				if ($this->testSelector!=-1)
-					$select_list = array($this->testSelector => $this->FULL_TEXT_SELECTOR[$this->testSelector]);
-				else
-					$select_list = $this->FULL_TEXT_SELECTOR;
-				$line[] = $comp;
-				break;
-			case 3:
-				//bool
-				$comp = new Xfer_Comp_Check($field_name."_value1");
-				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("égal");
-				$line[] = $comp;
-				break;
-			case 4:
-				//Date
-				$comp = new Xfer_Comp_Date($field_name."_value1");
-				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("égal","inférieur","suppérieur");
-				$line[] = $comp;
-				break;
-			case 5:
-				//time
-				$comp = new Xfer_Comp_Time($field_name."_value1");
-				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("égal","inférieur","suppérieur");
-				$line[] = $comp;
-				break;
-			case 6:
-				//Date & time
-				$comp = new Xfer_Comp_DateTime($field_name."_value1");
-				$comp->setValue($DBObjs->getField($FieldName));
-				$select_list = array("égal","inférieur","suppérieur");
-				$line[] = $comp;
-				break;
-			case 7:
-				// long text
-				$comp = new Xfer_Comp_Memo($field_name."_value1");
-				$comp->setValue($DBObjs->getField($FieldName));
-				if ($this->testSelector!=-1)
-					$select_list = array($this->testSelector => $this->FULL_TEXT_SELECTOR[$this->testSelector]);
-				else
-					$select_list = $this->FULL_TEXT_SELECTOR;
-				$line[] = $comp;
-				break;
-			case 8:
-				// enum
-				$comp = new Xfer_Comp_CheckList($field_name."_value1");
-				$comp->setSelect($param_fld['Enum']);
-				$comp->setValue($DBObjs->$FieldName);
-				$comp->setSize( min(120,20* count($comp->m_select)),200);
-				if($SubFieldOfChield)
-					$select_list = array("ou","et");
-				else
-					$select_list = array("ou");
-				$line[] = $comp;
-				break;
-			case 9:
-				// child
-				$param_fld = $field_item['params'];
-				$desc_fld = $field_item['description'];
-				$value = $DBObjs->getField($FieldName);
-				if($SubField == null) {
-					$RefField = $param_fld["RefField"];
-					$SubField = $value->getFieldEditable($DBObjs->__table);
-				}
-				if($SubTitle == "")
-					$new_title = $desc_fld;
-				else
-					$new_title = "$SubTitle-$desc_fld";
-				if($SubSearch == "")
-					$new_subsearch = $FieldName;
-				else
-					$new_subsearch = $SubSearch. SEP_SEARCH.$FieldName;
-				$posY = $this->setDBSearch($value,$SubField,$posY,$new_subsearch,$new_title, true);
-				break;
-			case 10:
-				// ref
-				if($SubField == null) {
-					$selectlist = array();
-					$comp = new Xfer_Comp_CheckList($field_name."_value1");
-					$tbl_name = $param_fld['TableName'];
-					$table_file_name = $DBObjs->getTableName($tbl_name);
-					if( is_file($table_file_name)) {
-						require_once($table_file_name);
-						$class_name = "DBObj_".$tbl_name;
-						$sub_object = new $class_name;
-						$sub_object->find();
-						while($sub_object->fetch())
-							$selectlist[$sub_object->id] = $sub_object->toText();
-					}
-					$comp->setSelect($selectlist);
-					$comp->setValue($DBObjs->$FieldName);
-					$comp->setSize( min(120,20* count($comp->m_select)),200);
-					if($SubSearch)
-						$select_list = array("ou","et");
-					else
-						$select_list = array("ou");
-					$line[] = $comp;
-				}
-				else {
-					$param_fld = $field_item['params'];
-					$desc_fld = $field_item['description'];
-					$value = $DBObjs->getField($FieldName);
-					if($SubTitle == "")
-						$new_title = $desc_fld;
-					else
-						$new_title = "$SubTitle-$desc_fld";
-					if($SubSearch == "")
-						$new_subsearch = $FieldName;
-					else
-						$new_subsearch = $SubSearch. SEP_SEARCH.$FieldName;
-					$posY = $this->setDBSearch($value,$SubField,$posY,$new_subsearch,$new_title);
-				}
-				break;
-			}
-			if($select_list != null) {
-				$desc_fld = $field_item['description'];
-				$label = new Xfer_Comp_LabelForm('label'.$field_name);
-				if($SubTitle == "")
-					$label->setValue("{[bold]}$desc_fld{[/bold]}");
-				else
-					$label->setValue("{[bold]}$SubTitle-$desc_fld{[/bold]}");
-				$label->setLocation(0,$posY);
-				$this->addComponent($label);
-				if( count($select_list) == 1) {
-					$keys=array_keys($select_list);
-					$first_key=(int)$keys[0];
-					$lbl_select = new Xfer_Comp_Label($field_name."_lbl_select");
-					$lbl_select->setLocation(1,$posY);
-					$lbl_select->setValue($select_list[$first_key]);
-					$this->addComponent($lbl_select);
-					$this->m_context[$field_name."_select"] = ($first_key+1);
-				}
-				else {
-					$select_field_name = $field_name."_select";
-					$value_field_name = $field_name."_value1";
-					$select = new Xfer_Comp_Select($field_name."_select");
-					$select->setSelect( array_merge(array("ignorer"),$select_list));
-					$select->setLocation(1,$posY);
-					$select->setNeeded( false);
-					$select->setValue(0);
-					$select->JavaScript = "var value=current.getRequete('').get('$select_field_name').toString();
-parent.get('$value_field_name').setEnabled(value!='0');";
-					$this->addComponent($select);
-				}
-				$posX = 2;
-				foreach($line as $subcomp) {
-					$subcomp->setLocation($posX,$posY);
-					$subcomp->setNeeded( false);
-					$this->addComponent($subcomp);
-					$posX++;
-				}
-				$posY++;
-			}
+		else {
+			$label->setValue("{[center]}{[bold]}{[underline]}Aucun critère de recherche défini{[/underline]}{[/bold]}{[/center]}");
+			$label->setLocation($posX,$posY,4);
+		}
+		$this->addComponent($label);
+		foreach($criteriaDesc as $id=>$criteriaText) {
+			$label = new Xfer_Comp_LabelForm('labelSearchText_'.$id);
+			$label->setValue($criteriaText);
+			$label->setLocation($posX+2,$posY,1);
+			$this->addComponent($label);
+			$comp = new Xfer_Comp_Button("searchButtonDel_".$id);
+			$comp->setIsMini(true);
+			$comp->setClickInfo('ACT',$id);
+			$comp->setLocation($posX+3,$posY++);
+			$comp->setAction($this->getRefreshAction("","suppr.png"));
+			$this->addComponent($comp);
 		}
 		return $posY;
 	}
@@ -497,7 +459,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @param Xfer_Component $component
 	 */
-	function addComponent($component) {
+	public function addComponent($component) {
 		$component->tab = $this->m_tab;
 		$id = $component->getId();
 		$this->m_components[$id] = $component;
@@ -510,7 +472,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 * @param int $hmin
 	 * @param int $vmin
 	 */
-	function resize($col,$hmin,$vmin) {
+	public function resize($col,$hmin,$vmin) {
 		foreach($this->m_components as $comp)
 			if(($comp->x == $col) && ($comp->colspan == 1))
 				$comp->setSize($vmin,$hmin);
@@ -521,7 +483,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @param string $tabName
 	 */
-	function findTab($tabName) {
+	public function findTab($tabName) {
 		$num = -1;
 		$index = 0;
 		foreach($this->m_components as $comp) {
@@ -542,7 +504,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @param string $tabName
 	 */
-	function newTab($tabName,$num = -1) {
+	public function newTab($tabName,$num = -1) {
 		$old_num = $this->findTab($tabName);
 		if($old_num == -1) {
 			if($num == -1)
@@ -564,7 +526,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @return integer
 	 */
-	function getComponentCount() {
+	public function getComponentCount() {
 		if($this->m_components == null)
 			return "NULL";
 		else
@@ -577,7 +539,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 * @param integer|string $cmp_idx
 	 * @return Xfer_Component
 	 */
-	function getComponents($cmp_idx) {
+	public function getComponents($cmp_idx) {
 		if( is_int($cmp_idx)) {
 			$nb = count($this->m_components);
 			if($cmp_idx<0)
@@ -608,7 +570,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @param integer|string $cmp_idx
 	 */
-	function removeComponents($cmp_idx) {
+	public function removeComponents($cmp_idx) {
 		if( is_int($cmp_idx)) {
 			$nb = count($this->m_components);
 			if($cmp_idx<0)
@@ -635,7 +597,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function addAction($action,$posAct=-1) {
+	public function addAction($action,$posAct=-1) {
 		if($this->checkActionRigth($action)) {
 			if ($posAct!=-1) {
 				$old_actions=$this->m_actions;
@@ -663,7 +625,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 *
 	 * @return array
 	 */
-	function getSortComponents() {
+	public function getSortComponents() {
 		$final_components = array();
 		foreach($this->m_components as $component) {
 			$id = $component->getId();
@@ -679,7 +641,7 @@ parent.get('$value_field_name').setEnabled(value!='0');";
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML() {
+	protected function _ReponseXML() {
 		$xml_text = "";
 		if( count($this->m_components) != 0) {
 			$final_components = $this->getSortComponents();

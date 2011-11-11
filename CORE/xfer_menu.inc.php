@@ -47,26 +47,26 @@ class Xfer_Menu_Item extends Xfer_Action
 	 *
 	 * @var string
 	 */
-	var $m_id="";
+	public $m_id="";
 	/**
 	 * Liste des sous menu
 	 *
 	 * @var array
 	 */
-	var $m_sub_menus=array();
+	public $m_sub_menus=array();
 	/**
 	 * Shortcut de menu
 	 *
 	 * @var string
 	 */
-	var $m_Shortcut="";
+	public $m_Shortcut="";
 
 	/**
 	 * Aide de menu
 	 *
 	 * @var string
 	 */
-	var $m_Help="";
+	public $m_Help="";
 
 	/**
 	 * Constructor
@@ -80,9 +80,9 @@ class Xfer_Menu_Item extends Xfer_Action
 	 * @param string $Help
 	 * @return Xfer_Menu_Item
 	 */
-	function Xfer_Menu_Item($id,$title,$icon="",$extension="",$action="",$modal="",$shortcut="",$help="")
+	public function __construct($id,$title,$icon="",$extension="",$action="",$modal="",$shortcut="",$help="")
 	{
-		$this->Xfer_Action($title,$icon,$extension,$action,$modal);
+		parent::__construct($title,$icon,$extension,$action,$modal);
 		$this->m_id = $id;
 		$this->m_Shortcut = $shortcut;
 		$this->m_Help = urlencode(htmlentities($help));
@@ -102,7 +102,7 @@ class Xfer_Menu_Item extends Xfer_Action
 	 *
 	 * @param Xfer_Menu_Item $submenu
 	 */
-	function addSubMenu($submenu)
+	public function addSubMenu($submenu)
 	{
 		array_push($this->m_sub_menus,$submenu);
 	}
@@ -113,7 +113,7 @@ class Xfer_Menu_Item extends Xfer_Action
 	 * @access private
 	 * @return string
 	 */
-	function _getContent()
+	protected function _getContent()
 	{
 		$xml_text = "";
 		if ($this->m_title!="")
@@ -141,7 +141,7 @@ class Xfer_Container_Menu extends Xfer_Container_Abstract
 	 *
 	 * @var Xfer_Menu_Item
 	 */
-	var $m_main_menus;
+	public $m_main_menus;
 	/**
 	 * Constructor
 	 *
@@ -150,9 +150,9 @@ class Xfer_Container_Menu extends Xfer_Container_Abstract
 	 * @param array $context
 	 * @return Xfer_Container_Menu
 	 */
-	function Xfer_Container_Menu($extension,$action,$context=array())
+	public function __construct($extension,$action,$context=array())
 	{
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name="CORE.Menu";
 		$this->m_main_menus = &new Xfer_Menu_Item("","","");
 	}
@@ -161,7 +161,7 @@ class Xfer_Container_Menu extends Xfer_Container_Abstract
 	 *
 	 * @param Xfer_Menu_Item $submenu
 	 */
-	function addSubMenu($submenu)
+	public function addSubMenu($submenu)
 	{
 		$this->m_main_menus->addSubMenu($submenu);
 	}
@@ -172,7 +172,7 @@ class Xfer_Container_Menu extends Xfer_Container_Abstract
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML()
+	protected function _ReponseXML()
 	{
 		return $this->m_main_menus->getReponseXML();
 	}

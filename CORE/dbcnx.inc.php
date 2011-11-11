@@ -22,17 +22,17 @@
 
 //@BEGIN@
 class DBCNX {
-	var $mysql;
-	var $res;
-	var $resIndex;
-	var $errorMsg;
-	var $errorCode;
-	var $connected;
-	var $debugLevel;
+	private $mMysql;
+	private $mRes;
+	private $mResIndex;
+	private $mDSN;
 
-	var $dsn;
+	public $errorMsg;
+	public $errorCode;
+	public $connected;
+	public $debugLevel;
 
-	public function createDataBase($dbcnf) {
+	public static function createDataBase($dbcnf) {
 		$mysql = new mysqli($dbcnf['dbhost'], $dbcnf['dbuser'], $dbcnf['dbpass']);
 		$last_error=$mysql->connect_errno;
 		if ($last_error) {
@@ -47,8 +47,8 @@ class DBCNX {
 	}
 
 	public function __construct() {
-		$this->res = array();
-		$this->resIndex = 0;
+		$this->mRes = array();
+		$this->mResIndex = 0;
 		$this->connected = false;
 		global $debugLevel;
 		if (isset($debugLevel))
@@ -59,8 +59,8 @@ class DBCNX {
 
  	public function __destruct()
 	{
-		if ($this->mysql!=null)
-			$this->mysql->close();
+		if ($this->mMysql!=null)
+			$this->mMysql->close();
      		session_write_close();
  	}
 
@@ -72,31 +72,31 @@ class DBCNX {
 	}
 
 	public function connect ($dbcnf){
-		$this->dsn = "mysql://".
+		$this->mDSN = "mMysql://".
 			$dbcnf['dbuser'].":".
 			$dbcnf['dbpass']."@".
 			$dbcnf['dbhost']."/".
 			$dbcnf['dbname'];
 
-		$this->printDebug("DBCNX::connect : DSN = $this->dsn\n");
+		$this->printDebug("DBCNX::connect : DSN = $this->mDSN\n");
 
-		$this->mysql = new mysqli($dbcnf['dbhost'], $dbcnf['dbuser'], $dbcnf['dbpass']);
-		$last_error=$this->mysql->connect_errno;
+		$this->mMysql = new mysqli($dbcnf['dbhost'], $dbcnf['dbuser'], $dbcnf['dbpass']);
+		$last_error=$this->mMysql->connect_errno;
 		if ($last_error) {
-			$this->errorMsg = $this->mysql->connect_error;
+			$this->errorMsg = $this->mMysql->connect_error;
 			$this->errorCode = $last_error;
 			return false;
 		}
-		$this->mysql->query("use ".$dbcnf['dbname'].";");
-		$last_error=$this->mysql->errno;
+		$this->mMysql->query("use ".$dbcnf['dbname'].";");
+		$last_error=$this->mMysql->errno;
 		if ($last_error) {
-			$this->errorMsg = $this->mysql->error;
+			$this->errorMsg = $this->mMysql->error;
 			$this->errorCode = $last_error;
 			return false;
 		}
 
 		$this->connected = true;
-		$this->mysql->autocommit(TRUE);
+		$this->mMysql->autocommit(TRUE);
 		return true;
 	}
 
@@ -106,19 +106,19 @@ class DBCNX {
 		$this->errorMsg = "";
 		$this->errorCode = false;
 
-		if(!$this->connected || $this->mysql->connect_error) {
+		if(!$this->connected || $this->mMysql->connect_error) {
 			$this->printDebug("DBCNX::execute : non connecté à une base de données\n");
-			$this->errorMsg = "non connecté à une base de données (".$this->mysql->connect_error.")";
+			$this->errorMsg = "non connecté à une base de données (".$this->mMysql->connect_error.")";
 			$this->errorCode = "NOTCONNECTED";
 			if ($throw) $this->throwError();
 			return false;
 		}
 
-		$result = $this->mysql->query($query);
+		$result = $this->mMysql->query($query);
 		if (!$result) {
-			$this->printDebug("DBCNX::execute : apres execution de la requette: ".$this->mysql->error."\n");
-			$this->errorMsg = $this->mysql->error."[$query]";
-			$this->errorCode = $this->mysql->errno;
+			$this->printDebug("DBCNX::execute : apres execution de la requette: ".$this->mMysql->error."\n");
+			$this->errorMsg = $this->mMysql->error."[$query]";
+			$this->errorCode = $this->mMysql->errno;
 			if ($throw)
 				$this->throwError();
 			return false;
@@ -127,17 +127,17 @@ class DBCNX {
 			// on ne stock que les resultats de requettes SELECT
 			if ((substr($query, 0, 6) == "SELECT") || (substr($query, 0, 4) == "SHOW")) {
 				$this->printDebug("DBCNX::execute : requette SELECT avec ".$result->num_rows." resultats\n");
-				$this->resIndex++;
-				$this->res[$this->resIndex] = $result;
-				return $this->resIndex;
+				$this->mResIndex++;
+				$this->mRes[$this->mResIndex] = $result;
+				return $this->mResIndex;
 			}
 			else if (substr($query, 0, 11) == "INSERT INTO") {
-				$ret=$this->mysql->insert_id;
+				$ret=$this->mMysql->insert_id;
 				$this->printDebug("DBCNX::execute : requette INSERT => ID=$ret\n");
 				return $ret;
 			}
 			else {
-				$ret=$this->mysql->affected_rows;
+				$ret=$this->mMysql->affected_rows;
 				$this->printDebug("DBCNX::execute : nombre enregistrement modifiés=$ret\n");
 				return true;
 			}
@@ -145,46 +145,46 @@ class DBCNX {
 	}
 
 	public function isFailed(){
-		if ($this->mysql->errno)
+		if ($this->mMysql->errno)
 			return true;
 		else
 			return false;
 	}
 
 	public function throwExcept($MsgPred='') {
-		if ($this->mysql->errno) {
+		if ($this->mMysql->errno) {
 			require_once("CORE/Lucterios_Error.inc.php");
-			throw new LucteriosException(GRAVE,$MsgPred.$this->mysql->error);
+			throw new LucteriosException(GRAVE,$MsgPred.$this->mMysql->error);
 		}
 	}
 
 	public function throwError() {
 		if ($this->errorMsg!='') {
 			require_once("CORE/Lucterios_Error.inc.php");
-			throw new LucteriosException(GRAVE,"#".$this->mysql->errno." - ".$this->errorMsg);
+			throw new LucteriosException(GRAVE,"#".$this->mMysql->errno." - ".$this->errorMsg);
 		}
 	}
 
 	public function begin() {
-		$this->mysql->autocommit(FALSE);
+		$this->mMysql->autocommit(FALSE);
 		$this->throwExcept('Begin:');
 	}
 	public function commit() {
-		$this->mysql->commit();
+		$this->mMysql->commit();
 		$this->throwExcept('Commit:');
-		$this->mysql->autocommit(TRUE);
+		$this->mMysql->autocommit(TRUE);
 	}
 	public function rollback() {
-		$this->mysql->rollback();
+		$this->mMysql->rollback();
 		$this->throwExcept('Rollback:');
-		$this->mysql->autocommit(TRUE);
+		$this->mMysql->autocommit(TRUE);
 	}
 
 	public function getRecord($queryId) {
 		$row = array();
 		if(is_string($queryId) || is_int($queryId)) {
-			if(array_key_exists($queryId, $this->res)) {
-				return $this->res[$queryId];
+			if(array_key_exists($queryId, $this->mRes)) {
+				return $this->mRes[$queryId];
 			}
 		}
 		return false;
@@ -200,7 +200,7 @@ class DBCNX {
 			else {
 				// on a atteint la fin des enregistrements, on enleve l'index du tableau de resultats
 				$req->free();
-				unset($this->res[$queryId]);
+				unset($this->mRes[$queryId]);
 				return false;
 			}
 		}
@@ -231,7 +231,7 @@ class DBCNX {
 			else {
 				// on a atteint la fin des enregistrements, on enleve l'index du tableau de resultats
 				$req->free();
-				unset($this->res[$queryId]);
+				unset($this->mRes[$queryId]);
 				return false;
 			}
 		}
@@ -240,12 +240,16 @@ class DBCNX {
 
 	public function getNumRows($queryId) {
 		if(is_string($queryId) || is_int($queryId)) {
-			if(array_key_exists($queryId, $this->res))
-				return $this->res[$queryId]->num_rows;
+			if(array_key_exists($queryId, $this->mRes))
+				return $this->mRes[$queryId]->num_rows;
 			else
 				return false;
 		}
 		else return false;
+	}
+
+	public function getAffectedRows() {
+		return $this->mMysql->affected_rows;
 	}
 
 } // fin de la class DBCNX

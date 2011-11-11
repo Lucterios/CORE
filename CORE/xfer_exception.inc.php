@@ -84,14 +84,14 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 	 *
 	 * @var Exception
 	 */
-	var $m_error = "";
+	public $m_error = "";
 
 	/**
 	 * Description
 	 *
 	 * @var string
 	 */
-	var $m_text = "";
+	public $m_text = "";
 
 	/**
 	 * Constructor
@@ -101,8 +101,8 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 	 * @param array $context
 	 * @return Xfer_Container_Exception
 	 */
-	function Xfer_Container_Exception($extension,$action,$context = array()) {
-		$this->Xfer_Container_Abstract($extension,$action,$context);
+	public function __construct($extension,$action,$context = array()) {
+		parent::__construct($extension,$action,$context);
 		$this->m_observer_name = "CORE.Exception";
 	}
 
@@ -112,7 +112,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 	 * @param PEAR_Error or Exception $pear_error
 	 * @param string $text
 	 */
-	function setData($error,$text = "") {
+	public function setData($error,$text = "") {
 		$this->m_error = $error;
 		$this->m_text = $text;
 	}
@@ -122,13 +122,13 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 	 *
 	 * @return string
 	 */
-	function toString() {
+	public function toString() {
 		$ret = $this->m_text;
 		$ret .= "[".$this->m_pear_error->getMessage().";".$this->m_pear_error->getCode().";".$this->m_pear_error->getMode()."]";
 		return $ret;
 	}
 
-	function getLucteriosFile($File) {
+	public function getLucteriosFile($File) {
 		if($File == $_SERVER['SCRIPT_FILENAME'])
 		return "[init]";
 		else {
@@ -143,7 +143,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		}
 	}
 
-	function getErrorTrace() {
+	public function getErrorTrace() {
 		$trace = "";
 		if( is_subclass_of($this->m_error,'Exception')) {
 			foreach($this->m_error->getTrace() as $num => $trace_line) {
@@ -166,7 +166,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 	 * @access private
 	 * @return string
 	 */
-	function _ReponseXML() {
+	protected function _ReponseXML() {
 		$xml_text = "<EXCEPTION>\n";
 		if( is_string($this->m_error)) {
 			$xml_text = $xml_text."\t<MESSAGE><![CDATA[".$this->m_error."]]></MESSAGE>\n";
@@ -199,7 +199,7 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
  * @return string
  */
 function xfer_returnError($extension,$action,$context,$error) {
-	$error_rep = & new Xfer_Container_Exception($extension,$action,$context);
+	$error_rep = new Xfer_Container_Exception($extension,$action,$context);
 	$error_rep->setData($error,"");
 	return $error_rep->getReponseXML();
 }

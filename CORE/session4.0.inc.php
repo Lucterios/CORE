@@ -33,14 +33,6 @@ function refresh_session($d,$timeOut,$link) {
 	// mise hors service des sessions en time-out
 	$link->execute("DELETE FROM $session_table WHERE dtmod<$time_limid_delete");
 	$link->execute("UPDATE $session_table SET valid='n' WHERE valid='o' AND dtmod<$time_limid_valid");
-
-	/*$res = $link->execute("SELECT sid, dtmod FROM $session_table WHERE uid='$uid' AND valid='o'");
-	while(list($ses, $dtmod) = $link->getRow($res)) {
-		if($d>$dtmod+($timeOut*60)) {
-			$link->execute("UPDATE $session_table SET valid='n' WHERE sid='$ses'");
-		}
-	}*/
-	
 }
 
 // create a session in database with limited acces to a lonly ip adress.
@@ -52,21 +44,21 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 
 	// decoupage de l'IP
 	if(strstr($ip, "/")!=false)
-		list($inetAddr, $netmask) = split("/", $ip);
+		list($inetAddr, $netmask) = explode("/", $ip);
 	else {
 		$inetAddr = $ip;
 		$netmask = 32;
 	}
 	
-	list($classA, $classB, $classC, $classD) = split("\.", $inetAddr);
+	list($classA, $classB, $classC, $classD) = explode("\.", $inetAddr);
 	// chargement de la liste des IPs autorisée à se connecter
 	$q = "SELECT inetAddr FROM $access_table WHERE inetAddr LIKE '$classA.%' OR inetAddr LIKE '255.%'";
 	$r = $link->execute($q);
 	$ipIsAutorised = false;
 	while(list($inet) = $link->getRow($r)) {
 		// decoupage de inet
-		list($dbinet, $dbnetmask) = split("/", $inet);
-		list($DBclassA, $DBclassB, $DBclassC, $DBclassD) = split("\.", $dbinet);
+		list($dbinet, $dbnetmask) = explode("/", $inet);
+		list($DBclassA, $DBclassB, $DBclassC, $DBclassD) = explode("\.", $dbinet);
 		
 		// verif de la pertinance et dc du droit
 		if($dbnetmask<=$netmask) {

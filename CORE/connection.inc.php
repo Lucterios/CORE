@@ -53,7 +53,7 @@ function getConnectionInfo($login,$ses) {
 		if( function_exists('application_SupportEmail'))
 			$SupportEmail = application_SupportEmail();
 	}
-	$path = split('/',$_SERVER["SCRIPT_NAME"]);
+	$path = explode('/',$_SERVER["SCRIPT_NAME"]);
 	unset($path[ count($path)-1]);
 	$path = trim( implode("/",$path));
 	if( strlen($path)>0)
@@ -105,21 +105,30 @@ elseif ( array_key_exists("login",$GLOBAL) && array_key_exists("pass",$GLOBAL)) 
 	if($nb != 1)
 		mustAutentificate('BADAUTH');
 	else {
-		$GLOBAL["ses"] = get_session_id($GLOBAL["login"],$timeOut,$connect,$GLOBAL["REMOTE_ADDR"],"multiple");
-		if($GLOBAL["ses"] == "")
-			mustAutentificate('BADFROMLOCATION');
-		else {
-			// recup du realName
-			getConnectionInfo($GLOBAL["login"],$GLOBAL["ses"]);
-			$IS_CONNECTED = true;
-			$login = $GLOBAL['login'];
+		require_once("CORE/securityLock.inc.php");
+		$SECURITY_LOCK=new SecurityLock();
+		if ($SECURITY_LOCK->isLock()!=-1) {
+			$GLOBAL["ses"] = get_session_id($GLOBAL["login"],$timeOut,$connect,$GLOBAL["REMOTE_ADDR"],"multiple");
+			if($GLOBAL["ses"] == "")
+				mustAutentificate('BADFROMLOCATION');
+			else {
+				// recup du realName
+				getConnectionInfo($GLOBAL["login"],$GLOBAL["ses"]);
+				$IS_CONNECTED = true;
+				$login = $GLOBAL['login'];
+			}
 		}
+		else
+			mustAutentificate('LOCK');
 	}
 }
 elseif ( array_key_exists("ses",$GLOBAL) && ! verif_session($GLOBAL["ses"],$timeOut,$connect,$GLOBAL["REMOTE_ADDR"])) {
 	mustAutentificate('BADSESS');
 }
 else {
+	require_once("CORE/securityLock.inc.php");
+	$SECURITY_LOCK=new SecurityLock();
+
 	$IS_CONNECTED = true;
 	if( array_key_exists("login",$GLOBAL))
 		$login = $GLOBAL["login"];

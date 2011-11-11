@@ -23,9 +23,13 @@
 //@BEGIN@
 
 function checkRight($login,$extension,$action) {
+	global $SECURITY_LOCK;
+	if ($SECURITY_LOCK->isLock()==1)
+		return true;
+
 	//if (!is_null($login)) {
 		global $connect;
-		list($usec,$sec) = split(" ", microtime());
+		list($usec,$sec) = explode(" ", microtime());
 		$q = "SELECT cgr.value
 	FROM
 		CORE_extension ce
@@ -49,7 +53,7 @@ function checkRight($login,$extension,$action) {
 				break;
 			}
 		}
-		list($usec2,$sec2) = split(" ", microtime());
+		list($usec2,$sec2) = explode(" ", microtime());
 		$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$actionreponse:$droittemps:$t");
 		return ($droit == 'o');
 	//}

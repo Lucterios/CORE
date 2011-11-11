@@ -1,3 +1,4 @@
+
 <?php
 // 
 //     This file is part of Lucterios.
@@ -44,13 +45,13 @@
 
 class Param_Depencies
 {
-	var $name='';
-	var $version_majeur_max=0;
-	var $version_mineur_max=0;
-	var $version_majeur_min=0;
-	var $version_mineur_min=0;
-	var $optionnal=false;
-	function Param_Depencies($name,$version_majeur_max,$version_mineur_max,$version_majeur_min=-1,$version_mineur_min=-1,$optionnal=false)
+	public $name='';
+	public $version_majeur_max=0;
+	public $version_mineur_max=0;
+	public $version_majeur_min=0;
+	public $version_mineur_min=0;
+	public $optionnal=false;
+	public function __construct($name,$version_majeur_max,$version_mineur_max,$version_majeur_min=-1,$version_mineur_min=-1,$optionnal=false)
 	{
 		$this->name=$name;
 		$this->version_majeur_max=$version_majeur_max;
@@ -69,15 +70,15 @@ class Param_Depencies
 
 class Param_Menu
 {
-	var $description;
-	var $help;
-	var $act;
-	var $pere;
-	var $icon;
-	var $shortcut;
-	var $position;
-	var $modal;
-	function Param_Menu($description,$pere="",$act="",$icon="",$shortcut="",$position=0,$modal=0,$help='')
+	public $description;
+	public $help;
+	public $act;
+	public $pere;
+	public $icon;
+	public $shortcut;
+	public $position;
+	public $modal;
+	public function __construct($description,$pere="",$act="",$icon="",$shortcut="",$position=0,$modal=0,$help='')
 	{
 		$this->description=$description;
 		$this->act=$act;
@@ -93,11 +94,11 @@ class Param_Menu
 
 class Param_Action
 {
-	var $action;
-	var $rightNumber;
-	var $description;
+	public $action;
+	public $rightNumber;
+	public $description;
 
-	function Param_Action($description, $action, $rightNumbers) {
+	public function __construct($description, $action, $rightNumbers) {
 		$this->description = $description;
 		$this->action = $action;
 		$this->rightNumber = $rightNumbers;
@@ -106,9 +107,9 @@ class Param_Action
 
 class Param_Rigth
 {
-	var $description;
-	var $weigth;
-	function Param_Rigth($description,$weigth=50)
+	public $description;
+	public $weigth;
+	public function __construct($description,$weigth=50)
 	{
 		$this->description=$description;
 		$this->weigth=$weigth;
@@ -123,12 +124,12 @@ define('PARAM_TYPE_ENUM', 4);
 
 class Param_Parameters
 {
-	var $name;
-	var $defaultvalue;
-	var $description;
-	var $type;
-	var $extend;
-	function Param_Parameters($name,$defaultvalue,$description="",$type=PARAM_TYPE_STR,$extend=array())
+	public $name;
+	public $defaultvalue;
+	public $description;
+	public $type;
+	public $extend;
+	public function __construct($name,$defaultvalue,$description="",$type=PARAM_TYPE_STR,$extend=array())
 	{
 		$this->name=$name;
 		$this->defaultvalue=$defaultvalue;
@@ -138,7 +139,7 @@ class Param_Parameters
 		$this->extend=$extend;
 	}
 
-        function ArrayToString($array)
+        public static function ArrayToString($array)
         {
                 $result="";
                 if (!is_array($array))
@@ -159,7 +160,7 @@ class Param_Parameters
                         }
                         elseif (is_array($val))
                         {
-                                $result.=$this->ArrayToString($val);
+                                $result.=Param_Parameters::ArrayToString($val);
                         }
                         elseif (is_bool($val))
                         {
@@ -175,10 +176,10 @@ class Param_Parameters
                 return $result;
         }
 
-	function getExtendToText($Complete=true)
+	public function getExtendToText($Complete=true)
 	{
 		require_once 'debug_tools.php';
-		$extent_text=$this->ArrayToString($this->extend);
+		$extent_text=Param_Parameters::ArrayToString($this->extend);
 		if (!$Complete)
 		{
 			$extent_text=trim($extent_text);

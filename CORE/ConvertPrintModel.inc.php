@@ -22,78 +22,72 @@
 
 //@BEGIN@
 class ModelConverter {
-	var$_Model;
-	var$_Url;
+	private $mModel;
+	private $mUrl;
 
-	function ModelConverter($modelXml) {
-		$this->_Model = $modelXml;
+	public function __construct($modelXml) {
+		$this->mModel = $modelXml;
 		$current_file = "http://".$_SERVER["SERVER_NAME"].$_SERVER["PHP_SELF"];
-		$this->_Url = substr($current_file,0,-1* strlen( strrchr($current_file,"/"))+1);
+		$this->mUrl = substr($current_file,0,-1* strlen( strrchr($current_file,"/"))+1);
 	}
 
-	function Run() {
-		$pos_body = strpos($this->_Model,'<body');
+	public function run() {
+		$pos_body = strpos($this->mModel,'<body');
 		if($pos_body !== false) {
-			$this->_Model = substr($this->_Model,0,$pos_body)."<xsl:template name='body'>\n". substr($this->_Model,$pos_body);
+			$this->mModel = substr($this->mModel,0,$pos_body)."<xsl:template name='body'>\n". substr($this->mModel,$pos_body);
 		}
-		$this->__InsertInTag('header','<xsl:template name="header">','</xsl:template>');
-		$this->__InsertInTag('bottom','<xsl:template name="bottom">','</xsl:template>');
-		$this->__InsertInTag('left','<xsl:template name="left">','</xsl:template>');
-		$this->__InsertInTag('rigth','<xsl:template name="rigth">','</xsl:template>');
-		$this->__InsertInTagWithDataLoop('body',"<xsl:call-template name='header'/><xsl:call-template name='bottom'/><xsl:call-template name='left'/><xsl:call-template name='rigth'/>","<page>\n","</page>\n");
-		$this->__InsertInTagWithDataLoop('columns');
-		$this->__InsertInTagWithDataLoop('rows');
-		$this->__InsertInTagWithDataLoop('cell');
-		$this->__ChangeSelect();
-		$this->__ConvertImage();
-		$pos_model = strpos($this->_Model,'<model');
+		$this->insertInTag('header','<xsl:template name="header">','</xsl:template>');
+		$this->insertInTag('bottom','<xsl:template name="bottom">','</xsl:template>');
+		$this->insertInTag('left','<xsl:template name="left">','</xsl:template>');
+		$this->insertInTag('rigth','<xsl:template name="rigth">','</xsl:template>');
+		$this->insertInTagWithDataLoop('body',"<xsl:call-template name='header'/><xsl:call-template name='bottom'/><xsl:call-template name='left'/><xsl:call-template name='rigth'/>","<page>\n","</page>\n");
+		$this->insertInTagWithDataLoop('columns');
+		$this->insertInTagWithDataLoop('rows');
+		$this->insertInTagWithDataLoop('cell');
+		$this->changeSelect();
+		$this->convertImage();
+		$pos_model = strpos($this->mModel,'<model');
 		$pos_model_sep = false;
-		if($pos_model !== false)$pos_model_sep = strpos($this->_Model,'>',$pos_model);
+		if($pos_model !== false)$pos_model_sep = strpos($this->mModel,'>',$pos_model);
 		if(($pos_model !== false) && ($pos_model_sep !== false)) {
 			$header = "<?xml version='1.0' encoding='ISO-8859-1' ?>\n";
 			$header .= "<xsl:stylesheet version='1.0' xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>\n";
 			$header .= "<xsl:template match='/'>\n";
-			$header .= substr($this->_Model,$pos_model,$pos_model_sep-$pos_model+1)."\n";
+			$header .= substr($this->mModel,$pos_model,$pos_model_sep-$pos_model+1)."\n";
 			$header .= "<xsl:call-template name='body'/>\n";
 			$header .= "</model>\n";
 			$header .= "</xsl:template>\n";
-			$this->_Model = substr($this->_Model,$pos_model_sep+1);
-			$this->_Model = str_replace("</model>","\n</xsl:template>\n</xsl:stylesheet>",$this->_Model);
-			$this->_Model = $header.$this->_Model;
+			$this->mModel = substr($this->mModel,$pos_model_sep+1);
+			$this->mModel = str_replace("</model>","\n</xsl:template>\n</xsl:stylesheet>",$this->mModel);
+			$this->mModel = $header.$this->mModel;
 		}
 		return true;
 	}
 
-	function TransformXsl($xmldata,$xsldata) {
-		if( version_compare( phpversion(),'5','>=')) {
-			if(! class_exists('XsltProcessor') || ! class_exists('DomDocument'))die('processeur XSLT non installe!');
-			$proc_xsl = new DomDocument();
-			$proc_xsl->loadXML($xsldata);
-			$proc_xml = new DomDocument();
-			$proc_xml->loadXML($xmldata);
-			$xslt = new XsltProcessor();
-			$xslt->importStylesheet($proc_xsl);
-			$obj = $xslt->transformToDoc($proc_xml);
-			$obj->encoding = 'ISO-8859-1';
-			$res = $obj->saveXML();
-		}
-		else {
-			$dom_xml = domxml_open_mem($xmldata);
-			$dom_xsl = domxml_xslt_stylesheet($xsldata);
-			$dom_result = $dom_xsl->process($dom_xml);
-			$res = $dom_result->dump_mem( true,"ISO-8859-1");
-		}
-		return $res;
-	}
-
-	function toXap($xmldata,$xmlresultfile = '') {
-		$Xap = $this->TransformXsl($xmldata,$this->_Model);
-		$Xap = $this->convertApasFormat($Xap);
-		if($xmlresultfile != '')$this->Save($xmlresultfile,$Xap);
+	public function toXap($xmldata,$xmlresultfile = '') {
+		$Xap = $this->TransformXsl($xmldata,$this->mModel);
+		$Xap = $this->ConvertApasFormat($Xap);
+		if($xmlresultfile != '')
+			$this->save($xmlresultfile,$Xap);
 		return $Xap;
 	}
 
-	function convertApasFormat($xmltext) {
+	public static function TransformXsl($xmldata,$xsldata) {
+		if(! class_exists('XsltProcessor') || ! class_exists('DomDocument'))
+			die('processeur XSLT non installe!');
+		$proc_xsl = new DomDocument();
+		$proc_xsl->loadXML($xsldata);
+		$proc_xml = new DomDocument();
+		$proc_xml->loadXML($xmldata);
+		$xslt = new XsltProcessor();
+		$xslt->importStylesheet($proc_xsl);
+		$obj = $xslt->transformToDoc($proc_xml);
+		$obj->encoding = 'ISO-8859-1';
+		$res = $obj->saveXML();
+		return $res;
+	}
+
+	public static function ConvertApasFormat($xmltext) {
 		$xml_text = str_replace('<b>','<font Font-weight="bold">',$xmltext);
 		$xml_text = str_replace('<i>','<font Font-style="italic">',$xml_text);
 		$xml_text = str_replace('<u>','<font text-decoration="underline">',$xml_text);
@@ -113,38 +107,41 @@ class ModelConverter {
 		return $xml_text;
 	}
 
-	function Save($modelFile,$content = null) {
-		if($content == null)$content = $this->_Model;
+	private function save($modelFile,$content = null) {
+		if($content == null)
+			$content = $this->mModel;
 		$wh = fopen($modelFile,'w');
 		if($wh !== false) {
-			foreach( split("\n",$content) as $line) fwrite($wh,$line."\n");
-		} fclose($wh);
+			foreach( explode("\n",$content) as $line) 
+				fwrite($wh,$line."\n");
+		} 
+		fclose($wh);
 	}
 
-	function __GetTagPosition($tagName,$start) {
-		return $this->__GetItemPosition("<$tagName","</$tagName>",array('/','>'),$start);
+	private function getTagPosition($tagName,$start) {
+		return $this->getItemPosition("<$tagName","</$tagName>",array('/','>'),$start);
 	}
 
-	function __InsertInTag($tagName,$addBegin,$endBegin) {
+	private function insertInTag($tagName,$addBegin,$endBegin) {
 		$start = 0;
 		$len = 0;
 		while($len != -1) {
-			list($pos,$len) = $this->__GetTagPosition($tagName,$start);
+			list($pos,$len) = $this->getTagPosition($tagName,$start);
 			if($len != -1) {
-				$new_text = $addBegin. substr($this->_Model,$pos,$len).$endBegin;
-				$this->_Model = substr_replace($this->_Model,$new_text,$pos,$len);
+				$new_text = $addBegin. substr($this->mModel,$pos,$len).$endBegin;
+				$this->mModel = substr_replace($this->mModel,$new_text,$pos,$len);
 				$start = $pos+ strlen($new_text);
 			}
 		}
 	}
 
-	function __GetItemPosition($itembegin,$itemend,$ending,$start) {
-		$posIn = strpos($this->_Model,$itembegin,$start);
-		$posOut = strpos($this->_Model,$itemend,$start);
+	private function getItemPosition($itembegin,$itemend,$ending,$start) {
+		$posIn = strpos($this->mModel,$itembegin,$start);
+		$posOut = strpos($this->mModel,$itemend,$start);
 		if($posOut !== false)$posOut += strlen($itemend)-1;
 		if(($posIn !== false) && ($posOut === false) && ($ending != null)) {
-			$end = strpos($this->_Model,$ending[1],$posIn);
-			if(($end>1) && ($this->_Model[$end-1] == $ending[0]))$posOut = $end;
+			$end = strpos($this->mModel,$ending[1],$posIn);
+			if(($end>1) && ($this->mModel[$end-1] == $ending[0]))$posOut = $end;
 		}
 		if(($posIn === false) || ($posOut === false) || ($posOut<$posIn))
 		return array(-1,-1);
@@ -152,27 +149,27 @@ class ModelConverter {
 		return array($posIn,$posOut-$posIn+1);
 	}
 
-	function __ConvertImage() {
+	private function convertImage() {
 		$start = 0;
 		$len = 0;
 		while($len != -1) {
-			list($pos,$len) = $this->__GetTagPosition('image',$start);
+			list($pos,$len) = $this->getTagPosition('image',$start);
 			if($len != -1) {
-				$pos_begin = strpos($this->_Model,">",$pos);
-				$pos_end = strpos($this->_Model,'</image',$pos);
+				$pos_begin = strpos($this->mModel,">",$pos);
+				$pos_end = strpos($this->mModel,'</image',$pos);
 				if(($pos_begin >= 0) && ($pos_begin<($pos+$len-1)) && ($pos_end >= 0) && ($pos_end<($pos+$len-1))) {
 					$pos_begin++;
-					$file_name = substr($this->_Model,$pos_begin,$pos_end-$pos_begin);
+					$file_name = substr($this->mModel,$pos_begin,$pos_end-$pos_begin);
 					$len_file_name = strlen($file_name);
 					$file_name = trim($file_name);
 					if (is_file($file_name)) {
 						$file_size = filesize($file_name);
 						$handle = fopen($file_name,'r');
 						$encoder = fread($handle,$file_size);
-						$encoder = chunk_split( base64_encode($encoder));
+						$encoder = chunk_explode( base64_encode($encoder));
 						$f = fclose($handle);
 						$base64_mime_image = "data:image/*;base64,$encoder";
-						$this->_Model = substr($this->_Model,0,$pos_begin)."\n$base64_mime_image\n". substr($this->_Model,$pos_end);
+						$this->mModel = substr($this->mModel,0,$pos_begin)."\n$base64_mime_image\n". substr($this->mModel,$pos_end);
 						$start = $pos+$len+ strlen($base64_mime_image)-$len_file_name;
 					}
 					else $start = $pos+$len;
@@ -182,53 +179,53 @@ class ModelConverter {
 		}
 	}
 
-	function __ChangeSelect() {
+	private function changeSelect() {
 		$start = 0;
 		$len = 0;
 		while($len != -1) {
-			list($pos,$len) = $this->__GetItemPosition('[{','}]', null,$start);
+			list($pos,$len) = $this->getItemPosition('[{','}]', null,$start);
 			if($len != -1) {
-				$item = substr($this->_Model,$pos+2,$len-4);
+				$item = substr($this->mModel,$pos+2,$len-4);
 				$new_text = "<xsl:value-of select='$item'/>";
-				$this->_Model = substr_replace($this->_Model,$new_text,$pos,$len);
+				$this->mModel = substr_replace($this->mModel,$new_text,$pos,$len);
 				$start = $pos+ strlen($new_text);
 			}
 		}
 		$start = 0;
 		$len = 0;
 		while($len != -1) {
-			list($pos,$len) = $this->__GetItemPosition('[(',')]', null,$start);
+			list($pos,$len) = $this->getItemPosition('[(',')]', null,$start);
 			if($len != -1) {
-				$item = substr($this->_Model,$pos+2,$len-4);
+				$item = substr($this->mModel,$pos+2,$len-4);
 				$new_text = "<xsl:value-of select='$item'/>";
-				$this->_Model = substr_replace($this->_Model,$new_text,$pos,$len);
+				$this->mModel = substr_replace($this->mModel,$new_text,$pos,$len);
 				$start = $pos+ strlen($new_text);
 			}
 		}
 	}
 
-	function __InsertInTagWithDataLoop($tagName,$loopingBegin = '',$addbegin = '',$addend = '') {
+	private function insertInTagWithDataLoop($tagName,$loopingBegin = '',$addbegin = '',$addend = '') {
 		$start = 0;
 		$len = 0;
 		while($len != -1) {
-			list($pos,$len) = $this->__GetTagPosition($tagName,$start);
-			if($pos != -1)$pos_end = strpos($this->_Model,'>',$pos);
+			list($pos,$len) = $this->getTagPosition($tagName,$start);
+			if($pos != -1)$pos_end = strpos($this->mModel,'>',$pos);
 			if(($len != -1) && ($pos_end !== false)) {
 				$data = '';
-				$pos_data = strpos($this->_Model,'data',$pos);
+				$pos_data = strpos($this->mModel,'data',$pos);
 				if(($pos_data !== false) && ($pos_data<$pos_end)) {
-					$pos_equal = strpos($this->_Model,'=',$pos_data);
-					$pos_cote = min($pos_end, strpos($this->_Model,' ',$pos_equal));
-					if(($pos_equal !== false) && ($pos_cote !== false) && ($pos_equal<$pos_cote))$data = substr($this->_Model,$pos_equal+1,$pos_cote-$pos_equal-1);
+					$pos_equal = strpos($this->mModel,'=',$pos_data);
+					$pos_cote = min($pos_end, strpos($this->mModel,' ',$pos_equal));
+					if(($pos_equal !== false) && ($pos_cote !== false) && ($pos_equal<$pos_cote))$data = substr($this->mModel,$pos_equal+1,$pos_cote-$pos_equal-1);
 				}
 				if(($data != '') && ($data != '"."') && ($data != "'.'") && ($data != "''") && ($data != '""')) {
 					$data = str_replace("'",'"',$data);
-					$new_text = "<xsl:for-each select=$data>\n".$addbegin.$loopingBegin. substr($this->_Model,$pos,$len).$addend."\n</xsl:for-each>\n";
+					$new_text = "<xsl:for-each select=$data>\n".$addbegin.$loopingBegin. substr($this->mModel,$pos,$len).$addend."\n</xsl:for-each>\n";
 				}
 				else {
-					$new_text = $addbegin.$loopingBegin. substr($this->_Model,$pos,$len).$addend;
+					$new_text = $addbegin.$loopingBegin. substr($this->mModel,$pos,$len).$addend;
 				}
-				$this->_Model = substr_replace($this->_Model,$new_text,$pos,$len);
+				$this->mModel = substr_replace($this->mModel,$new_text,$pos,$len);
 				$start = $pos+ strlen($new_text);
 			}
 			else $len = -1;
@@ -322,7 +319,7 @@ function CheckOrBuildReport($extension,$printmodel,$modelRef,$params,$title,$pri
 		$XmlDataFctName = $extension."_APAS_".$printmodel."_getXmlData";
 		$xml_data = $XmlDataFctName($params);
 		$model_converter = new ModelConverter('<?xml version="1.0" encoding="ISO-8859-1"?>'.$model);
-		$model_converter->Run();
+		$model_converter->run();
 		$xap = $model_converter->toXap('<?xml version="1.0" encoding="ISO-8859-1"?>'.$xml_data);
 		if(($printRef>0) && ($writeMode != WRITE_MODE_NONE)) {
 			$rep = str_replace('"',"'",$report[0]);

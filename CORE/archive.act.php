@@ -47,6 +47,9 @@ try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","archive",$Params);
 $xfer_result->Caption="Sauvegarder les données";
 //@CODE_ACTION@
+global $SECURITY_LOCK;
+$SECURITY_LOCK->open(true);
+
 $file_path = $path.$filename;
 $path_parts = pathinfo($file_path);
 if(isset($path_parts['extension']))
@@ -58,6 +61,7 @@ if($xfer_result->confirme("Voulez-vous réaliser une sauvegarde vers le fichier '
 	$xfer_result->m_context['file_path'] = $file_path;
 	$xfer_result->redirectAction( new Xfer_Action('_Archiver','','CORE','archiveForm', FORMTYPE_MODAL, CLOSE_YES));
 }
+$SECURITY_LOCK->close();
 //@CODE_ACTION@
 }catch(Exception $e) {
 	throw $e;

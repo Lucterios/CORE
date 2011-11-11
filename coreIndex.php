@@ -21,7 +21,7 @@
 
 require_once("CORE/Lucterios_Error.inc.php");
 
-list($usec, $sec) = split(" ", microtime());
+list($usec, $sec) = explode(" ", microtime());
 // avant toute chose, on stipule qu'on retourne du text/plain
 header("http-content: text/plain");
 
@@ -94,7 +94,7 @@ if($IS_CONNECTED) {
 		// on boucle sur l'ensemble des actions demand?
         require_once("CORE/BoucleReponse.inc.php");
         $REPONSE.= BoucleReponse($lesRequettes);
-	} catch (Exception $e) {              // Devrait ï¿½tre attrapï¿½e
+	} catch (Exception $e) {              // Devrait être attrapée
 		require_once "CORE/xfer_exception.inc.php";
   		$Xfer_erro=new Xfer_Container_Exception("CORE","coreIndex");
   		$Xfer_erro->setData($e);
@@ -104,7 +104,7 @@ if($IS_CONNECTED) {
 // les actions sont execut?, on exporte l'ensemble des reponses en XML
 $REPONSE.="</REPONSES>";
 
-list($usec2, $sec2) = split(" ", microtime());
+list($usec2, $sec2) = explode(" ", microtime());
 $t = ($sec2-$sec)+(($usec2-$usec)/10);
 logAutre("temps total serveur: $t");
 // log de la reponse
