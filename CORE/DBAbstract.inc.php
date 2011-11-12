@@ -728,8 +728,11 @@ class DBObj_Abstract {
 		unset($fields['id']);
 		unset($fields['superId']);
 		foreach($fields as $field_name => $field_item)
-			if(!is_null($this->$field_name) && isset($this->__DBMetaDataField[$field_name])) {
-				$type=$this->__DBMetaDataField[$field_name]['type'];
+			if(!is_null($this->$field_name)) {
+				if (isset($this->__DBMetaDataField[$field_name]))
+					$type=$this->__DBMetaDataField[$field_name]['type'];
+				else
+					$type=2;
 				$value = $this->$field_name;
 				if ($field_item==DBOBJ_STR) {
 					$value = str_replace("'","''",$value);
