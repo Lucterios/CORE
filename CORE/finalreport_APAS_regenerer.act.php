@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Action file write by SDK tool
-// --- Last modification: Date 20 October 2011 22:12:30 By  ---
+// --- Last modification: Date 14 November 2011 22:59:45 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -79,7 +79,7 @@ if ($xfer_result->showSelector(0)) {
 	$DBPrint->delete();
 
 	$xfer_result->m_extension=$self->extensionid;
-	$xfer_result->selectReport($self->identify,0,$xfer_result->m_context,"Regénération",WRITE_MODE_WRITE,$self->reference);
+	$xfer_result->selectReport($self->identify,$xfer_result->m_context,"Regénération",WRITE_MODE_WRITE,$self->reference);
 }
 //@CODE_ACTION@
 }catch(Exception $e) {

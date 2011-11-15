@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 03 October 2011 22:37:58 By  ---
+// --- Last modification: Date 15 November 2011 0:23:20 By  ---
 
 //@BEGIN@
 class ModelConverter {
@@ -112,9 +112,9 @@ class ModelConverter {
 			$content = $this->mModel;
 		$wh = fopen($modelFile,'w');
 		if($wh !== false) {
-			foreach( explode("\n",$content) as $line) 
+			foreach( explode("\n",$content) as $line)
 				fwrite($wh,$line."\n");
-		} 
+		}
 		fclose($wh);
 	}
 
@@ -304,16 +304,20 @@ function getDBReport($extension,$printmodel,$reference) {
 	}
 	else
 	return false;
-} define('WRITE_MODE_NONE',0); define('WRITE_MODE_WRITE',1); define('WRITE_MODE_OVERWRITE',2);
+}
 
-function CheckOrBuildReport($extension,$printmodel,$modelRef,$params,$title,$printRef = 0,$writeMode = WRITE_MODE_NONE) {
+define('WRITE_MODE_NONE',0);
+define('WRITE_MODE_WRITE',1);
+define('WRITE_MODE_OVERWRITE',2);
+
+function CheckOrBuildReport($extension,$printmodel,$params,$title,$printRef = 0,$writeMode = WRITE_MODE_NONE) {
 	$printfile = "extensions/$extension/$printmodel.prt.php";
 	if(($printRef>0) && ($writeMode == WRITE_MODE_WRITE)) {
 		$report = getDBReport($extension,$printmodel,$printRef);
 		if( is_array($report))
 		return $report;
 	}
-	list($id,$model,$res) = checkDBModel($extension,$printmodel,$modelRef);
+	list($id,$model,$res) = checkDBModel($extension,$printmodel);
 	if($id>0) {
 		require_once$printfile;
 		$XmlDataFctName = $extension."_APAS_".$printmodel."_getXmlData";

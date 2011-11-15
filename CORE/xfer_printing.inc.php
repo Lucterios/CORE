@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 29 August 2011 19:27:29 By  ---
+// --- Last modification: Date 14 November 2011 23:02:02 By  ---
 
 //@BEGIN@
 /**
@@ -207,11 +207,11 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	 * @param integer $printRef
 	 * @return boolean reussite
 	 */
-	public function selectReport($printmodel,$modelRef,$params,$title,$writeMode=WRITE_MODE_NONE,$printRef=0)
+	public function selectReport($printmodel,$params,$title,$writeMode=WRITE_MODE_NONE,$printRef=0)
 	{
 		$modelRef=(int)$modelRef;
 		$printRef=(int)$printRef;
-		$report=CheckOrBuildReport($this->m_extension, $printmodel, $modelRef, $params, $title, $printRef, $writeMode);
+		$report=CheckOrBuildReport($this->m_extension, $printmodel, $params, $title, $printRef, $writeMode);
 		if (is_array($report))
 		{
 			$this->ReportContent=$report[0];
@@ -378,7 +378,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	protected function _ReponseXML()
 	{
 		$content=$this->getBodyContent();
-		$xml_text=sprintf("<PRINT title='%s' type='%d' mode='%d' withTextExport='%d'><![CDATA[%s]]></PRINT>",$this->ReportTitle,$this->ReportType,$this->ReportMode,$this->withTextExport,$content);
+		$xml_text=sprintf("<PRINT type='%d' mode='%d' withTextExport='%d'><TITLE><![CDATA[%s]]></TITLE><![CDATA[%s]]></PRINT>",$this->ReportType,$this->ReportMode,$this->withTextExport,$this->ReportTitle,$content);
 		return $xml_text;
 	}
 }
