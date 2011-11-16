@@ -1,24 +1,24 @@
 <?php
+// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	Thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// 	Diacamma is free software; you can redistribute it and/or modify
+// 	it under the terms of the GNU General Public License as published by
+// 	the Free Software Foundation; either version 2 of the License, or
+// 	(at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// 	Diacamma is distributed in the hope that it will be useful,
+// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// 	GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
+// 	You should have received a copy of the GNU General Public License
+// 	along with Lucterios; if not, write to the Free Software
+// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // Action file write by SDK tool
-// --- Last modification: Date 05 February 2008 23:29:40 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+// Action file write by SDK tool
+// --- Last modification: Date 15 November 2011 19:24:50 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -42,7 +42,7 @@ function users_APAS_list($Params)
 $self=new DBObj_CORE_users();
 try {
 $xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_list",$Params);
-$xfer_result->Caption='Liste des utilisateurs';
+$xfer_result->Caption="Liste des utilisateurs";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
 $img->setValue('user.png');
@@ -64,9 +64,10 @@ $lbl_actifs->setLocation(0, 1, 2, 1);
 $xfer_result->addComponent($lbl_actifs);
 
 $user_actif= &new Xfer_Comp_Grid('user_actif','Grille des utilisateurs');
-$user_actif->setDBObject($self,array("login","realName","groupId"));
+$user_actif->setDBObject($self,array("login","realName","groupId","lastDate"));
 $user_actif->addAction($self->NewAction("_Modifier",'edit.png','modifier',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $user_actif->addAction($self->NewAction("_Désactiver",'suppr.png','desactiver',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
+$user_actif->addAction($self->NewAction("_Supprimer",'suppr.png','Del',FORMTYPE_MODAL,CLOSE_NO,SELECT_MULTI));
 $user_actif->addAction($self->NewAction("_Ajouter",'add.png','ajouter',FORMTYPE_MODAL,CLOSE_NO,SELECT_NONE));
 $user_actif->setLocation(0, 2,2);
 $xfer_result->addComponent($user_actif);
@@ -90,6 +91,7 @@ $xfer_result->addComponent($lbl_inactif);
 $user_desactif= &new Xfer_Comp_Grid('user_desactif','Grille des utilisateurs');
 $user_desactif->setDBObject($self,array("login","realName","groupId"));
 $user_desactif->addAction($self->NewAction("_Réactiver",'ok.png','reactiver', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
+$user_desactif->addAction($self->NewAction("S_upprimer",'suppr.png','Del',FORMTYPE_MODAL,CLOSE_NO,SELECT_MULTI));
 $user_desactif->setLocation(0, 5,2);
 $xfer_result->addComponent($user_desactif);
 

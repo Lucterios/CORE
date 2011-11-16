@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // Test file write by SDK tool
-// --- Last modification: Date 21 October 2011 19:18:57 By  ---
+// --- Last modification: Date 15 November 2011 20:14:02 By  ---
 
 
 //@TABLES@
@@ -162,7 +162,7 @@ $test->assertEquals("Liste des droits de groupes{[newline]}Modifier un droit{[ne
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [2,value]");
 $rec=$comp->m_records[$key[3]];
 $test->assertEquals("Ajouter/modifier un utilisateur",$rec["description"],"Valeur de grid [3,description]");
-$test->assertEquals("Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}modifier un utilisateur{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur{[newline]}",$rec["actions"],"Valeur de grid [3,actions]");
+$test->assertEquals("Supprimer un utilisateur{[newline]}Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}modifier un utilisateur{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur{[newline]}",$rec["actions"],"Valeur de grid [3,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [3,value]");
 $rec=$comp->m_records[$key[4]];
 $test->assertEquals("Archivage",$rec["description"],"Valeur de grid [4,description]");
@@ -295,7 +295,7 @@ $test->assertEquals("Liste des droits de groupes{[newline]}Modifier un droit{[ne
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [2,value]");
 $rec=$comp->m_records[$key[3]];
 $test->assertEquals("Ajouter/modifier un utilisateur",$rec["description"],"Valeur de grid [3,description]");
-$test->assertEquals("Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}modifier un utilisateur{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur{[newline]}",$rec["actions"],"Valeur de grid [3,actions]");
+$test->assertEquals("Supprimer un utilisateur{[newline]}Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}modifier un utilisateur{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur{[newline]}",$rec["actions"],"Valeur de grid [3,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [3,value]");
 $rec=$comp->m_records[$key[4]];
 $test->assertEquals("Archivage",$rec["description"],"Valeur de grid [4,description]");

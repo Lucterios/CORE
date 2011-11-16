@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 14 March 2011 8:40:41 By  ---
+// --- Last modification: Date 15 November 2011 21:56:06 By  ---
 
 //@BEGIN@
 /**
@@ -215,7 +215,7 @@ class PrintImage extends PrintItem {
 		$file_size = filesize($this->value);
 		$handle = fopen($this->value,'r');
 		$img = fread($handle,$file_size);
-		$img = chunk_explode( base64_encode($img));
+		$img = chunk_split(base64_encode($img));
 		$f = fclose($handle);
 		return "data:image/*;base64,$img";
 	}

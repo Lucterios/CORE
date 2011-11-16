@@ -1,0 +1,46 @@
+-- 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+-- 	Thanks to have payed a retribution for using this module.
+-- 
+-- 	Diacamma is free software; you can redistribute it and/or modify
+-- 	it under the terms of the GNU General Public License as published by
+-- 	the Free Software Foundation; either version 2 of the License, or
+-- 	(at your option) any later version.
+-- 
+-- 	Diacamma is distributed in the hope that it will be useful,
+-- 	but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- 	GNU General Public License for more details.
+-- 
+-- 	You should have received a copy of the GNU General Public License
+-- 	along with Lucterios; if not, write to the Free Software
+-- 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+-- 
+-- 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
+-- Stocked file write by SDK tool
+-- Last modification: Date 15 November 2011 19:21:16 By  ---
+
+
+-- @DESC@Date de la dernière connexion
+-- @PARAM@ ObjId int(10)
+
+CREATE FUNCTION CORE_FCT_users_APAS_getLastConnectDate(ObjId int(10))
+RETURNS TEXT
+READS SQL DATA
+BEGIN
+DECLARE result TEXT DEFAULT '';
+-- @CODE_ACTION@
+DECLARE val int(1);
+
+SELECT DATE_FORMAT(FROM_UNIXTIME(S.dtmod),'%d/%m/%Y %H:%i'),(S.valid='o') INTO result,val FROM CORE_sessions S,CORE_users U WHERE S.uid=U.login AND U.id=ObjId order by S.dtmod DESC limit 0,1;
+
+IF result IS NULL THEN
+	set result='';
+END IF;
+
+IF val=1 THEN
+	set result=CONCAT(result,' -- Actif -- ');
+END IF;
+-- @CODE_ACTION@
+RETURN result;
+END
+

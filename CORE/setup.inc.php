@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // setup file write by SDK tool
-// --- Last modification: Date 15 November 2011 0:23:20 By  ---
+// --- Last modification: Date 15 November 2011 21:56:06 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.";
@@ -30,7 +30,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=3;
 $version_release=1;
-$version_build=689;
+$version_build=714;
 
 $depencies=array();
 
@@ -123,14 +123,15 @@ $actions[48] = new Param_Action("Résumé", "status", 0);
 $actions[49] = new Param_Action("Gestion des sauvegardes", "toolBackup", 11);
 $actions[50] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
 $actions[51] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
-$actions[52] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
-$actions[53] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
-$actions[54] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
-$actions[55] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
-$actions[56] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
-$actions[57] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
-$actions[58] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
-$actions[59] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
+$actions[52] = new Param_Action("Supprimer un utilisateur", "users_APAS_Del", 1);
+$actions[53] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
+$actions[54] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
+$actions[55] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
+$actions[56] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
+$actions[57] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
+$actions[58] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
+$actions[59] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
+$actions[60] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
 
 $params=array();
 
