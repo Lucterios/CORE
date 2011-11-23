@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 14 November 2011 22:59:11 By  ---
+// --- Last modification: Date 22 November 2011 21:57:55 By  ---
 
 //@BEGIN@
 /**
@@ -259,6 +259,10 @@ class DBObj_Basic extends DBObj_Abstract {
 	 *
 	 */
 	public function deleteCascade() {
+		if (((int)$this->id)==0) {
+			require_once"Lucterios_Error.inc.php";
+			throw new LucteriosException( IMPORTANT,"Suppression impossible{[newline]}Enregistrement vide.");
+		}
 		require_once"Lucterios_Error.inc.php";
 		$res=$this->canBeDelete();
 		if ($res==1)
@@ -394,9 +398,10 @@ class DBObj_Basic extends DBObj_Abstract {
 						$class_name = "DBObj_".$tbl_select;
 						$sub_object = new $class_name;
 						if($item['type'] == 10) {
-							if($field_val>0)$sub_object->get($field_val);
+							if($field_val>0)
+								$sub_object->get($field_val);
 						}
-						else {
+						else if ($this->id>0) {
 							$child_field_name = $item['params']['RefField'];
 							$sub_object->$child_field_name = $this->id;
 							if($filter != "")
