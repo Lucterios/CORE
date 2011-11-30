@@ -235,7 +235,7 @@ class DBObj_Setup {
 			if (($rep!=false) && ($connect->getNumRows($rep)==1)) {
 				$row = $connect->getRowByName($rep);
 				$resValue=$row['Create Table'];
-				$resValue=str_ireplace('`'.$this->DBObject->__table.'`','`'.$this->DBObject->__table.'`',$resValue);
+				$resValue=str_ireplace($this->DBObject->__table,$this->DBObject->__table,$resValue);
 			}
 			else
 				$this->RetMsg .= "Erreur SHOW CREATE TABLE : ".$connect->errorMsg;

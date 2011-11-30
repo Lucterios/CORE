@@ -128,8 +128,10 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 		closedir($dh);
 		if(!$addSQL)
 			throw new LucteriosException( IMPORTANT,'Données non trouvées! ('.$temp_path.")");
-		foreach($cst_list as $cst_item) {
-			$connect->execute($cst_item,true);
+		foreach($ext_list as $current_name => $current_dir) {
+			$current_obj = new Extension($current_name,$current_dir);
+			$current_obj->throwExcept=true;
+			$current_obj->upgradeContraintsTable();
 		}
 		foreach($items as $item) {
 			$r = rm_recursive($item);
@@ -141,7 +143,9 @@ if(isset($xfer_result->m_context['RESTOR'])) {
 	}
 	 catch( Exception$e) {
 		$connect->rollback();
-		$lbl->setValue("{[center]}{[bold]}Erreur.{[newline]}{[font color=red]}".$e->getMessage()."{[/font]}{[/bold]}{[/center]}");
+		$msg=$e->getMessage();
+		$msg=str_replace(array("\n"),array('{[newline]}'),$msg);
+		$lbl->setValue("{[center]}{[bold]}Erreur de restoration.{[newline]}{[font color=red]}".$msg."{[/font]}{[/bold]}{[/center]}");
 	}
 	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png','CORE','menu', FORMTYPE_MODAL, CLOSE_YES));
 }
