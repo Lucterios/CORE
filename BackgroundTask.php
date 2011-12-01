@@ -10,7 +10,11 @@ if (!isset($_SERVER['HTTP_HOST'])) {
     require_once("CORE/log.inc.php");
     if (is_file("CORE/securityLock.inc.php")) {
 	    global $GLOBAL;
-	    $GLOBAL['ses']=posix_getpid().'@'.time();
+	    if (function_exists('posix_getpid'))
+		$pid=posix_getpid();
+	    else
+		$pid=0;
+	    $GLOBAL['ses']=$pid.'@'.time();
 	    require_once("CORE/securityLock.inc.php");
 	    $SECURITY_LOCK=new SecurityLock();
 	    if ($SECURITY_LOCK->isLock()==-1) {
