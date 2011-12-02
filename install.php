@@ -159,17 +159,37 @@ function startDBCreation()
 {
 	global $dbcnf;
 	global $connect;
+
 	$is_cnx=$connect->connected;
 	echo "<form method='POST'>";
-	if (!$is_cnx || file_exists(realpath('password.txt'))) 
+	if (!$is_cnx) {
+		echo "<tr style='text-align:center;'><td colspan='3'>Mot de passe administrateur : <input name='PASSWD'></td></tr>";
+		$title='Créer la Base de Donnée';
+	}
+	else {
+		global $GLOBAL;
+		global $login;
+		$login="admin";
+		$GLOBAL['ses']=rand().'@'.time();
+		require_once("CORE/securityLock.inc.php");
+		$SECURITY_LOCK=new SecurityLock();
+		list($ret,$msg)=$SECURITY_LOCK->open();
+		if (!$ret) {
+			  echo "<tr style='text-align:center;'><td colspan='3'>UTILISATEUR CONNECTE</td></tr>";
+			  $title='';
+		}
+		else {
+			  echo "<tr style='text-align:center;'><td colspan='3'>Mot de passe administrateur : <input type='password' name='PASSWD'></td></tr>";
+			  $title='Controler la Base de Donnée';
+		}
+		$SECURITY_LOCK->close();
+	}
+	if ($title!='') {
 		echo "	<tr style='text-align:center;'>
-				<td colspan='3'>Mot de passe administrateur : <input name='PASSWD'></td>
-			</tr>";
-	if (!$is_cnx) $title='Créer la Base de Donnée'; else $title='Controler la Base de Donnée';
-	echo "	<tr style='text-align:center;'>
-			<td colspan='3'><input type='submit' name='DropDB' value='$title'></td>
-		</tr>
-		<tr><td><br></td></tr>";
+				<td colspan='3'><input type='submit' name='DropDB' value='$title'></td>
+			</tr>
+			<tr><td><br></td></tr>";
+	}
 	echo "</form>";
 	return $connect;
 }
@@ -201,6 +221,20 @@ function showModules()
 	}
 
 	echo "</table>";
+}
+
+function checkAdminPassword() {
+	global $GLOBAL;
+	global $connect;
+	if ($connect->connected) {
+		$pass=str_replace("'","''",$GLOBAL["PASSWD"]);
+		$pass_md5=md5($pass);
+		$q = "SELECT COUNT(*) FROM CORE_users WHERE login='admin' AND (pass=PASSWORD('$pass') OR pass='$pass_md5') AND actif='o'";
+		list($nb) = $connect->getRow($connect->execute($q));
+		return ($nb == 1);
+	}
+	else
+	      return true;
 }
 
 ?>
@@ -396,10 +430,23 @@ if (array_key_exists('DropDB',$_POST))
 	require_once("conf/cnf.inc.php");
 	require_once("CORE/dbcnx.inc.php");
 	$is_cnx=$connect->connected;
-	$can_be_change_pass=(!$is_cnx || file_exists(realpath('password.txt'))); 
-
+	if (!checkAdminPassword()) {
+		  $last_error="Mot de passe invalide!!";
+	}
+	else
 	try
 	{
+		global $GLOBAL;
+		global $login;
+		global $SECURITY_LOCK;
+		$login="admin";
+		$GLOBAL['ses']=rand().'@'.time();
+		require_once("CORE/securityLock.inc.php");
+		$SECURITY_LOCK=new SecurityLock();
+		if ($is_cnx)
+		      $SECURITY_LOCK->open(true);
+
+		$can_be_change_pass=!$is_cnx; 
 		require_once "CORE/extensionManager.inc.php";
 		createDataBase();
 
@@ -417,9 +464,11 @@ if (array_key_exists('DropDB',$_POST))
 				$connect->execute($q,true);
 			}
 		}
+		$SECURITY_LOCK->close();
 	}
 	catch(Exception $e){
 		$last_error=$e->getMessage();
+		$SECURITY_LOCK->close();
 	}
 	if ($last_error=='')
 	{

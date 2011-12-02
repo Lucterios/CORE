@@ -370,7 +370,7 @@ if ($ResVar=='')
 				}
 				else
 					$new_val_txt=$new_val;
-				$criteriaDesc[]="{[bold]}$new_desc{[/bold]} ".$operatorList[$new_op]." {[italic]}$new_val_txt{[italic]}";
+				$criteriaDesc[]="{[bold]}$new_desc{[/bold]} ".$operatorList[$new_op]." {[italic]}$new_val_txt{[/italic]}";
 			}
 		}
 		return $criteriaDesc;

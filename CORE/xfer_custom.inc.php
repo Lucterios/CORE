@@ -444,12 +444,12 @@ if ((type=='list') || (type=='listmult')) {
 		foreach($criteriaDesc as $id=>$criteriaText) {
 			$label = new Xfer_Comp_LabelForm('labelSearchText_'.$id);
 			$label->setValue($criteriaText);
-			$label->setLocation($posX+2,$posY,1);
+			$label->setLocation($posX+2,$posY,2);
 			$this->addComponent($label);
 			$comp = new Xfer_Comp_Button("searchButtonDel_".$id);
 			$comp->setIsMini(true);
 			$comp->setClickInfo('ACT',$id);
-			$comp->setLocation($posX+3,$posY++);
+			$comp->setLocation($posX+4,$posY++);
 			$comp->setAction($this->getRefreshAction("","suppr.png"));
 			$this->addComponent($comp);
 		}
