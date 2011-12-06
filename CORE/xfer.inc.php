@@ -127,7 +127,7 @@ class Xfer_Object {
 		return $ret;
 	}
 
-	public function signal($name,&$obj,$val1=null,$val2=null,$val3=null,$val4=null,$val4=null) {
+	public function signal($name,&$obj,$val1=null,$val2=null,$val3=null,$val4=null,$val5=null) {
 		$retList=array();
 		global $rootPath;
 		if(!isset($rootPath)) $rootPath = "";
@@ -139,7 +139,7 @@ class Xfer_Object {
 				require_once($evtFile);
 				$function_name=$extName.EXTENSION_SEP.$name;
 				if (function_exists($function_name)) {
-					$ret=$function_name($obj,$val1,$val2,$val3,$val4,$val4);
+					$ret=$function_name($obj,$val1,$val2,$val3,$val4,$val5);
 					$retList[$extName]=$ret;
 				}
 			}
