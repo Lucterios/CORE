@@ -200,9 +200,9 @@ function showModules()
 	global $connect;
 	$is_cnx=$connect->connected;
 	echo "<h3>Modules</h3>
-		<table width='90%' style='text-align:center;'>
+		<table class='modules'>
 		<tr>
-			<th>Nom</th><th>Titre</th><th>Version à installer</th><th>Version installée</th>
+			<th>Nom</th><th>Titre</th><th>Version à installer</th><th>Version installée</th><th>Dépendances</th>
 		</tr>";
 	require_once "CORE/extensionManager.inc.php";
 	$ext_list=getExtensions();
@@ -217,6 +217,16 @@ function showModules()
 			echo "<td><i>".$ext->getDBVersion()."</i></td>";
 		else
 			echo "<td><i> - - - - </i></td>";
+		echo "<td>";
+		$depList=$ext->getCheckedDependances($ext_list);
+		foreach($depList as $depName=>$depItem) {
+		    echo "$depName ";
+		    if ($depItem[0])
+			echo "<font color='green'>OK</font><br/>";
+		    else
+			echo "<font color='red'>".$depItem[1]."</font><br/>";
+		}
+		echo "</td>";
 		echo "</tr>";
 	}
 
@@ -256,7 +266,7 @@ function checkAdminPassword() {
 		}
 		
 		h2 {
-	<td	font-size : 8mm;
+		font-size : 8mm;
 		font-style : italic;
 		font-weight : lighter;
 		text-align : center;
@@ -302,7 +312,7 @@ function checkAdminPassword() {
 
 		TD.menu {
 		width: 120px;
-		vertical-align: top;
+		vertical-align: text-top;
 		color: white;
 		}	
 
@@ -311,11 +321,11 @@ function checkAdminPassword() {
 		}	
 		
 		TR.contents {
-		vertical-align: top;
+		vertical-align: text-top;
 		}
 		
 		TD.contents {
-		vertical-align: top;
+		vertical-align: text-top;
 		}
 	
 		/* corps */
@@ -325,10 +335,25 @@ function checkAdminPassword() {
 		
 		TD.corps {
 		width: 860px;
-		vertical-align: top;
+		vertical-align: text-top;
 		background-color: white;
 		}
 		
+
+		TABLE.modules {
+		width: 90%;
+		text-align:center;
+		}	
+		
+		TABLE.modules TR {
+		vertical-align: text-top;
+		}
+		
+		TABLE.modules TD {
+		vertical-align: text-top;
+		text-align:left;
+		}
+
 		/* pied */
 		TR.pied {
 		width: 980px;

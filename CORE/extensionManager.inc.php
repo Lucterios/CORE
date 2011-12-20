@@ -287,6 +287,33 @@ class Extension {
 		return trim($text);
 	}
 
+	public function getCheckedDependances($extList) {
+		$resDep=array();
+		foreach($this->depencies as $dep) {
+			if (isset($extList[$dep->name])) {
+				$depExt=$ext=new Extension($dep->name,$extList[$dep->name]);
+				$error="";
+				$versMax=$dep->version_majeur_max.'.'.$dep->version_mineur_max;
+				$versMin=$dep->version_majeur_min.'.'.$dep->version_mineur_min;
+				$version = $depExt->getPHPVersion();
+				$pos_p = strpos($version,'.');
+				$pos_p = strpos($version,'.',$pos_p+1);
+				$version = substr($version,0,$pos_p);
+				$check_max = ( version_compare($version,$versMax)<=0);
+				$check_min = ( version_compare($version,$versMin) >= 0);
+				if (!$check_max || !$check_min) {
+					$error="$version # [$versMax;$versMin]";
+				}
+				$resDep[$dep->name]=array($error=='',$error);			  
+			}
+			else {
+				if (!$dep->optionnal)
+					$resDep[$dep->name]=array(false,"Inconnu");
+			}
+		}
+		return $resDep;
+	}
+
 	public function insertion($first) {
 		if(! is_dir($this->Dir))
 		return 0;
