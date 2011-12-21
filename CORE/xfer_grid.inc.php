@@ -187,7 +187,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 */
 	function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "GRID";
+		$this->_componentIdent = "GRID";
 	}
 
 	/**

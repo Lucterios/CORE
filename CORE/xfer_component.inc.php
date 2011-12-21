@@ -62,7 +62,7 @@ class Xfer_Component extends Xfer_Object {
 	 * @access public
 	 * @var string
 	 */
-	protected $_component;
+	protected $_componentIdent;
 
 	/**
 	 * Identifiant du composant
@@ -163,7 +163,7 @@ class Xfer_Component extends Xfer_Object {
 	public function __construct($name) {
 		parent::__construct();
 		$this->m_name = $name;
-		$this->_component = "";
+		$this->_componentIdent = "";
 		//$component;
 		$this->m_value = "";
 		$this->tab = 0;
@@ -177,6 +177,10 @@ class Xfer_Component extends Xfer_Object {
 		$this->rowspan = 1;
 		$this->m_description = "";
 		$this->needed = false;
+	}
+
+	public function getIdent(){
+		return $this->_componentIdent;
 	}
 
 	/**
@@ -288,9 +292,9 @@ class Xfer_Component extends Xfer_Object {
 	 * @return string
 	 */
 	public function getReponseXML() {
-		$xml_text = sprintf("\t<%s %s>",$this->_component,$this->_attributs());
+		$xml_text = sprintf("\t<%s %s>",$this->_componentIdent,$this->_attributs());
 		$xml_text = $xml_text.$this->_getContent();
-		$xml_text = $xml_text. sprintf("</%s>\n",$this->_component);
+		$xml_text = $xml_text. sprintf("</%s>\n",$this->_componentIdent);
 		return $xml_text;
 	}
 }
@@ -310,7 +314,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	 */
 	public function __construct() {
 		parent::__construct("");
-		$this->_component = "TAB";
+		$this->_componentIdent = "TAB";
 	}
 
 	/**
@@ -329,9 +333,9 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	 */
 	/*	public function getReponseXML()
 	{
-		$xml_text=sprintf("\t<%s>",$this->_component);
+		$xml_text=sprintf("\t<%s>",$this->_componentIdent);
 		$xml_text=$xml_text.$this->_getContent();
-		$xml_text=$xml_text.sprintf("</%s>\ n",$this->_component);
+		$xml_text=$xml_text.sprintf("</%s>\ n",$this->_componentIdent);
 		return $xml_text;
 	}*/
 
@@ -361,7 +365,7 @@ class Xfer_Comp_Label extends Xfer_Component {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "LABEL";
+		$this->_componentIdent = "LABEL";
 	}
 
 	/**
@@ -406,7 +410,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "IMAGE";
+		$this->_componentIdent = "IMAGE";
 	}
 
 	/**
@@ -482,7 +486,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "LINK";
+		$this->_componentIdent = "LINK";
 		global $LINK_LABEL_MANAGER;
 		if ($LINK_LABEL_MANAGER!="")
 			require_once($LINK_LABEL_MANAGER);
@@ -577,7 +581,7 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "LABELFORM";
+		$this->_componentIdent = "LABELFORM";
 	}
 
 	/**
@@ -627,7 +631,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "BUTTON";
+		$this->_componentIdent = "BUTTON";
 	}
 	/**
 	 * change l'action associé au bouton
@@ -720,12 +724,12 @@ class Xfer_Comp_Button extends Xfer_Component {
 	 * @return string
 	 */
 	public function getReponseXML() {
-		$xml_text = sprintf("\t<%s %s>",$this->_component,$this->_attributs());
+		$xml_text = sprintf("\t<%s %s>",$this->_componentIdent,$this->_attributs());
 		$xml_text = $xml_text.$this->_getContent();
 		$xml_text = $xml_text.$this->_getActionContent();
 		if(strlen($this->JavaScript)>0)
 			$xml_text = $xml_text. sprintf("<JavaScript><![CDATA[%s]]></JavaScript>\n", urlencode($this->JavaScript));
-		$xml_text = $xml_text. sprintf("</%s>\n",$this->_component);
+		$xml_text = $xml_text. sprintf("</%s>\n",$this->_componentIdent);
 		return $xml_text;
 	}
 }
@@ -747,7 +751,7 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "EDIT";
+		$this->_componentIdent = "EDIT";
 	}
 	/**
 	 * Change le text contenu
@@ -800,7 +804,7 @@ class Xfer_Comp_Date extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "DATE";
+		$this->_componentIdent = "DATE";
 	}
 	/**
 	 * Change la date sous la forme "YYYY-MM-DD"
@@ -836,7 +840,7 @@ class Xfer_Comp_Time extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "TIME";
+		$this->_componentIdent = "TIME";
 	}
 	/**
 	 * Change la heure sous la forme "HH:mm:ss"
@@ -872,7 +876,7 @@ class Xfer_Comp_DateTime extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "DATETIME";
+		$this->_componentIdent = "DATETIME";
 	}
 	/**
 	 * Change la date+heure sous la forme "YYYY-MM-DD HH:mm:ss"
@@ -908,7 +912,7 @@ class Xfer_Comp_Passwd extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "PASSWD";
+		$this->_componentIdent = "PASSWD";
 	}
 	/**
 	 * Change la valeur par défaut.
@@ -948,7 +952,7 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "MEMO";
+		$this->_componentIdent = "MEMO";
 		$this->HMin = 200;
 		$this->VMin = 50;
 		$this->FirstLine = -1;
@@ -1020,7 +1024,7 @@ class Xfer_Comp_MemoForm extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "MEMOFORM";
+		$this->_componentIdent = "MEMOFORM";
 		$this->HMin = 250;
 	}
 	/**
@@ -1060,7 +1064,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	 */
 	public function __construct($name,$min = 0.00,$max = 10000.00,$prec = 2) {
 		parent::__construct($name);
-		$this->_component = "FLOAT";
+		$this->_componentIdent = "FLOAT";
 		$this->m_min = (double)$min;
 		$this->m_max = (double)$max;
 		$this->m_prec = (int)$prec;
@@ -1125,7 +1129,7 @@ class Xfer_Comp_Check extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "CHECK";
+		$this->_componentIdent = "CHECK";
 	}
 	/**
 	 * Change la valeur
@@ -1167,7 +1171,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "SELECT";
+		$this->_componentIdent = "SELECT";
 	}
 	/**
 	 * Change la sélection par défaut
@@ -1248,7 +1252,7 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "CHECKLIST";
+		$this->_componentIdent = "CHECKLIST";
 	}
 	/**
 	 * Change la liste de selection
@@ -1333,7 +1337,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "UPLOAD";
+		$this->_componentIdent = "UPLOAD";
 	}
 	/**
 	 * Change le text contenu
@@ -1423,7 +1427,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	 */
 	public function __construct($name) {
 		parent::__construct($name);
-		$this->_component = "DOWNLOAD";
+		$this->_componentIdent = "DOWNLOAD";
 	}
 
 	/**

@@ -87,8 +87,14 @@ class SecurityLock {
 		return $ret;
 	}
 
+	private function checkSessionExisting() {
+		global $connect;
+		$rep = $connect->execute("SHOW TABLE STATUS LIKE 'CORE_sessions'");
+		return ($rep && ($connect->getNumRows($rep) == 1));
+	}
+
 	private function checkLockFile() {
-		if (($this->m_lockSession!='') && (strpos($this->m_lockSession,'@')===false)) {
+		if (($this->m_lockSession!='') && (strpos($this->m_lockSession,'@')===false) && $this->checkSessionExisting()) {
 			include_once('CORE/sessions.tbl.php');
 			$DBSession=new DBObj_CORE_sessions;
 			$DBSession->sid=$this->m_lockSession;
@@ -124,7 +130,7 @@ class SecurityLock {
 		$lock=$this->isLock();
 		if ($lock!=-1) {
 			$nb=0;
-			if ($lock==0) {
+			if (($lock==0) && $this->checkSessionExisting()) {
 				global $GLOBAL;
 				include_once('CORE/sessions.tbl.php');
 				$DBSession=new DBObj_CORE_sessions;

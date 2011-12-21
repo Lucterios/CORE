@@ -233,15 +233,25 @@ function showModules()
 	echo "</table>";
 }
 
+function checkSessionExisting() {
+	global $connect;
+	$rep = $connect->execute("SHOW TABLE STATUS LIKE 'CORE_sessions'");
+	return ($rep && ($connect->getNumRows($rep) == 1));
+}
+
 function checkAdminPassword() {
 	global $GLOBAL;
 	global $connect;
 	if ($connect->connected) {
-		$pass=str_replace("'","''",$GLOBAL["PASSWD"]);
-		$pass_md5=md5($pass);
-		$q = "SELECT COUNT(*) FROM CORE_users WHERE login='admin' AND (pass=PASSWORD('$pass') OR pass='$pass_md5') AND actif='o'";
-		list($nb) = $connect->getRow($connect->execute($q));
-		return ($nb == 1);
+		if (checkSessionExisting()) {
+			$pass=str_replace("'","''",$GLOBAL["PASSWD"]);
+			$pass_md5=md5($pass);
+			$q = "SELECT COUNT(*) FROM CORE_users WHERE login='admin' AND (pass=PASSWORD('$pass') OR pass='$pass_md5') AND actif='o'";
+			list($nb) = $connect->getRow($connect->execute($q));
+			return ($nb == 1);
+		}
+		else
+		      return true;
 	}
 	else
 	      return true;
@@ -471,7 +481,7 @@ if (array_key_exists('DropDB',$_POST))
 		if ($is_cnx)
 		      $SECURITY_LOCK->open(true);
 
-		$can_be_change_pass=!$is_cnx; 
+		$can_be_change_pass=!$is_cnx || !checkSessionExisting(); 
 		require_once "CORE/extensionManager.inc.php";
 		createDataBase();
 

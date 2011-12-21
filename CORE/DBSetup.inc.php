@@ -264,7 +264,7 @@ class DBObj_Setup {
 			if (method_exists($connect,'getRowByName')) {
 				$row = $connect->getRowByName($rep);
 				$q = "";
-				if ($row['engine'] != 'InnoDB')
+				if (!isset($row['engine']) || ($row['engine'] != 'InnoDB'))
 					$q = "ALTER TABLE ".$this->DBObject->__table." ENGINE=InnoDB;";
 			}
 			else

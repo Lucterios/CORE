@@ -54,7 +54,7 @@ function checkRight($login,$extension,$action) {
 			}
 		}
 		list($usec2,$sec2) = explode(" ", microtime());
-		$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$actionreponse:$droittemps:$t");
+		$t = ($sec2-$sec)+(($usec2-$usec)/10); logAutre("Demande de droit checkRight:$login,$extension,$action reponse:$droit temps:$t");
 		return ($droit == 'o');
 	//}
 	//return true;
