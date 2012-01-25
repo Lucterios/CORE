@@ -1,11 +1,11 @@
 Le menu <i>Administration/Gestion des Droits/Groupes</i> vous permet de créer, modifier ou supprimer un groupe de droits.<br>
-Un groupe de droits réuni un ensemble d'autorisation aux actions de l'application.<br><br>
+Un groupe de droits réuni un ensemble d'autorisations aux actions de l'application.<br><br>
 <center><img src='~CORE$Groupes.jpg' alt='Groupes.jpg' /></center><br>
 Chaque groupe est associé à un poids. Ce poids corresponds à un niveau d'accès par défaut.
 Le poids <i>100</i> vous permets d'accéder à toutes actions , le poids <i>0</i> ne permettra l'utilisation d'aucune action.<br>
-Deux groupes, non modifiable, existent par défaut : <i>Admin</i> avec un poids de <i>100</i> (accès total) et <i>Visiteur</i> avec un poids de <i>0</i> (accès minimal).<br>
+Deux groupes, non modifiables, existent par défaut : <i>Admin</i> avec un poids de <i>100</i> (accès total) et <i>Visiteur</i> avec un poids de <i>0</i> (accès minimal).<br>
 <br>
 Il est possible de surcharger les droits par défaut dans un groupe.<br>
-Pour cela, éditez le. Pour chaqu'un des extensions de votre application, vous pouvez ajouter ou enlever le droit associé à un ensemble de fonction.<br>
+Pour cela, éditez le. Pour chacune des extensions de votre application, vous pouvez ajouter ou enlever le droit associé à un ensemble de fonction.<br>
 <center><img src='~CORE$DroitsGroupe.jpg' alt='DroitsGroupe.jpg' /></center><br>
 Pour simplifier votre gestion, vous avez la possibilité de cloner un droit, c'est à dire d'en créer une copie parfaite.<br>

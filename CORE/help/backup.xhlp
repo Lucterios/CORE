@@ -7,9 +7,9 @@ Une fois validé, l'application vous créera un fichier <i>.bkf</i> contenant l'en
 De la même façon, le menu <i>Administration/Archivage/Restauration</i> ouvre un explorateur de fichier pour sélectionner le nom de votre sauvegarde à restaurer.<br><br>
 <center><img src='~CORE$Restor.jpg' height='300' alt='Restor.jpg' /></center><br>
 Une fois validé, l'application vous extraire du fichier de sauvegarde l'ensemble des données ainsi que les modules d'extensions au moments de la sauvegarde.<br>
-<u>Attention:</u> La restauration écrasera toutes les données actuellement contenu dans la base.
+<u>Attention:</u> La restauration écrasera toutes les données actuellement contenues dans la base.
 <JUMP_PAGE/>
 <h2>Gestion des archives</h2>
 Depuis ce menu, vous avez accès à un petit gestionnaire de vos archives.<br>
-Vous avez alors la possibilité de ré-injecter un archive venant d'une sauvegarde CDRom par exemple, d'extraire une archive ou d'en supprimer.<br>
+Vous avez alors la possibilité de ré-injecter un archive venant d'une sauvegarde CD-Rom par exemple, d'extraire une archive ou d'en supprimer.<br>
 <center><img src='~CORE$Archives.jpg' height='300' alt='Archives.jpg' /></center><br>

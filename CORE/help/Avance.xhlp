@@ -2,5 +2,5 @@
 Depuis le menu <i>Administration/Avancé/Autorisation d'accès réseau</i>, vous avez la possibilité de définir des masques de filtrage d'adresse IP pour limiter l'accès depuis un réseau.
 
 <h2>Session</h2>
-Depuis le menu <i>Administration/Avancé/Session</i>, vous avez pouvez consulter la liste des session courant (et terminer) de connexion à l'application.<br>
+Depuis le menu <i>Administration/Avancé/Session</i>, vous avez pouvez consulter la liste des sessions courantes (et les terminer) de l'application.<br>
 Vous avez la possibilité de tuer une session courante pour éjecter un utilisateur de l'application.

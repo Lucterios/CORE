@@ -1,6 +1,6 @@
 Le menu <i>Administration/Gestion des Droits/Utilisateurs</i> vous permet de créer, modifier ou désactiver un utilisateur de l'application.<br>
 
-Un utilisateur défini un droit de connexion au logiciel. Il est constitué par un alias, un mot de passe et un groupe de droits (voir <a href='~CORE$groupes'>Les groupes</a> ) définissant le niveau d'accès de cette utilisateur.<br>
+Un utilisateur définit un droit de connexion au logiciel. Il est constitué par un alias, un mot de passe et un groupe de droits (voir <a href='~CORE$groupes'>Les groupes</a> ) définissant le niveau d'accès de cette utilisateur.<br>
 <br>
 <center><img src='~CORE$Utilisateurs.jpg' alt='Utilisateurs.jpg' /></center><br>
 
