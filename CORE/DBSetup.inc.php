@@ -18,7 +18,7 @@
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by SDK tool
-// --- Last modification: Date 03 October 2011 22:43:21 By  ---
+// --- Last modification: Date 03 February 2012 21:36:12 By  ---
 
 //@BEGIN@
 /**
@@ -958,13 +958,15 @@ class DBObj_Setup {
 			$names = "";
 			$values = "";
 			foreach($row as $nom=>$val) {
-				if (!empty($val)) {
-					$names .= $nom.",";
+				if (!is_null($val) && ($nom!='lockRecord') ) {
 					$type=$MetaDataField[$name]['type'];
-					if ($field_dico[$type][0]==DBOBJ_INT)
-						$values .= $val.",";
-					else
-						$values .= "'". str_replace("'","''",$val)."',";
+					if (!empty($val) || ($type!=10)) {
+						$names .= $nom.",";
+						if ($field_dico[$type][0]==DBOBJ_INT)
+							$values .= $val.",";
+						else
+							$values .= "'". str_replace("'","''",$val)."',";
+					}
 				}
 			}
 			$names = substr($names,0,-1);
