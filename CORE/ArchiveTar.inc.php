@@ -569,15 +569,12 @@ class ArchiveTar
                 continue;
             }
             while (false !== ($p_hitem = readdir($p_hdir))) {
-                if (($p_hitem != '.') && ($p_hitem != '..')) {
+                if ($p_hitem[0] != '.') { // Ignore hidden file
                     if ($v_filename != ".")
                         $p_temp_list[0] = $v_filename.'/'.$p_hitem;
                     else
                         $p_temp_list[0] = $p_hitem;
-
-                    $v_result = $this->_addList($p_temp_list,
-					                            $p_add_dir,
-												$p_remove_dir);
+                    $v_result = $this->_addList($p_temp_list,$p_add_dir,$p_remove_dir);
                 }
             }
 

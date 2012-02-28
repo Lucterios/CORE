@@ -78,6 +78,7 @@ function checkAndShowPrerquired()
 	$lib_classes=array();
 	$lib_classes['php5-mysql']='mysqli';
 	$lib_classes['php5-xsl']='XsltProcessor';
+	$lib_classes['php5-finfo']='finfo';
 	$lib_classes['DomDocument']='DomDocument';
 	$lib_classes['zlib']='gzinflate';
 	foreach($lib_classes as $lib_name=>$lib_classe)
@@ -90,23 +91,15 @@ function checkAndShowPrerquired()
 		echo "<tr><td>Bibliothèque</td><td>$lib_name</td><td>$result</td></tr>\n";
 	}
 	echo "<tr><td><br/></td></tr>";
-	$java_path='';
-	$JAVABIN=(DIRECTORY_SEPARATOR=='/')?'/java':'\java.exe';
-	$os_path_list=explode(PATH_SEPARATOR,$_SERVER['PATH']);
-	foreach($os_path_list as $os_path_item) {
-		if (is_file($os_path_item.$JAVABIN))
-			$java_path=$os_path_item.$JAVABIN;
-	}
 	$retVal=-1;
-	if ($java_path!='')
-		@system($java_path." -version", $retVal);
-	$result="<td colspan='2'><font color='yellow'>Impossible - Java non trouvé</font></td>";
+	@system("java -version", $retVal);
+	$result="<td colspan='2'><font color='orange'>Impossible - Java non trouvé</font></td>";
 	if ($retVal==0)
 		$result="<td>JAVA</td><td><font color='blue'>OK</font></td>";
 	echo "<tr><td>Impression</td>$result</tr>\n";	
 	include_once("CORE/fichierFonctions.inc.php");
 	$maxsize=taille_max_dl_fichier();
-	$result="<font color='yellow'>faible (<5Mo)</font>";
+	$result="<font color='orange'>faible (<5Mo)</font>";
 	if ($maxsize>5242880)
 		$result="<font color='blue'>OK</font>";
 	echo "<tr><td>Taille fichier max.</td><td>".convert_taille($maxsize)."</td><td>$result</td></tr>\n";
@@ -117,7 +110,7 @@ function checkAndShowPrerquired()
 		if(empty($max_execution_time))
 			$max_execution_time = 30;
 	}	
-	$result="<font color='yellow'>faible (<10 min)</font>";
+	$result="<font color='orange'>faible (<10 min)</font>";
 	if ($max_execution_time>600)
 		$result="<font color='blue'>OK</font>";
 	echo "<tr><td>Temps de réponse max.</td><td>".convertTimeDuration($max_execution_time)."</td><td>$result</td></tr>\n";

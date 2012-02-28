@@ -260,7 +260,7 @@ class DBObj_Basic extends DBObj_Abstract {
 	 */
 	public function deleteCascade() {
 		if (((int)$this->id)==0) {
-			require_once"Lucterios_Error.inc.php";
+			require_once("CORE/Lucterios_Error.inc.php");
 			throw new LucteriosException( IMPORTANT,"Suppression impossible{[newline]}Enregistrement vide.");
 		}
 		require_once"Lucterios_Error.inc.php";
@@ -305,8 +305,32 @@ class DBObj_Basic extends DBObj_Abstract {
 		require_once('CORE/extensionManager.inc.php');
 		$class_list = getReferenceTablesList($this->__table);
 		foreach($class_list as $table=>$fieldname) {
-			$q="UPDATE $table SET $fieldname=$this->id WHERE $fieldname=$DBObject->id";
-			$connect->execute($q,true);
+			require_once($this->getTableName($table));
+			$class_name="DBObj_".$table;
+			$DBObjRefTarget=new $class_name;
+			$item = $DBObjRefTarget->__DBMetaDataField[$fieldname];
+			if (isset($item['params']['CascadeMerge']) && $item['params']['CascadeMerge']) {
+				$DBObjRefTarget->$fieldname=$this->id;
+				$nb1=$DBObjRefTarget->find();
+				$DBObjRefTarget->fetch();
+				
+				$DBObjRefOther=new $class_name;
+				$DBObjRefOther->$fieldname=$DBObject->id;
+				$nb2=$DBObjRefOther->find();
+				$DBObjRefOther->fetch();
+
+				if (($nb1==1) && ($nb2==1) && ($DBObjRefTarget->id>0) && ($DBObjRefOther->id)) {
+					$DBObjRefTarget->merge($DBObjRefOther);
+				}
+				else  {
+					require_once("CORE/Lucterios_Error.inc.php");
+					throw new LucteriosException(IMPORTANT,"Fusion impossible.");
+				}
+			}
+			else {
+				$q="UPDATE $table SET $fieldname=$this->id WHERE $fieldname=$DBObject->id";
+				$connect->execute($q,true);
+			}
 		}
 		if($this->Heritage != "")
 			$this->Super->__replaceReference($DBObject->Super);
@@ -337,7 +361,7 @@ class DBObj_Basic extends DBObj_Abstract {
 					if ($this->id==$DBObject->id)
 						throw new LucteriosException(GRAVE,"Fusion impossible: Objet identique");
 					$this->__replaceReference($DBObject);
-					$DBObject->delete();
+					$DBObject->deleteCascade();
 				}
 				else if ($this_son == null)
 					$this->merge($DBObject_son);
@@ -352,13 +376,13 @@ class DBObj_Basic extends DBObj_Abstract {
 					$this->__replaceReference($sup_obj);
 					$q="UPDATE $DBObject->__table SET superId=$this->id WHERE id=$DBObject->id";
 					$connect->execute($q,true);
-					$sup_obj->delete();
+					$sup_obj->deleteCascade();
 				}
 				else {
 					$sup_obj=$this->getSuperObject($DBObject->__table);
 					if ($sup_obj!=null) {
 						$sup_obj->__replaceReference($DBObject);
-						$DBObject->delete();
+						$DBObject->deleteCascade();
 					}
 					else
 						throw new LucteriosException(GRAVE,"Fusion impossible: Objet incompatible ".get_class($this).' !! '.get_class($DBObject));

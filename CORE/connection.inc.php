@@ -75,14 +75,14 @@ function getConnectionInfo($login,$ses) {
 
 	$REPONSE .= "<REPONSE observer='CORE.Auth' source_extension='CORE' source_action='authentification'>
 				<CONNECTION>
-					<TITLE>$extention_titre</TITLE>
-					<SUBTITLE>$application_subtitle</SUBTITLE>
-					<VERSION>$applis_version</VERSION>
-					<SERVERVERSION>$CORE_version</SERVERVERSION>
-					<COPYRIGHT>$CopyRight</COPYRIGHT>
-					<LOGONAME>$protocol://$server_name:$server_port$path/extensions/applis/images/logo.gif</LOGONAME>
-					<LOGIN>$login</LOGIN>
-					<REALNAME>$G_REALNAME</REALNAME>
+					<TITLE><![CDATA[$extention_titre]]></TITLE>
+					<SUBTITLE><![CDATA[$application_subtitle]]></SUBTITLE>
+					<VERSION><![CDATA[$applis_version]]></VERSION>
+					<SERVERVERSION><![CDATA[$CORE_version]]></SERVERVERSION>
+					<COPYRIGHT><![CDATA[$CopyRight]]></COPYRIGHT>
+					<LOGONAME><![CDATA[$protocol://$server_name:$server_port$path/extensions/applis/images/logo.gif]]></LOGONAME>
+					<LOGIN><![CDATA[$login]]></LOGIN>
+					<REALNAME><![CDATA[$G_REALNAME]]></REALNAME>
 					<SUPPORT_EMAIL><![CDATA[$SupportEmail]]></SUPPORT_EMAIL>
 					<INFO_SERVER><![CDATA[$InfoServer]]></INFO_SERVER>
 				</CONNECTION>
