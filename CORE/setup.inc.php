@@ -1,13 +1,13 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	This file is part of Lucterios/Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
 // 	Thanks to have payed a retribution for using this module.
 // 
-// 	Diacamma is free software; you can redistribute it and/or modify
+// 	Lucterios/Diacamma is free software; you can redistribute it and/or modify
 // 	it under the terms of the GNU General Public License as published by
 // 	the Free Software Foundation; either version 2 of the License, or
 // 	(at your option) any later version.
 // 
-// 	Diacamma is distributed in the hope that it will be useful,
+// 	Lucterios/Diacamma is distributed in the hope that it will be useful,
 // 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 // 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // 	GNU General Public License for more details.
@@ -16,9 +16,8 @@
 // 	along with Lucterios; if not, write to the Free Software
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-// setup file write by SDK tool
-// --- Last modification: Date 03 February 2012 21:36:12 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// setup file write by SDK tool
+// --- Last modification: Date 01 March 2012 8:32:08 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.";
@@ -30,7 +29,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=3;
 $version_release=2;
-$version_build=731;
+$version_build=748;
 
 $depencies=array();
 
@@ -121,17 +120,19 @@ $actions[46] = new Param_Action("Tuer une session", "sessions_APAS_killsession",
 $actions[47] = new Param_Action("Consultation des session", "sessions_APAS_list", 8);
 $actions[48] = new Param_Action("Résumé", "status", 0);
 $actions[49] = new Param_Action("Gestion des sauvegardes", "toolBackup", 11);
-$actions[50] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
-$actions[51] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
-$actions[52] = new Param_Action("Supprimer un utilisateur", "users_APAS_Del", 1);
-$actions[53] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
-$actions[54] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
-$actions[55] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
-$actions[56] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
-$actions[57] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
-$actions[58] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
-$actions[59] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
-$actions[60] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
+$actions[50] = new Param_Action("Promouvoir un enregistrement", "upRecordClassAct", 1);
+$actions[51] = new Param_Action("Promouvoir un enregistrement", "upRecordClass", 1);
+$actions[52] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
+$actions[53] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
+$actions[54] = new Param_Action("Supprimer un utilisateur", "users_APAS_Del", 1);
+$actions[55] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
+$actions[56] = new Param_Action("Changer de mot de passe", "users_APAS_changerpassword", 5);
+$actions[57] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
+$actions[58] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
+$actions[59] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
+$actions[60] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
+$actions[61] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
+$actions[62] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
 
 $params=array();
 
