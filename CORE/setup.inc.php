@@ -17,7 +17,7 @@
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// setup file write by SDK tool
-// --- Last modification: Date 01 March 2012 8:32:08 By  ---
+// --- Last modification: Date 02 March 2012 6:08:24 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.";
@@ -29,7 +29,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=3;
 $version_release=2;
-$version_build=748;
+$version_build=767;
 
 $depencies=array();
 
@@ -74,7 +74,7 @@ $actions[0] = new Param_Action("Déverouillage", "UNLOCK", 0);
 $actions[1] = new Param_Action("Ajouter/modifier un accès", "access_APAS_ajouter", 7);
 $actions[2] = new Param_Action("Liste des accès", "access_APAS_list", 7);
 $actions[3] = new Param_Action("Supprimer un accès", "access_APAS_supprimer", 7);
-$actions[4] = new Param_Action("Valider l`ajouts d`accès", "access_APAS_valider", 7);
+$actions[4] = new Param_Action("Ajouter/modifier un accès", "access_APAS_valider", 7);
 $actions[5] = new Param_Action("Suppression d'un archive", "archiveDelete", 11);
 $actions[6] = new Param_Action("Sauvegarder les données", "archiveDownload", 11);
 $actions[7] = new Param_Action("Sauvegarder les données", "archiveForm", 11);
@@ -93,7 +93,7 @@ $actions[19] = new Param_Action("Recharger les configurations", "extension_APAS_
 $actions[20] = new Param_Action("Liste des paramètres généraux de l`application", "extension_params_APAS_list", 10);
 $actions[21] = new Param_Action("Mise à jour", "extension_params_APAS_miseajour", 3);
 $actions[22] = new Param_Action("Modifier un paramètre", "extension_params_APAS_modifier", 3);
-$actions[23] = new Param_Action("Valider une modification de paramètres", "extension_params_APAS_validerModif", 3);
+$actions[23] = new Param_Action("Modifier un paramètre", "extension_params_APAS_validerModif", 3);
 $actions[24] = new Param_Action("Liste des droits de groupes", "extension_rights_APAS_editer", 2);
 $actions[25] = new Param_Action("Suppression d'impression", "finalreport_APAS_delete", 3);
 $actions[26] = new Param_Action("Liste des impression", "finalreport_APAS_list", 6);
@@ -114,7 +114,7 @@ $actions[40] = new Param_Action("Liste des modèles d`impression", "printmodel_AP
 $actions[41] = new Param_Action("Réinitialiser un modèle", "printmodel_APAS_reinit", 6);
 $actions[42] = new Param_Action("Restauration de données", "restorForm", 11);
 $actions[43] = new Param_Action("Restaurer les données", "restor", 11);
-$actions[44] = new Param_Action("Sauvegarde des données", "selectNewArchive", 11);
+$actions[44] = new Param_Action("Sauvegarde d'archive", "selectNewArchive", 11);
 $actions[45] = new Param_Action("Restaurer les données", "selectRestor", 11);
 $actions[46] = new Param_Action("Tuer une session", "sessions_APAS_killsession", 8);
 $actions[47] = new Param_Action("Consultation des session", "sessions_APAS_list", 8);
@@ -122,7 +122,7 @@ $actions[48] = new Param_Action("Résumé", "status", 0);
 $actions[49] = new Param_Action("Gestion des sauvegardes", "toolBackup", 11);
 $actions[50] = new Param_Action("Promouvoir un enregistrement", "upRecordClassAct", 1);
 $actions[51] = new Param_Action("Promouvoir un enregistrement", "upRecordClass", 1);
-$actions[52] = new Param_Action("Valider la modification de mon compte", "users_APAS_AddModifyAct", 0);
+$actions[52] = new Param_Action("Modifier mon compte", "users_APAS_AddModifyAct", 0);
 $actions[53] = new Param_Action("Modifier mon compte", "users_APAS_AddModify", 0);
 $actions[54] = new Param_Action("Supprimer un utilisateur", "users_APAS_Del", 1);
 $actions[55] = new Param_Action("Ajouter un utilisateur", "users_APAS_ajouter", 1);
@@ -130,7 +130,7 @@ $actions[56] = new Param_Action("Changer de mot de passe", "users_APAS_changerpa
 $actions[57] = new Param_Action("Changer mot de passe", "users_APAS_confirmpwdmodif", 5);
 $actions[58] = new Param_Action("Désactiver un utilisateur", "users_APAS_desactiver", 1);
 $actions[59] = new Param_Action("Liste des utilisateurs", "users_APAS_list", 1);
-$actions[60] = new Param_Action("modifier un utilisateur", "users_APAS_miseajour", 1);
+$actions[60] = new Param_Action("Modifier un utilisateur", "users_APAS_miseajour", 1);
 $actions[61] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier", 1);
 $actions[62] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
 

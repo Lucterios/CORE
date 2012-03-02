@@ -194,8 +194,13 @@ class PrintImage extends PrintItem {
 	public function __construct($XferImage,$printAction) {
 		parent:: __construct($XferImage,$printAction);
 		$this->value = $XferImage->m_value;
+		$this->type = $XferImage->m_type;
 		$this->size = 0;
-		$this->ImgSize = getimagesize($XferImage->m_value);
+		if ($this->type == "") {
+		    $this->ImgSize = getimagesize($XferImage->m_value);
+		}
+		else
+		    $this->ImgSize = array($XferImage->HMin,$XferImage->VMin);
 		$this->height = (int)($this->ImgSize[1]*$this->DPI);
 	}
 
@@ -212,11 +217,15 @@ class PrintImage extends PrintItem {
 	}
 
 	public function getImgContent() {
-		$file_size = filesize($this->value);
-		$handle = fopen($this->value,'r');
-		$img = fread($handle,$file_size);
-		$img = chunk_split(base64_encode($img));
-		$f = fclose($handle);
+		if ($this->type == "") {
+		  $file_size = filesize($this->value);
+		  $handle = fopen($this->value,'r');
+		  $img = fread($handle,$file_size);
+		  $img = chunk_split(base64_encode($img));
+		  $f = fclose($handle);
+		}
+		else
+		  $img = $this->value;
 		return "data:image/*;base64,$img";
 	}
 

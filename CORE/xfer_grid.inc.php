@@ -362,9 +362,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 			break;
 		case 9:
 			//Childs
-			$val = "";
-			while($data->fetch())$val .= $data->toText()."{[newline]}";
-			$val = trim($val);
+			$valList = array();
+			while($data->fetch()) {
+			    $item=$data->toText();
+			    if (!in_array($item,$valList))
+			      $valList[]= $item;
+			}
+			$val = trim(implode("{[newline]}",$valList));
 			break;
 		case 10:
 			//Ref

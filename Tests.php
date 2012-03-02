@@ -237,14 +237,14 @@ if (isset($_GET['extension']) && isset($_GET['dbuser']) && isset($_GET['dbpass']
 	      isset($_GET['cover'])?($_GET['cover']=='true'):false);
 	$testManager->initial($_GET['dbuser'],$_GET['dbpass'],$_GET['dbname'],isset($_GET['num'])?$_GET['num']:-1,isset($_GET['delete'])?($_GET['delete']!='false'):true);
 }
-elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7) || (count($argv)==8)) {
+elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7) || (count($argv)==8) || (count($argv)==9)) {
 	echo "<!-- Test: ";
 	foreach($argv as $num=>$val)
 		echo "arg($num)='$val' ";
 	echo "-->\n";
 
 	$testManager=new TestManager($argv[1],(count($argv)>=6)?$argv[5]:"LucteriosTest",(count($argv)>=7)?($argv[6]!='NON'):true);
-	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?(int)$argv[7]:-1,true);
+	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?(int)$argv[7]:-1,(count($argv)>=9)?($argv[8]!='NON'):true);
 }
 else {
 	$testManager=new TestManager("","",false);

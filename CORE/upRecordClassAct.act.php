@@ -17,7 +17,7 @@
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// Action file write by SDK tool
-// --- Last modification: Date 01 March 2012 8:32:08 By  ---
+// --- Last modification: Date 02 March 2012 6:08:24 By  ---
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -53,9 +53,18 @@ $xfer_result=&new Xfer_Container_Acknowledge("CORE","upRecordClassAct",$Params);
 $xfer_result->Caption="Promouvoir un enregistrement";
 //@CODE_ACTION@
 $table_name=str_replace('/','_',$upclass);
-
 global $connect;
 $connect->execute("INSERT  INTO $table_name (superId) VALUES ($current_id)",true);
+
+require_once("CORE/DBAbstract.inc.php");
+require_once("extensions/".$upclass.".tbl.php");
+$class_name="DBObj_".str_replace('/','_',$upclass);
+
+$DBObj=new $class_name;
+$DBObj->whereAdd("$table_name.superId=$current_id");
+$DBObj->find();
+if ($DBObj->fetch())
+	$DBObj->updateData($Params);
 
 list($ext,$act)=explode('/',$origininal_action);
 $xfer_result->redirectAction(new Xfer_Action('','',$ext,$act,FORMTYPE_MODAL,CLOSE_YES));

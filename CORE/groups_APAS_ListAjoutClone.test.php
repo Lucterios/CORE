@@ -1,13 +1,13 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// 	This file is part of Lucterios/Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
 // 	Thanks to have payed a retribution for using this module.
 // 
-// 	Diacamma is free software; you can redistribute it and/or modify
+// 	Lucterios/Diacamma is free software; you can redistribute it and/or modify
 // 	it under the terms of the GNU General Public License as published by
 // 	the Free Software Foundation; either version 2 of the License, or
 // 	(at your option) any later version.
 // 
-// 	Diacamma is distributed in the hope that it will be useful,
+// 	Lucterios/Diacamma is distributed in the hope that it will be useful,
 // 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 // 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // 	GNU General Public License for more details.
@@ -16,9 +16,8 @@
 // 	along with Lucterios; if not, write to the Free Software
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-// Test file write by SDK tool
-// --- Last modification: Date 15 November 2011 20:14:02 By  ---
+// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// Test file write by SDK tool
+// --- Last modification: Date 02 March 2012 2:18:45 By  ---
 
 
 //@TABLES@
@@ -150,51 +149,51 @@ $test->assertEquals("Valeur",$headers["value"]->m_descript,'Header #3');
 $key=array_keys($comp->m_records);
 $rec=$comp->m_records[$key[0]];
 $test->assertEquals("Acceder au menu de l`application",$rec["description"],"Valeur de grid [0,description]");
-$test->assertEquals("Déverouillage{[newline]}Desconnection{[newline]}Import grille{[newline]}Menu de l application{[newline]}Résumé{[newline]}Valider la modification de mon compte{[newline]}Modifier mon compte{[newline]}",$rec["actions"],"Valeur de grid [0,actions]");
+$test->assertEquals("Déverouillage{[newline]}Desconnection{[newline]}Import grille{[newline]}Menu de l application{[newline]}Résumé{[newline]}Modifier mon compte",$rec["actions"],"Valeur de grid [0,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [0,value]");
 $rec=$comp->m_records[$key[1]];
 $test->assertEquals("Activer/Desactiver une extension",$rec["description"],"Valeur de grid [1,description]");
-$test->assertEquals("Supprimer une extension{[newline]}Liste des actions d`une extension{[newline]}Liste des extentions{[newline]}",$rec["actions"],"Valeur de grid [1,actions]");
+$test->assertEquals("Supprimer une extension{[newline]}Liste des actions d`une extension{[newline]}Liste des extentions",$rec["actions"],"Valeur de grid [1,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [1,value]");
 $rec=$comp->m_records[$key[2]];
 $test->assertEquals("Ajouter/Modifier un groupe",$rec["description"],"Valeur de grid [2,description]");
-$test->assertEquals("Liste des droits de groupes{[newline]}Modifier un droit{[newline]}Ajouter un groupe{[newline]}Cloner un groupe{[newline]}Editer les droits d`un groupe{[newline]}Liste des groupes{[newline]}Ajouter/Modifier un groupe{[newline]}Supprimer un groupe{[newline]}",$rec["actions"],"Valeur de grid [2,actions]");
+$test->assertEquals("Liste des droits de groupes{[newline]}Modifier un droit{[newline]}Ajouter un groupe{[newline]}Cloner un groupe{[newline]}Editer les droits d`un groupe{[newline]}Liste des groupes{[newline]}Ajouter/Modifier un groupe{[newline]}Supprimer un groupe",$rec["actions"],"Valeur de grid [2,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [2,value]");
 $rec=$comp->m_records[$key[3]];
 $test->assertEquals("Ajouter/modifier un utilisateur",$rec["description"],"Valeur de grid [3,description]");
-$test->assertEquals("Supprimer un utilisateur{[newline]}Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}modifier un utilisateur{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur{[newline]}",$rec["actions"],"Valeur de grid [3,actions]");
+$test->assertEquals("Promouvoir un enregistrement{[newline]}Supprimer un utilisateur{[newline]}Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur",$rec["actions"],"Valeur de grid [3,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [3,value]");
 $rec=$comp->m_records[$key[4]];
 $test->assertEquals("Archivage",$rec["description"],"Valeur de grid [4,description]");
-$test->assertEquals("Suppression d`un archive{[newline]}Sauvegarder les données{[newline]}Sauvegarder les données{[newline]}Gestion des sauvegardes{[newline]}Sauvegarder les données{[newline]}Restauration de données{[newline]}Restaurer les données{[newline]}Sauvegarde des données{[newline]}Restaurer les données{[newline]}Gestion des sauvegardes{[newline]}",$rec["actions"],"Valeur de grid [4,actions]");
+$test->assertEquals("Suppression d`un archive{[newline]}Sauvegarder les données{[newline]}Gestion des sauvegardes{[newline]}Restauration de données{[newline]}Restaurer les données{[newline]}Sauvegarde d`archive",$rec["actions"],"Valeur de grid [4,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [4,value]");
 $rec=$comp->m_records[$key[5]];
 $test->assertEquals("Changer de mot de passe",$rec["description"],"Valeur de grid [5,description]");
-$test->assertEquals("Changer de mot de passe{[newline]}Changer mot de passe{[newline]}",$rec["actions"],"Valeur de grid [5,actions]");
+$test->assertEquals("Changer de mot de passe{[newline]}Changer mot de passe",$rec["actions"],"Valeur de grid [5,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [5,value]");
 $rec=$comp->m_records[$key[6]];
 $test->assertEquals("Consultation de session de connexion",$rec["description"],"Valeur de grid [6,description]");
-$test->assertEquals("Tuer une session{[newline]}Consultation des session{[newline]}",$rec["actions"],"Valeur de grid [6,actions]");
+$test->assertEquals("Tuer une session{[newline]}Consultation des session",$rec["actions"],"Valeur de grid [6,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [6,value]");
 $rec=$comp->m_records[$key[7]];
 $test->assertEquals("Consulter les paramètres généreaux",$rec["description"],"Valeur de grid [7,description]");
-$test->assertEquals("Configuration{[newline]}",$rec["actions"],"Valeur de grid [7,actions]");
+$test->assertEquals("Configuration",$rec["actions"],"Valeur de grid [7,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [7,value]");
 $rec=$comp->m_records[$key[8]];
 $test->assertEquals("Gestion des autorisation d`acces réseau",$rec["description"],"Valeur de grid [8,description]");
-$test->assertEquals("Ajouter/modifier un accès{[newline]}Liste des accès{[newline]}Supprimer un accès{[newline]}Valider l`ajouts d`accès{[newline]}",$rec["actions"],"Valeur de grid [8,actions]");
+$test->assertEquals("Ajouter/modifier un accès{[newline]}Liste des accès{[newline]}Supprimer un accès",$rec["actions"],"Valeur de grid [8,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [8,value]");
 $rec=$comp->m_records[$key[9]];
 $test->assertEquals("Impression",$rec["description"],"Valeur de grid [9,description]");
-$test->assertEquals("Validation{[newline]}Ajouter/Modifier une étiquette{[newline]}Liste des étiquettes{[newline]}Supprimer une étiquette{[newline]}Liste des impression{[newline]}reimprimer{[newline]}Editer un modèle{[newline]}Liste des modèles d`impression{[newline]}Réinitialiser un modèle{[newline]}",$rec["actions"],"Valeur de grid [9,actions]");
+$test->assertEquals("Validation{[newline]}Ajouter/Modifier une étiquette{[newline]}Liste des étiquettes{[newline]}Supprimer une étiquette{[newline]}Liste des impression{[newline]}reimprimer{[newline]}Editer un modèle{[newline]}Liste des modèles d`impression{[newline]}Réinitialiser un modèle",$rec["actions"],"Valeur de grid [9,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [9,value]");
 $rec=$comp->m_records[$key[10]];
 $test->assertEquals("Modifier les paramètres généraux",$rec["description"],"Valeur de grid [10,description]");
-$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Valider une modification de paramètres{[newline]}Suppression d`impression{[newline]}Regénérer une impression{[newline]}Impression de la configuration{[newline]}",$rec["actions"],"Valeur de grid [10,actions]");
+$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Suppression d`impression{[newline]}Regénérer une impression{[newline]}Impression de la configuration",$rec["actions"],"Valeur de grid [10,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [10,value]");
 $rec=$comp->m_records[$key[11]];
 $test->assertEquals("Paramètres généraux (avancé)",$rec["description"],"Valeur de grid [11,description]");
-$test->assertEquals("Recharger les configurations{[newline]}Liste des paramètres généraux de l`application{[newline]}",$rec["actions"],"Valeur de grid [11,actions]");
+$test->assertEquals("Recharger les configurations{[newline]}Liste des paramètres généraux de l`application",$rec["actions"],"Valeur de grid [11,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [11,value]");
 
 $test->CallAction("CORE","group_rights_APAS_modify",array("ORIGINE"=>"groups_APAS_editer","extension"=>"100","group"=>"100","groupright"=>"$key[3]",),"Xfer_Container_Acknowledge");
@@ -283,51 +282,51 @@ $test->assertEquals(12,count($comp->m_records),"Nb grid records de groupright");
 $key=array_keys($comp->m_records);
 $rec=$comp->m_records[$key[0]];
 $test->assertEquals("Acceder au menu de l`application",$rec["description"],"Valeur de grid [0,description]");
-$test->assertEquals("Déverouillage{[newline]}Desconnection{[newline]}Import grille{[newline]}Menu de l application{[newline]}Résumé{[newline]}Valider la modification de mon compte{[newline]}Modifier mon compte{[newline]}",$rec["actions"],"Valeur de grid [0,actions]");
+$test->assertEquals("Déverouillage{[newline]}Desconnection{[newline]}Import grille{[newline]}Menu de l application{[newline]}Résumé{[newline]}Modifier mon compte",$rec["actions"],"Valeur de grid [0,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [0,value]");
 $rec=$comp->m_records[$key[1]];
 $test->assertEquals("Activer/Desactiver une extension",$rec["description"],"Valeur de grid [1,description]");
-$test->assertEquals("Supprimer une extension{[newline]}Liste des actions d`une extension{[newline]}Liste des extentions{[newline]}",$rec["actions"],"Valeur de grid [1,actions]");
+$test->assertEquals("Supprimer une extension{[newline]}Liste des actions d`une extension{[newline]}Liste des extentions",$rec["actions"],"Valeur de grid [1,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [1,value]");
 $rec=$comp->m_records[$key[2]];
 $test->assertEquals("Ajouter/Modifier un groupe",$rec["description"],"Valeur de grid [2,description]");
-$test->assertEquals("Liste des droits de groupes{[newline]}Modifier un droit{[newline]}Ajouter un groupe{[newline]}Cloner un groupe{[newline]}Editer les droits d`un groupe{[newline]}Liste des groupes{[newline]}Ajouter/Modifier un groupe{[newline]}Supprimer un groupe{[newline]}",$rec["actions"],"Valeur de grid [2,actions]");
+$test->assertEquals("Liste des droits de groupes{[newline]}Modifier un droit{[newline]}Ajouter un groupe{[newline]}Cloner un groupe{[newline]}Editer les droits d`un groupe{[newline]}Liste des groupes{[newline]}Ajouter/Modifier un groupe{[newline]}Supprimer un groupe",$rec["actions"],"Valeur de grid [2,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [2,value]");
 $rec=$comp->m_records[$key[3]];
 $test->assertEquals("Ajouter/modifier un utilisateur",$rec["description"],"Valeur de grid [3,description]");
-$test->assertEquals("Supprimer un utilisateur{[newline]}Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}modifier un utilisateur{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur{[newline]}",$rec["actions"],"Valeur de grid [3,actions]");
+$test->assertEquals("Promouvoir un enregistrement{[newline]}Supprimer un utilisateur{[newline]}Ajouter un utilisateur{[newline]}Désactiver un utilisateur{[newline]}Liste des utilisateurs{[newline]}Modifier un utilisateur{[newline]}Résactiver un utilisateur",$rec["actions"],"Valeur de grid [3,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [3,value]");
 $rec=$comp->m_records[$key[4]];
 $test->assertEquals("Archivage",$rec["description"],"Valeur de grid [4,description]");
-$test->assertEquals("Suppression d`un archive{[newline]}Sauvegarder les données{[newline]}Sauvegarder les données{[newline]}Gestion des sauvegardes{[newline]}Sauvegarder les données{[newline]}Restauration de données{[newline]}Restaurer les données{[newline]}Sauvegarde des données{[newline]}Restaurer les données{[newline]}Gestion des sauvegardes{[newline]}",$rec["actions"],"Valeur de grid [4,actions]");
+$test->assertEquals("Suppression d`un archive{[newline]}Sauvegarder les données{[newline]}Gestion des sauvegardes{[newline]}Restauration de données{[newline]}Restaurer les données{[newline]}Sauvegarde d`archive",$rec["actions"],"Valeur de grid [4,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [4,value]");
 $rec=$comp->m_records[$key[5]];
 $test->assertEquals("Changer de mot de passe",$rec["description"],"Valeur de grid [5,description]");
-$test->assertEquals("Changer de mot de passe{[newline]}Changer mot de passe{[newline]}",$rec["actions"],"Valeur de grid [5,actions]");
+$test->assertEquals("Changer de mot de passe{[newline]}Changer mot de passe",$rec["actions"],"Valeur de grid [5,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [5,value]");
 $rec=$comp->m_records[$key[6]];
 $test->assertEquals("Consultation de session de connexion",$rec["description"],"Valeur de grid [6,description]");
-$test->assertEquals("Tuer une session{[newline]}Consultation des session{[newline]}",$rec["actions"],"Valeur de grid [6,actions]");
+$test->assertEquals("Tuer une session{[newline]}Consultation des session",$rec["actions"],"Valeur de grid [6,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [6,value]");
 $rec=$comp->m_records[$key[7]];
 $test->assertEquals("Consulter les paramètres généreaux",$rec["description"],"Valeur de grid [7,description]");
-$test->assertEquals("Configuration{[newline]}",$rec["actions"],"Valeur de grid [7,actions]");
+$test->assertEquals("Configuration",$rec["actions"],"Valeur de grid [7,actions]");
 $test->assertEquals("Oui",$rec["value"],"Valeur de grid [7,value]");
 $rec=$comp->m_records[$key[8]];
 $test->assertEquals("Gestion des autorisation d`acces réseau",$rec["description"],"Valeur de grid [8,description]");
-$test->assertEquals("Ajouter/modifier un accès{[newline]}Liste des accès{[newline]}Supprimer un accès{[newline]}Valider l`ajouts d`accès{[newline]}",$rec["actions"],"Valeur de grid [8,actions]");
+$test->assertEquals("Ajouter/modifier un accès{[newline]}Liste des accès{[newline]}Supprimer un accès",$rec["actions"],"Valeur de grid [8,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [8,value]");
 $rec=$comp->m_records[$key[9]];
 $test->assertEquals("Impression",$rec["description"],"Valeur de grid [9,description]");
-$test->assertEquals("Validation{[newline]}Ajouter/Modifier une étiquette{[newline]}Liste des étiquettes{[newline]}Supprimer une étiquette{[newline]}Liste des impression{[newline]}reimprimer{[newline]}Editer un modèle{[newline]}Liste des modèles d`impression{[newline]}Réinitialiser un modèle{[newline]}",$rec["actions"],"Valeur de grid [9,actions]");
+$test->assertEquals("Validation{[newline]}Ajouter/Modifier une étiquette{[newline]}Liste des étiquettes{[newline]}Supprimer une étiquette{[newline]}Liste des impression{[newline]}reimprimer{[newline]}Editer un modèle{[newline]}Liste des modèles d`impression{[newline]}Réinitialiser un modèle",$rec["actions"],"Valeur de grid [9,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [9,value]");
 $rec=$comp->m_records[$key[10]];
 $test->assertEquals("Modifier les paramètres généraux",$rec["description"],"Valeur de grid [10,description]");
-$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Valider une modification de paramètres{[newline]}Suppression d`impression{[newline]}Regénérer une impression{[newline]}Impression de la configuration{[newline]}",$rec["actions"],"Valeur de grid [10,actions]");
+$test->assertEquals("Mise à jour{[newline]}Modifier un paramètre{[newline]}Suppression d`impression{[newline]}Regénérer une impression{[newline]}Impression de la configuration",$rec["actions"],"Valeur de grid [10,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [10,value]");
 $rec=$comp->m_records[$key[11]];
 $test->assertEquals("Paramètres généraux (avancé)",$rec["description"],"Valeur de grid [11,description]");
-$test->assertEquals("Recharger les configurations{[newline]}Liste des paramètres généraux de l`application{[newline]}",$rec["actions"],"Valeur de grid [11,actions]");
+$test->assertEquals("Recharger les configurations{[newline]}Liste des paramètres généraux de l`application",$rec["actions"],"Valeur de grid [11,actions]");
 $test->assertEquals("Non",$rec["value"],"Valeur de grid [11,value]");
 $test->CallAction("CORE","UNLOCK",array("ORIGINE"=>"groups_APAS_editer","RECORD_ID"=>"101","TABLE_NAME"=>"CORE_groups","extension"=>"100","group"=>"101",),"Xfer_Container_Acknowledge");
 
