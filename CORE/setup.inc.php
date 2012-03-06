@@ -17,7 +17,7 @@
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// setup file write by SDK tool
-// --- Last modification: Date 05 March 2012 2:18:15 By  ---
+// --- Last modification: Date 06 March 2012 3:51:44 By  ---
 
 $extention_name="CORE";
 $extention_description="Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.";
@@ -28,7 +28,7 @@ $extension_libre=true;
 
 $version_max=1;
 $version_min=3;
-$version_release=2;
+$version_release=3;
 $version_build=768;
 
 $depencies=array();
