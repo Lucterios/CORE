@@ -453,6 +453,7 @@ if ($ResVar=='')
 			$query="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables)." WHERE ".implode(' AND ',$wheres);
 		if ($OrderBy!='')
 			$query.=" ORDER BY ".$OrderBy;
+		__log($query,"DBFind.execute");
 		return $query;
 	}
 }

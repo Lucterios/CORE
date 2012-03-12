@@ -166,7 +166,7 @@ class ModelConverter {
 						$file_size = filesize($file_name);
 						$handle = fopen($file_name,'r');
 						$encoder = fread($handle,$file_size);
-						$encoder = chunk_explode( base64_encode($encoder));
+						$encoder = chunk_split( base64_encode($encoder));
 						$f = fclose($handle);
 						$base64_mime_image = "data:image/*;base64,$encoder";
 						$this->mModel = substr($this->mModel,0,$pos_begin)."\n$base64_mime_image\n". substr($this->mModel,$pos_end);

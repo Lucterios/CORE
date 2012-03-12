@@ -82,7 +82,7 @@ function callAction($extension,$action,$params,$internal) {
 		}
 	}
 	else
-		throw new LucteriosException(CRITIC,'Mauvais droit');
+		throw new LucteriosException(CRITIC,"Mauvais droit");
 	return $current_reponse;
 }
 
