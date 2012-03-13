@@ -70,5 +70,18 @@ function ConvertTextToCVS($textCVS) {
 	return $CVS_array;
 }
 
+function ConvertCSVTextToSimpleArray($textCSV) {
+	if (is_string($textCSV)) {
+		$CSV_array = array();
+		$textCSV = str_replace("{[newline]}","\n",$textCSV);
+		$arrayCSV = explode("\n",$textCSV);
+		foreach($arrayCSV as $id=>$line) {
+		      $CSV_array[$id]=explode(';',$line);
+		}
+		return $CSV_array;
+	}
+	return null;
+}
+
 //@END@
 ?>
