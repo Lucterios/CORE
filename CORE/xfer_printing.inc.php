@@ -381,6 +381,21 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 		$xml_text=sprintf("<PRINT type='%d' mode='%d' withTextExport='%d'><TITLE><![CDATA[%s]]></TITLE><![CDATA[%s]]></PRINT>",$this->ReportType,$this->ReportMode,$this->withTextExport,$this->ReportTitle,$content);
 		return $xml_text;
 	}
+
+	/**
+	 * getCSVArrayContent
+	 *
+	 * @access private
+	 * @return array
+	 */
+	public function getCSVArrayContent()
+	{
+		require_once("CORE/import.inc.php");
+		$this->ReportMode=4;
+		$content=$this->getBodyContent(false);
+		return ConvertCSVTextToSimpleArray($content);
+	}
+
 }
 
 /**

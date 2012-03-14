@@ -299,7 +299,7 @@ function getDBReport($extension,$printmodel,$reference) {
 	if($report->find()>0) {
 		$report->fetch();
 		$xap = $report->getXap();
-		$title = $report->title;
+		$title = $report->titre;
 		return array($xap,$title,1);
 	}
 	else
