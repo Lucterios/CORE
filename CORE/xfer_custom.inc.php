@@ -222,6 +222,8 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				case 10:
 					// ref
 					$select_list = array();
+					if ($field_item['notnull']==false)
+						$select_list[0]='';
 					$comp = new Xfer_Comp_Select($FieldName);
 					$tbl_name = $param_fld['TableName'];
 					$table_file_name = $DBObjs->getTableName($tbl_name);
