@@ -744,6 +744,8 @@ class DBObj_Abstract {
 				}
 				else if (($type!=10) || (((int)$value)!=0))
 					$fied_eq_value="$field_name=$value";
+				else 
+					$fied_eq_value="$field_name=NULL";
 				$set[]=$fied_eq_value;
 			}
 		$q = "UPDATE ".$this->__table;
