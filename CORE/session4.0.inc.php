@@ -28,7 +28,7 @@ function refresh_session($d,$timeOut,$link) {
 	global $session_table;
 
 	$time_limid_valid=$d-($timeOut*60); // time out de validité de la session => timeOut minutes
-	$time_limid_delete=$d-($timeOut*60*60*24); // time out d'existance de la session => timeOut jours
+	$time_limid_delete=$d-($timeOut*3*60*60*24); // time out d'existance de la session => timeOut jours
 
 	// mise hors service des sessions en time-out
 	$link->execute("DELETE FROM $session_table WHERE dtmod<$time_limid_delete");

@@ -17,7 +17,7 @@
 // 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // 
 // 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// table file write by SDK tool
-// --- Last modification: Date 26 October 2011 6:04:44 By  ---
+// --- Last modification: Date 14 May 2012 7:54:18 By  ---
 
 require_once('CORE/DBObject.inc.php');
 
@@ -39,7 +39,9 @@ class DBObj_CORE_sessions extends DBObj_Basic
 	public $dtmod;
 	public $valid;
 	public $ip;
-	public $__DBMetaDataField=array('sid'=>array('description'=>'Session', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'uid'=>array('description'=>'Login', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>20, 'Multi'=>false)), 'dtcreate'=>array('description'=>'Date/heure de connexion', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>0)), 'dtmod'=>array('description'=>'Date/heure de dernière modification', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>0)), 'valid'=>array('description'=>'Validé', 'type'=>3, 'notnull'=>true, 'params'=>array()), 'ip'=>array('description'=>'Adresse IP', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>16, 'Multi'=>false)));
+	public $dateCreate;
+	public $dateModify;
+	public $__DBMetaDataField=array('sid'=>array('description'=>'Session', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>30, 'Multi'=>false)), 'uid'=>array('description'=>'Login', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>20, 'Multi'=>false)), 'dtcreate'=>array('description'=>'Temps de connexion', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>0)), 'dtmod'=>array('description'=>'Temps de dernière modification', 'type'=>0, 'notnull'=>true, 'params'=>array('Min'=>0, 'Max'=>0)), 'valid'=>array('description'=>'Validé', 'type'=>3, 'notnull'=>true, 'params'=>array()), 'ip'=>array('description'=>'Adresse IP', 'type'=>2, 'notnull'=>true, 'params'=>array('Size'=>16, 'Multi'=>false)), 'dateCreate'=>array('description'=>'Date/heure de connexion', 'type'=>11, 'notnull'=>false, 'params'=>array('Function'=>'CORE_FCT_sessions_APAS_getDateCreate', 'NbField'=>1)), 'dateModify'=>array('description'=>'Date/heure de dernière modification', 'type'=>11, 'notnull'=>false, 'params'=>array('Function'=>'CORE_FCT_sessions_APAS_getDateModify', 'NbField'=>1)));
 
 }
 
