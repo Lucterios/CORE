@@ -345,7 +345,7 @@ if ((type=='list') || (type=='listmult')) {
 					$new_val=$this->m_context['searchValueDate'].' '.$this->m_context['searchValueTime'];
 				if (($new_type=='list') || ($new_type=='listmult'))
 					$new_val=$this->m_context['searchValueList'];
-				if ($new_val!='')
+				if (($new_val!='') || (($new_type=='str') && ($new_op=='1')) || (($new_type=='str') && ($new_op=='2')))
 					$currentCriteria[]=array($new_name,$new_op,$new_val,$FieldDescList[$new_name]);
 			}
 		}
