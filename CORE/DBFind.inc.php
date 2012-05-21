@@ -376,11 +376,14 @@ if ($ResVar=='')
 		return $criteriaDesc;
 	}
 
-	public static function getCriteriaText($DBObject,$Params) {
+	public static function getCriteriaText($DBObject,$Params,$extraAddon='') {
 		$newFind= new DBFind($DBObject);
 		$criteriaDesc=$newFind->getCriteriaDescription($newFind->extractCriteria($Params));
-		if (count($criteriaDesc)>0)
+		if (count($criteriaDesc)>0) {
+			if ($extraAddon!='')
+			      $criteriaDesc=array_merge((array)$extraAddon,$criteriaDesc);
 			$searchText="{[underline]}Vos critères de recherche:{[/underline]} ".implode(' et ',$criteriaDesc);
+		}
 		else
 			$searchText="{[underline]}Aucun critère de recherche défini{[/underline]}";
 		return $searchText;

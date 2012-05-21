@@ -352,7 +352,15 @@ if ((type=='list') || (type=='listmult')) {
 		else if (isset($this->m_context['ACT'])) {
 			unset($currentCriteria[$this->m_context['ACT']]);
 		}
+	}
+
+	public function clearSearchParam() {
 		unset($this->m_context['ACT']);
+		$ctx_keys=array_keys($this->m_context);
+		foreach($ctx_keys as $ctx_key) {
+		      if (substr($ctx_key,0,6)=='search')
+			  unset($this->m_context[$ctx_key]);
+		}
 	}
 
 	/**
@@ -363,7 +371,7 @@ if ((type=='list') || (type=='listmult')) {
 	 * @param integer $posY position en vertical
 	 * @param integer $posX position en horizontal
 	 */
-	public function setSearchGUI($DBObjs,$SearchFieldDescList = null,$posY = 0,$posX = 0) {
+	public function setSearchGUI($DBObjs,$SearchFieldDescList = null,$posY = 0,$posX = 0,$extraAddon='') {
 		// $FieldDescItem : array('fieldname'=>'','description'=>'','type'=>'xxx','list'=>'xxx||yyyy;xxx||yyyy;xxx||yyyy')
 		// type:float,str,bool,date,time,datetime,list,listmult
 		include_once("CORE/DBFind.inc.php");
@@ -431,6 +439,7 @@ if ((type=='list') || (type=='listmult')) {
 		$this->manageFindAction($current_criteria,$FieldDescList);
 		$newFind->reinjectCriteria($this->m_context,$current_criteria,$FieldDescList);
 		$criteriaDesc=$newFind->getCriteriaDescription($current_criteria,$FieldDescList);
+		$this->clearSearchParam();
 
 		$label = new Xfer_Comp_LabelForm('labelsearchDescTitle');
 		if (count($criteriaDesc)>0) {
@@ -443,6 +452,14 @@ if ((type=='list') || (type=='listmult')) {
 		}
 		$this->addComponent($label);
 		$posY++;
+
+		if (count($criteriaDesc)>0) {
+		  $label = new Xfer_Comp_LabelForm('labelSearchText_addOn');
+		  $label->setValue($extraAddon);
+		  $label->setLocation($posX+2,$posY++,2);
+		  $this->addComponent($label);
+		}
+
 		foreach($criteriaDesc as $id=>$criteriaText) {
 			$label = new Xfer_Comp_LabelForm('labelSearchText_'.$id);
 			$label->setValue($criteriaText);
