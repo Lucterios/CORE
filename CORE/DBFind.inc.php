@@ -259,70 +259,75 @@ if ($ResVar=='')
 	}
 
 	public function generateQuery($Params,$oldtables=array(),$oldwheres=array()) {
-		$CriteriaList=$this->extractCriteria($Params);
-		$operatorList=DBFind::getOperatorListQuery();
-
+		$tables=array();
+		$wheres=array();
 		$notManage=array();
-		$tables=$oldtables;
-		if (!in_array($this->m_object->__table,$tables))
-			$tables=array($this->m_object->__table);
-		$wheres=$oldwheres;
-		foreach($CriteriaList as $id=>$criteriaItem) {
-			$new_name=$criteriaItem[0];
-			$new_op=(int)$criteriaItem[1];
-			$new_val=$criteriaItem[2];
-			if (is_array($criteriaItem[3]))
-				$FieldDescItem=$criteriaItem[3];
-			else
-				$FieldDescItem=$this->convertFieldItem($new_name);
+    
+		$CriteriaList=$this->extractCriteria($Params);
+		if (count($CriteriaList)>0) {
+			$operatorList=DBFind::getOperatorListQuery();
 
-			if (isset($FieldDescItem['table.name'])) {
-				$new_type=$FieldDescItem['type'];
-				if (($new_type=='date') || ($new_type=='time') || ($new_type=='datetime'))
-					$new_val_txt="'".$new_val."'";
-				else if ($new_type=='bool') {
-					$new_val_txt=($new_val=='o')?"'o'":"'n'";
-				}
-				else if ($new_type=='str') {
-					$new_val_txt=str_replace("'","''",$new_val);
-					if (($new_op==1) || ($new_op==2))
+			$tables=$oldtables;
+			if (!in_array($this->m_object->__table,$tables))
+				$tables=array($this->m_object->__table);
+			$wheres=$oldwheres;
+			foreach($CriteriaList as $id=>$criteriaItem) {
+				$new_name=$criteriaItem[0];
+				$new_op=(int)$criteriaItem[1];
+				$new_val=$criteriaItem[2];
+				if (is_array($criteriaItem[3]))
+					$FieldDescItem=$criteriaItem[3];
+				else
+					$FieldDescItem=$this->convertFieldItem($new_name);
+
+				if (isset($FieldDescItem['table.name'])) {
+					$new_type=$FieldDescItem['type'];
+					if (($new_type=='date') || ($new_type=='time') || ($new_type=='datetime'))
 						$new_val_txt="'".$new_val."'";
+					else if ($new_type=='bool') {
+						$new_val_txt=($new_val=='o')?"'o'":"'n'";
+					}
+					else if ($new_type=='str') {
+						$new_val_txt=str_replace("'","''",$new_val);
+						if (($new_op==1) || ($new_op==2))
+							$new_val_txt="'".$new_val."'";
+					}
+					else if ($new_type=='list') {
+						$new_val_txt=str_replace(';',',',$new_val);
+					}
+					else
+						$new_val_txt=$new_val;
+					$new_wheres=$FieldDescItem['wheres'];
+					if (isset($FieldDescItem['operator'])) {
+						$operator_text=$FieldDescItem['operator'];
+						$new_val_txt=$new_val;
+					}
+					else
+						$operator_text=$operatorList[$new_op];
+					$new_wheres[]=$FieldDescItem['table.name'].str_replace('@@',$new_val_txt,$operator_text);
+					foreach($new_wheres as $new_where)
+						if (!in_array($new_where,$wheres))
+							$wheres[]=$new_where;
+					$new_tables=$FieldDescItem['tables'];
+					foreach($new_tables as $new_table)
+						if (!in_array($new_table,$tables))
+							$tables[]=$new_table;
 				}
-				else if ($new_type=='list') {
-					$new_val_txt=str_replace(';',',',$new_val);
+				else if (isset($FieldDescItem['tables']) && isset($FieldDescItem['wheres'])) {
+					$new_wheres=$FieldDescItem['wheres'];
+					foreach($new_wheres as $new_where)
+						if (!in_array($new_where,$wheres))
+							$wheres[]=$new_where;
+					$new_tables=$FieldDescItem['tables'];
+					foreach($new_tables as $new_table)
+						if (!in_array($new_table,$tables))
+							$tables[]=$new_table;
 				}
-				else
-					$new_val_txt=$new_val;
-				$new_wheres=$FieldDescItem['wheres'];
-				if (isset($FieldDescItem['operator'])) {
-					$operator_text=$FieldDescItem['operator'];
-					$new_val_txt=$new_val;
+				else {
+				      $FieldDescItem['op']=$new_op;
+				      $FieldDescItem['val']=$new_val;
+				      $notManage[]=$FieldDescItem;
 				}
-				else
-					$operator_text=$operatorList[$new_op];
-				$new_wheres[]=$FieldDescItem['table.name'].str_replace('@@',$new_val_txt,$operator_text);
-				foreach($new_wheres as $new_where)
-					if (!in_array($new_where,$wheres))
-						$wheres[]=$new_where;
-				$new_tables=$FieldDescItem['tables'];
-				foreach($new_tables as $new_table)
-					if (!in_array($new_table,$tables))
-						$tables[]=$new_table;
-			}
-			else if (isset($FieldDescItem['tables']) && isset($FieldDescItem['wheres'])) {
-				$new_wheres=$FieldDescItem['wheres'];
-				foreach($new_wheres as $new_where)
-					if (!in_array($new_where,$wheres))
-						$wheres[]=$new_where;
-				$new_tables=$FieldDescItem['tables'];
-				foreach($new_tables as $new_table)
-					if (!in_array($new_table,$tables))
-						$tables[]=$new_table;
-			}
-			else {
-			      $FieldDescItem['op']=$new_op;
-			      $FieldDescItem['val']=$new_val;
-			      $notManage[]=$FieldDescItem;
 			}
 		}
 		return array($tables,$wheres,$notManage);
@@ -452,11 +457,13 @@ if ($ResVar=='')
 			if (!in_array($new_table,$oldtables))
 				$oldtables[]=$new_table;	
 		list($tables,$wheres,$notManage)=$this->generateQuery($Params,$oldtables,$oldwheres);
-		if (count($wheres)>0)
-			$query="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables)." WHERE ".implode(' AND ',$wheres);
-		if ($OrderBy!='')
-			$query.=" ORDER BY ".$OrderBy;
-		__log($query,"DBFind.execute");
+		if ((count($fields)>0) && (count($tables)>0)) {
+		      $query="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables);
+		      if (count($wheres)>0)
+				$query.=" WHERE ".implode(' AND ',$wheres);
+		      if ($OrderBy!='')
+			      $query.=" ORDER BY ".$OrderBy;
+		}
 		return $query;
 	}
 }
