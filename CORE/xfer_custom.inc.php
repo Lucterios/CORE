@@ -34,6 +34,7 @@
 require_once'xfer_component.inc.php';
 require_once'xfer_grid.inc.php';
 
+
 /**
  * Classe containaire d'une fenêtre personnalisée
  *
@@ -267,6 +268,12 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 
 	public $testSelector=0;
 
+	private function convertTextToJavaScript($itialText) {
+	    $final_text=$itialText;
+	    $final_text=str_replace(array("'","é","è","ê","ë","à","â","ù","ü","ô","ö","î","ï"),array("`","e","e","e","a","a","u","u","o","o","i","i"),$final_text);
+	    return $final_text;
+	}
+
 	private function buildSelectAndScript($FieldDescList) {
 		include_once("CORE/DBFind.inc.php");
 
@@ -278,7 +285,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 				$selector[$FieldDescItem['fieldname']]=$FieldDescItem['description'];
 				$script_ref.="findFields['".$FieldDescItem['fieldname']."']='".$FieldDescItem['type']."';\n";
 				if (($FieldDescItem['type']=='list') || ($FieldDescItem['type']=='listmult') || ($FieldDescItem['type']=='float'))
-					$script_ref.="findLists['".$FieldDescItem['fieldname']."']='".$FieldDescItem['list']."';\n";
+					$script_ref.="findLists['".$FieldDescItem['fieldname']."']='".$this->convertTextToJavaScript($FieldDescItem['list'])."';\n";
 			}
 		}
 		$script_ref.="
