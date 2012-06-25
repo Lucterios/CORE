@@ -28,7 +28,7 @@ function refresh_session($d,$timeOut,$link) {
 	global $session_table;
 
 	$time_limid_valid=$d-($timeOut*60); // time out de validité de la session => timeOut minutes
-	$time_limid_delete=$d-($timeOut*3*60*60*24); // time out d'existance de la session => timeOut jours
+	$time_limid_delete=$d-($timeOut*60*60*24); // time out d'existance de la session => timeOut jours
 
 	// mise hors service des sessions en time-out
 	$link->execute("DELETE FROM $session_table WHERE dtmod<$time_limid_delete");
@@ -43,7 +43,7 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 	refresh_session($d,$timeOut,$link);
 
 	// decoupage de l'IP
-	if(strstr($ip, "/")!=false)
+	/*if(strstr($ip, "/")!=false)
 		list($inetAddr, $netmask) = explode("/", $ip);
 	else {
 		$inetAddr = $ip;
@@ -92,7 +92,7 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 	elseif($wayOfCheck == "singleforce") {
 		$q="UPDATE $session_table SET valid='n' WHERE uid='$uid'";
 		$link->execute($q);
-	}
+	}*/
 	// on genere l'id session
 	$sid = $uid.$d;
 	$q="INSERT INTO $session_table (sid, uid, dtcreate, dtmod, valid, ip) VALUES ('$sid', '$uid', '$d', '$d', 'o', '$ip')";
