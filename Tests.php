@@ -53,7 +53,7 @@ class TestManager {
 		global $dbcnf;
 		global $fileDump;
 		$ret=array();
-		$cmd="mysqldump -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." > $this->fileDump";
+		$cmd="mysqldump --routines -u ".$dbcnf['dbuser']." -p".$dbcnf['dbpass']." ".$dbcnf['dbname']." > $this->fileDump";
 		$this->execCmd($cmd);
 	}
 
