@@ -1,26 +1,23 @@
 <?php
-// 	This file is part of Lucterios/Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// 	Thanks to have payed a retribution for using this module.
+// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a donation for using this module.
 // 
-// 	Lucterios/Diacamma is free software; you can redistribute it and/or modify
-// 	it under the terms of the GNU General Public License as published by
-// 	the Free Software Foundation; either version 2 of the License, or
-// 	(at your option) any later version.
+// Lucterios is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
 // 
-// 	Lucterios/Diacamma is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU General Public License for more details.
+// Lucterios is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 // 
-// 	You should have received a copy of the GNU General Public License
-// 	along with Lucterios; if not, write to the Free Software
-// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY// table file write by SDK tool
-// --- Last modification: Date 28 October 2011 13:30:02 By lag ---
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// library file write by Lucterios SDK tool
 
 //@BEGIN@
-
 class SecurityLock {
 
 	/**
@@ -36,7 +33,7 @@ class SecurityLock {
 	 * @var string
 	 */
 	private $m_lockDate = null;
-	
+
 
 	/**
 	 * Constructeur
@@ -97,9 +94,7 @@ class SecurityLock {
 		if (($this->m_lockSession!='') && (strpos($this->m_lockSession,'@')===false) && $this->checkSessionExisting()) {
 			include_once('CORE/sessions.tbl.php');
 			$DBSession=new DBObj_CORE_sessions;
-			$DBSession->sid=$this->m_lockSession;
-			$DBSession->valid='o';
-			$DBSession->find();
+			$DBSession->query("SELECT * FROM CORE_sessions WHERE sid='".$this->m_lockSession."' AND valid='o'");
 			if (!$DBSession->fetch()) {
 				$this->m_lockSession='';
 			}
@@ -134,8 +129,7 @@ class SecurityLock {
 				global $GLOBAL;
 				include_once('CORE/sessions.tbl.php');
 				$DBSession=new DBObj_CORE_sessions;
-				$DBSession->valid='o';
-				$DBSession->find();
+				$DBSession->query("SELECT * FROM CORE_sessions WHERE valid='o'");
 				while ($DBSession->fetch()) {
 					  if ($DBSession->sid!=$GLOBAL["ses"])
 						$nb++;
@@ -175,6 +169,5 @@ class SecurityLock {
 	}
 
 }
-
 //@END@
 ?>
