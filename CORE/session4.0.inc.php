@@ -1,25 +1,23 @@
 <?php
-//
-//  This file is part of Lucterios.
-//
-//  Lucterios is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation; either version 2 of the License, or
-//  (at your option) any later version.
-//
-//  Lucterios is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with Lucterios; if not, write to the Free Software
-//  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-//
-//	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//
+// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
+// thanks to have payed a retribution for using this module.
+// 
+// Lucterios/Diacamma is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// Lucterios/Diacamma is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// library file write by Lucterios SDK tool
 
-
+//@BEGIN@
 /* CONF */
 $session_table="CORE_sessions";
 $access_table="CORE_access";
@@ -49,7 +47,7 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 		$inetAddr = $ip;
 		$netmask = 32;
 	}
-	
+
 	list($classA, $classB, $classC, $classD) = explode("\.", $inetAddr);
 	// chargement de la liste des IPs autorisée à se connecter
 	$q = "SELECT inetAddr FROM $access_table WHERE inetAddr LIKE '$classA.%' OR inetAddr LIKE '255.%'";
@@ -59,13 +57,13 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 		// decoupage de inet
 		list($dbinet, $dbnetmask) = explode("/", $inet);
 		list($DBclassA, $DBclassB, $DBclassC, $DBclassD) = explode("\.", $dbinet);
-		
+
 		// verif de la pertinance et dc du droit
 		if($dbnetmask<=$netmask) {
 			// verif de la compatibilité de la classe d'ip representee par $inet avec notre ip courante
 			// on ne traite que les netmasks de classes completes
 			if($netmask!=8 && $netmask!=16 && $netmask!=24 && $netmask!=32) return false;
-			
+
 			if($dbnetmask==8 && ($DBclassA==255 || $classA==$DBclassA)) $ipIsAutorised = true; // toutes classes A autorisées
 			else {
 				if($dbnetmask==16 && ($DBclassB==255 || $classB==$DBclassB)) $ipIsAutorised = true; // toutes classes B autorisées pour cette classe A
@@ -80,7 +78,7 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 		}
 	} // fin while
 	if(!$ipIsAutorised) return false;
-	
+
 	// on effectue les verifs necessaires
 	if($wayOfCheck == "singlecheck") {
 		// reste t-il une session valide?
@@ -97,7 +95,6 @@ function get_session_id($uid, $timeOut, $link, $ip="0.0.0.0/0", $wayOfCheck="mul
 	$sid = $uid.$d;
 	$q="INSERT INTO $session_table (sid, uid, dtcreate, dtmod, valid, ip) VALUES ('$sid', '$uid', '$d', '$d', 'o', '$ip')";
 	if(!$link->execute($q)) print $link->errorMsg;
-	//setcookie("ses", $sid, time()+($timeOut*60));
 	return $sid;
 }
 
@@ -110,16 +107,14 @@ function verif_session($ses, $timeOut, $link, $ip="0.0.0.0/0") {
 	$res = $link->execute("SELECT dtmod, valid, ip FROM $session_table WHERE sid='$ses'");
 	list($dtmod, $valid, $inet) = $link->getRow($res);
 	if($valid=="o") {
-		if(!strcmp($inet, "0.0.0.0/0") || !strcmp($inet, $ip)) {
-			if($d>$dtmod+($timeOut*60)) {
-				$link->execute("UPDATE $session_table SET valid='n' WHERE sid='$ses'");
-			}
-			else {
-				$q="UPDATE $session_table SET dtmod='$d' WHERE sid='$ses'";
-				$link->execute($q);
-				//setcookie("ses", $ses, $d+($timeOut*60));
-				$ses_ok = true;
-			}
+		// TODO : check current IP and initial IP ?
+		if($d>$dtmod+($timeOut*60)) {
+			$link->execute("UPDATE $session_table SET valid='n' WHERE sid='$ses'");
+		}
+		else {
+			$q="UPDATE $session_table SET dtmod='$d' WHERE sid='$ses'";
+			$link->execute($q);
+			$ses_ok = true;
 		}
 	}
 	return $ses_ok;
@@ -129,7 +124,6 @@ function verif_session($ses, $timeOut, $link, $ip="0.0.0.0/0") {
 function deconnect($ses, $link) {
 	global $session_table;
 	$link->execute("UPDATE $session_table SET valid='n' WHERE sid='$ses'");
-	//setcookie("ses");
 }
-
+//@END@
 ?>
