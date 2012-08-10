@@ -1,13 +1,13 @@
 <?php
-// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
-// thanks to have payed a retribution for using this module.
+// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a donation for using this module.
 // 
-// Lucterios/Diacamma is free software; you can redistribute it and/or modify
+// Lucterios is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 // 
-// Lucterios/Diacamma is distributed in the hope that it will be useful,
+// Lucterios is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -27,7 +27,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=3;
 $version_release=5;
-$version_build=786;
+$version_build=793;
 
 $depencies=array();
 
@@ -50,7 +50,7 @@ $menus[1] = new Param_Menu("Ad_ministration", "", "", "admin.png", "", 100 , 0, 
 $menus[2] = new Param_Menu("_Utilisateurs", "_Gestion des Droits", "users_APAS_list", "user.png", "", 5 , 0, "Gestion des utilisateurs autorisés à se connecter.");
 $menus[4] = new Param_Menu("_Paramètres", "_Avancé", "extension_params_APAS_list", "", "", 20 , 0, "");
 $menus[5] = new Param_Menu("_Extensions", "_Gestion des Droits", "extension_APAS_list", "extensions.png", "", 15 , 0, "Gestion des modules et association des droits.");
-$menus[6] = new Param_Menu("_Mot de passe", "Ad_ministration", "users_APAS_changerpassword", "passwd.png", "", 5 , 1, "Changement de votre mot de passe.");
+$menus[6] = new Param_Menu("_Mot de passe", "_Général", "users_APAS_changerpassword", "passwd.png", "", 90 , 1, "Changement de votre mot de passe.");
 $menus[7] = new Param_Menu("_Groupes", "_Gestion des Droits", "groups_APAS_liste", "group.png", "", 10 , 0, "Gestion d'un groupe de droits d'accès.");
 $menus[8] = new Param_Menu("_Rapport et Impression", "Ad_ministration", "", "PrintReport.png", "", 25 , 0, "Gestion de vos rapports et des outils d'impression.");
 $menus[9] = new Param_Menu("_Modèles des rapports", "_Rapport et Impression", "printmodel_APAS_list", "PrintReportModel.png", "", 30 , 0, "Gestion des différents modèles d'impression.");
@@ -60,12 +60,13 @@ $menus[12] = new Param_Menu("_Gestion des Droits", "Ad_ministration", "", "gesti
 $menus[13] = new Param_Menu("_Avancé", "Ad_ministration", "", "", "", 50 , 0, "");
 $menus[14] = new Param_Menu("Ra_pports sauvegardés", "_Rapport et Impression", "finalreport_APAS_list", "PrintReportSave.png", "", 20 , 0, "Ré-édition des anciennes impressions sauvegardées");
 $menus[15] = new Param_Menu("_Extensions (conf.)", "Ad_ministration", "", "config_ext.png", "", 20 , 0, "Gestion des configurations des différentes modules.");
-$menus[16] = new Param_Menu("Configuration _générale", "Ad_ministration", "configuration", "config.png", "shift ctrl alt C", 10 , 1, "Visualisation et modification des paramètres généraux.");
+$menus[16] = new Param_Menu("Configuration _générale", "Ad_ministration", "configuration", "config.png", "", 10 , 1, "Visualisation et modification des paramètres généraux.");
 $menus[17] = new Param_Menu("_Etiquettes", "_Rapport et Impression", "etiquettes_APAS_liste", "PrintReportLabel.png", "", 5 , 0, "Gestion des planches d'étiquettes");
 $menus[18] = new Param_Menu("Ar_chivage", "Ad_ministration", "", "backup.png", "", 15 , 0, "Outils de sauvegarde et de restoration des données.");
 $menus[19] = new Param_Menu("_Sauvegarder", "Ar_chivage", "selectNewArchive", "backup_save.png", "", 10 , 1, "Sauvegarde manuel des données du logiciel.");
 $menus[20] = new Param_Menu("_Restauration", "Ar_chivage", "selectRestor", "backup_restor.png", "", 20 , 1, "Restauration d'une archives.");
 $menus[21] = new Param_Menu("_Gestion des archives", "Ar_chivage", "toolBackup", "backup_tool.png", "", 30 , 1, "Importer ou télécharger des archives de sauvegarde");
+$menus[22] = new Param_Menu("_Général", "", "", "general.png", "", 1 , 0, "Généralité");
 
 $actions=array();
 $actions[0] = new Param_Action("Déverouillage", "UNLOCK", 0);
