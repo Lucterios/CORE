@@ -70,6 +70,8 @@ class TestManager {
 		$msg="";
 		$set_of_ext[]=$this->extensionObj;
 		$dep_names=explode(" ",$this->extensionObj->getDepencies());
+		if (!in_array("applis",$dep_names))
+			$dep_names[]="applis";
 		foreach($dep_names as $name)
 			if ($name!='') {
 				$new_ext=new Extension($name,Extension::getFolder($name));
