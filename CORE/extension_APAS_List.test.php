@@ -49,7 +49,7 @@ $test->assertClass("Xfer_Comp_Grid",$comp);
 $test->assertEquals("extension",$comp->m_name);
 $test->assertEquals(4,count($comp->m_headers),"headers");
 $test->assertEquals(2,count($comp->m_actions),"actions");
-$test->assertEquals(1,count($comp->m_records),"records");
+$test->assertEquals(2,count($comp->m_records),"records");
 $test->assertEquals(new Xfer_Action("_Droits et Actions",'edit.png', "CORE", "extension_APAS_listactions",FORMTYPE_MODAL, CLOSE_NO, SELECT_SINGLE),$comp->m_actions[0]);
 $test->assertEquals(new Xfer_Action('_Supprimer','suppr.png', "CORE", "extension_APAS_Delete",FORMTYPE_MODAL, CLOSE_NO, SELECT_SINGLE),$comp->m_actions[1]);
 $headers=array_keys($comp->m_headers);
@@ -59,7 +59,7 @@ $test->assertEquals("description",$headers[2]);
 $test->assertEquals("validite",$headers[3]);
 
 $test->assertEquals("Noyau Lucterios",$comp->m_records["100"]["titre"]);
-$test->assertEquals("1.3.",substr($comp->m_records["100"]['Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild'],0,4));
+$test->assertEquals("1.4.",substr($comp->m_records["100"]['Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild'],0,4));
 $test->assertEquals("Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.",$comp->m_records["100"]["description"]);
 $test->assertEquals("Oui",$comp->m_records["100"]["validite"]);
 //@CODE_ACTION@
