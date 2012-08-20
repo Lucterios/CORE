@@ -1,29 +1,27 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// 	Thanks to have payed a retribution for using this module.
+// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a donation for using this module.
 // 
-// 	Diacamma is free software; you can redistribute it and/or modify
-// 	it under the terms of the GNU General Public License as published by
-// 	the Free Software Foundation; either version 2 of the License, or
-// 	(at your option) any later version.
+// Lucterios is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
 // 
-// 	Diacamma is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU General Public License for more details.
+// Lucterios is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 // 
-// 	You should have received a copy of the GNU General Public License
-// 	along with Lucterios; if not, write to the Free Software
-// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-// Action file write by SDK tool
-// --- Last modification: Date 26 April 2011 18:05:40 By  ---
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// Action file write by Lucterios SDK tool
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
 
 //@TABLES@
+require_once('CORE/sessions.tbl.php');
 //@TABLES@
 //@XFER:custom
 require_once('CORE/xfer_custom.inc.php');
@@ -47,126 +45,167 @@ $xfer_result->Caption="Restauration de données";
 //@CODE_ACTION@
 global $SECURITY_LOCK;
 $SECURITY_LOCK->open(true);
-if(isset($xfer_result->m_context['RESTOR'])) {
-	$img_title = new Xfer_Comp_Image('img_title');
-	$img_title->setLocation(0,0,1,2);
-	$img_title->setValue('backup_restor.png');
-	$xfer_result->addComponent($img_title);
-	$lbl = new Xfer_Comp_LabelForm("info");
-	$lbl->setLocation(1,0);
-	$xfer_result->addComponent($lbl);
-	//
-	$temp_path = getcwd()."/tmp/restor/";
-	if( is_dir($temp_path)) rmdir($temp_path);
-	if(! is_dir($temp_path)) mkdir($temp_path,0777, true);
-	//
-	require_once("CORE/ArchiveTar.inc.php");
-	require_once("CORE/Lucterios_Error.inc.php");
-	$tar = new ArchiveTar($file_path);
-	$result = $tar->extract($temp_path);
-	$items = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
-	foreach($items as $item) {
-		if( substr($item,-1) == "/") {
-			$item = substr($item,0,-1);
-			if(! is_dir($temp_path.$item))
-				throw new LucteriosException( IMPORTANT,"Répértoire ".$temp_path.$item." non trouvé!");
-		}
-		else if(! is_file($temp_path.$item)) {
-			throw new LucteriosException( IMPORTANT,"Fichier ".$temp_path.$item." non trouvé!");
-		}
-	}
-	global $connect;
-	$connect->begin();
-	try {
 
-		require_once("CORE/extensionManager.inc.php");
-		$ext_list = getExtensions();
-		foreach($ext_list as $current_name => $current_dir) {
-			$current_obj = new Extension($current_name,$current_dir);
-			$current_obj->throwExcept=true;
-			$current_obj->removeAllContraintsTable();
-		}
+$img_title = new Xfer_Comp_Image('img_title');
+$img_title->setLocation(0,0,1,2);
+$img_title->setValue('backup_restor.png');
+$xfer_result->addComponent($img_title);
+$lbl = new Xfer_Comp_LabelForm("info");
+$lbl->setLocation(1,0);
+$xfer_result->addComponent($lbl);
 
-		$cst_list=array();
-		$addSQL=false;
-		$dh = opendir($temp_path);
-		while(($file = readdir($dh)) != false)
-			if(substr($file,-4)=='.sql') {
-				$query_txt = "";
-				$SQL_file_name=$temp_path.$file;
-				$handle = @fopen($SQL_file_name, "r");
-				while ($handle && !feof($handle)) {
-	        		$line = @fgets($handle);
-				if(( substr( trim($line),0,2) != '--') && ( trim($line) != '')) {
-					$line = trim($line);
-					$query_txt .= " ".trim($line);
-					if(((substr($line,-1) == ';') || (substr($line,-14) == 'CHARSET=latin1')) && ($query_txt != '')) {
-						$addSQL=true;
-						$query_txt=trim($query_txt);
-						if (substr($query_txt,0,12)=='CREATE TABLE') {
-							$cst_pos=strpos($query_txt,', CONSTRAINT');
-							if ($cst_pos>0) {
-								$par_pos=strrpos($query_txt,')');
-								$cst_line=trim(substr($query_txt,$cst_pos+1,$par_pos-$cst_pos-1));
-								$query_txt=substr($query_txt,0,$cst_pos).substr($query_txt,$par_pos);
-								$cst_line=str_replace(array('CONSTRAINT'),array('ADD CONSTRAINT'),$cst_line);
-								$first_par=strpos($query_txt,'(');
-								$cst_line=str_replace(array('CREATE'),array('ALTER'),substr($query_txt,0,$first_par)).$cst_line.";";
-								$cst_list[]=$cst_line;
-							}
-						}
-						if (substr($query_txt,-1) != ';')
-							$query_txt.=';';
-						$connect->execute($query_txt,true);
-						$query_txt = '';
-					}
-				}
-    			}
-			if ($handle)
-				@fclose($handle);
-		}
-		closedir($dh);
-		if(!$addSQL)
-			throw new LucteriosException( IMPORTANT,'Données non trouvées! ('.$temp_path.")");
-		foreach($ext_list as $current_name => $current_dir) {
-			$current_obj = new Extension($current_name,$current_dir);
-			$current_obj->throwExcept=true;
-			$current_obj->upgradeContraintsTable();
-		}
+if(isset($xfer_result->m_context['RESTOR']))
+	$restor=(int)$xfer_result->m_context['RESTOR'];
+else
+	$restor=0;
+switch($restor) {
+	case 0:
+		$lbl->setValue("{[center]}{[bold]}Restauration en cours.{[newline]}Merci de patienter.{[/bold]}{[/center]}");
+		$btn = new Xfer_Comp_Button("Next");
+		$btn->setLocation(1,1);
+		$btn->setAction($xfer_result->getRefreshAction('Restaurer'));
+		$btn->JavaScript = "parent.refresh();";
+		$xfer_result->addComponent($btn);
+		$xfer_result->m_context['RESTOR'] = 1;
+		$xfer_result->addAction( new Xfer_Action('_Annuler','cancel.png','','', FORMTYPE_MODAL, CLOSE_YES));
+		break;
+	case 1:
+		$DBSes=new DBObj_CORE_sessions;
+		$DBSes->valid='o';
+		$DBSes->find();
+		if ($DBSes->fetch())
+			$res_sess="INSERT INTO CORE_sessions  (sid, uid, dtcreate, dtmod, valid, ip) VALUES ('".$DBSes->sid."', '".$DBSes->uid."', '".$DBSes->dtcreate."', '".$DBSes->dtmod."', 'o', '".$DBSes->ip."')";
+		else
+			$res_sess="";
+
+		$temp_path = getcwd()."/tmp/restor/";
+		if( is_dir($temp_path)) rmdir($temp_path);
+		if(! is_dir($temp_path)) mkdir($temp_path,0777, true);
+		//
+		require_once("CORE/ArchiveTar.inc.php");
+		require_once("CORE/Lucterios_Error.inc.php");
+		$tar = new ArchiveTar($file_path);
+		$result = $tar->extract($temp_path);
+		$items = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
 		foreach($items as $item) {
-			$r = rm_recursive($item);
-			$r = rename($temp_path.$item,$item);
+			if( substr($item,-1) == "/") {
+				$item = substr($item,0,-1);
+				if(! is_dir($temp_path.$item))
+					throw new LucteriosException( IMPORTANT,"Répértoire ".$temp_path.$item." non trouvé!");
+			}
+			else if(! is_file($temp_path.$item)) {
+				throw new LucteriosException( IMPORTANT,"Fichier ".$temp_path.$item." non trouvé!");
+			}
 		}
-		$connect->commit();
-		$lbl->setValue("{[center]}{[bold]}Restauration Terminer.{[newline]}Vous devez vous reconnecter.{[/bold]}{[/center]}");
-		$r = rm_recursive($temp_path);
-	}
-	 catch( Exception$e) {
-		$connect->rollback();
-		$msg=$e->getMessage();
-		$msg=str_replace(array("\n"),array('{[newline]}'),$msg);
-		$lbl->setValue("{[center]}{[bold]}Erreur de restoration.{[newline]}{[font color=red]}".$msg."{[/font]}{[/bold]}{[/center]}");
-	}
-	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png','CORE','menu', FORMTYPE_MODAL, CLOSE_YES));
-}
-else {
-	$xfer_result->m_context['RESTOR'] = 1;
-	$img_title = new Xfer_Comp_Image('img_title');
-	$img_title->setLocation(0,0,1,2);
-	$img_title->setValue('backup_restor.png');
-	$xfer_result->addComponent($img_title);
-	$lbl = new Xfer_Comp_LabelForm("info");
-	$lbl->setLocation(1,0);
-	$lbl->setValue("{[center]}{[bold]}Restauration en cours.{[newline]}Merci de patienter.{[/bold]}{[/center]}");
-	$xfer_result->addComponent($lbl);
-	$btn = new Xfer_Comp_Button("Next");
-	$btn->setLocation(1,1);
-	$btn->setAction($xfer_result->getRefreshAction('Restaurer'));
-	$btn->JavaScript = "
-	parent.refresh();
-";
-	$xfer_result->addComponent($btn);
-	$xfer_result->addAction( new Xfer_Action('_Annuler','cancel.png','','', FORMTYPE_MODAL, CLOSE_YES));
+		global $connect;
+		$connect->begin();
+		try {
+			require_once("CORE/extensionManager.inc.php");
+			$ext_list = getExtensions();
+			foreach($ext_list as $current_name => $current_dir) {
+				$current_obj = new Extension($current_name,$current_dir);
+				$current_obj->throwExcept=true;
+				$current_obj->removeAllContraintsTable();
+			}
+			$cst_list=array();
+			$addSQL=false;
+			$dh = opendir($temp_path);
+			while(($file = readdir($dh)) != false)
+				if(substr($file,-4)=='.sql') {
+					$query_txt = "";
+					$SQL_file_name=$temp_path.$file;
+					$handle = @fopen($SQL_file_name, "r");
+					while ($handle && !feof($handle)) {
+	        					$line = @fgets($handle);
+						if(( substr( trim($line),0,2) != '--') && ( trim($line) != '')) {
+						$line = trim($line);
+						$query_txt .= " ".trim($line);
+						if(((substr($line,-1) == ';') || (substr($line,-14) == 'CHARSET=latin1')) && ($query_txt != '')) {
+							$addSQL=true;
+							$query_txt=trim($query_txt);
+							if (substr($query_txt,0,12)=='CREATE TABLE') {
+								$cst_pos=strpos($query_txt,', CONSTRAINT');
+								if ($cst_pos>0) {
+									$par_pos=strrpos($query_txt,')');
+									$cst_line=trim(substr($query_txt,$cst_pos+1,$par_pos-$cst_pos-1));
+									$query_txt=substr($query_txt,0,$cst_pos).substr($query_txt,$par_pos);
+									$cst_line=str_replace(array('CONSTRAINT'),array('ADD CONSTRAINT'),$cst_line);
+									$first_par=strpos($query_txt,'(');
+									$cst_line=str_replace(array('CREATE'),array('ALTER'),substr($query_txt,0,$first_par)).$cst_line.";";
+									$cst_list[]=$cst_line;
+								}
+							}
+							if (substr($query_txt,-1) != ';')
+								$query_txt.=';';
+							$connect->execute($query_txt,true);
+							$query_txt = '';
+						}
+					}
+    				}
+				if ($handle)
+					@fclose($handle);
+			}
+			closedir($dh);
+			if(!$addSQL)
+				throw new LucteriosException( IMPORTANT,'Données non trouvées! ('.$temp_path.")");
+			if ($res_sess!='')
+				$connect->execute($res_sess,true);
+			$connect->commit();
+
+			foreach($items as $item) {
+				$r = rm_recursive($item);
+				$r = rename($temp_path.$item,$item);
+			}
+			$r = rm_recursive($temp_path);
+
+			$lbl->setValue("{[center]}{[bold]}Restauration en cours.{[newline]}Merci de patienter.{[/bold]}{[/center]}");
+			$btn = new Xfer_Comp_Button("Next");
+			$btn->setLocation(1,1);
+			$btn->setAction($xfer_result->getRefreshAction('Restaurer'));
+			$btn->JavaScript = "parent.refresh();";
+			$xfer_result->addComponent($btn);
+			$xfer_result->m_context['RESTOR'] = 2;
+			$xfer_result->addAction( new Xfer_Action('_Annuler','cancel.png','','', FORMTYPE_MODAL, CLOSE_YES));
+		}
+		 catch( Exception $e) {
+			$connect->rollback();
+			$msg=$e->getMessage();
+			$msg=str_replace(array("\n"),array('{[newline]}'),$msg);
+			$lbl->setValue("{[center]}{[bold]}Erreur de restoration.{[newline]}{[font color=red]}".$msg."{[/font]}{[/bold]}{[/center]}");
+			$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png','CORE','menu', FORMTYPE_MODAL, CLOSE_YES));
+		}
+		break;
+	case 2:
+		global $connect;
+		$connect->begin();
+		try {
+			require_once("CORE/extensionManager.inc.php");
+			$ext_list = getExtensions();
+			foreach($ext_list as $current_name => $current_dir) {
+				$current_obj = new Extension($current_name,$current_dir);
+				$current_obj->throwExcept=true;
+				$current_obj->upgradeContraintsTable();
+			}
+			foreach($items as $item) {
+				$r = rm_recursive($item);
+				$r = rename($temp_path.$item,$item);
+			}
+			$connect->commit();
+			$lbl->setValue("{[center]}{[bold]}Restauration Terminer.{[newline]}Vous devez vous reconnecter.{[/bold]}{[/center]}");
+			$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png','CORE','menu', FORMTYPE_MODAL, CLOSE_YES));
+		}
+		 catch( Exception$e) {
+			$connect->rollback();
+			$msg=$e->getMessage();
+			$msg=str_replace(array("\n"),array('{[newline]}'),$msg);
+			$lbl->setValue("{[center]}{[bold]}Erreur de restoration.{[newline]}{[font color=red]}".$msg."{[/font]}{[/bold]}{[/center]}");
+			$xfer_result->addAction( new Xfer_Action('_Contrôler','','CORE','extension_APAS_reload',FORMTYPE_MODAL, CLOSE_YES));
+		}
+		break;
+	default:
+		$lbl->setValue("");
+		$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png','CORE','menu', FORMTYPE_MODAL, CLOSE_YES));
+		break;
 }
 $SECURITY_LOCK->close();
 //@CODE_ACTION@
