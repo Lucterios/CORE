@@ -1,4 +1,4 @@
-<?
+<?php
 //
 //  This file is part of Lucterios.
 //
@@ -63,7 +63,7 @@ $list_sub_folder=array_merge(getSubFolder('./UpdateClients/'),getSubFolder('./')
 ?>
 <html>
 <head>
-  <title><? echo $extention_description;?></title>
+  <title><?php echo $extention_description;?></title>
 	<style type="text/css">
 	<!--
 		BODY {
@@ -186,10 +186,10 @@ $list_sub_folder=array_merge(getSubFolder('./UpdateClients/'),getSubFolder('./')
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                     <td>
-                        <img src='<? echo $appli_dir."/images/logo.gif";?>' alt='logo' />
+                        <img src='<?php echo $appli_dir."/images/logo.gif";?>' alt='logo' />
                     </td>
                     <td align="center">
-                        <h1 class="banniere"><? echo $extention_description;?></h1>
+                        <h1 class="banniere"><?php echo $extention_description;?></h1>
                     </td>
                 </tr>
             </table>
@@ -205,7 +205,7 @@ $list_sub_folder=array_merge(getSubFolder('./UpdateClients/'),getSubFolder('./')
 		<h4>Séléctionnez le client que vous voulez utiliser.</h4>
 		<br>
 		<table>
-		<?
+		<?php
 			foreach($list_sub_folder as $sub_folder) {
 				$name=$sub_folder[0];
 				$index=$sub_folder[1].'/index.php';
@@ -225,7 +225,7 @@ $list_sub_folder=array_merge(getSubFolder('./UpdateClients/'),getSubFolder('./')
             <table border="0" cellspacing="0" cellpadding="0" width="100%">
                 <tr>
                     <td class="pied">
-                        <? echo $copy_right;?> - Mise à jour <? echo date ("d/m/Y", filemtime("index.php")); ?>
+                        <?php echo $copy_right;?> - Mise à jour <?php echo date ("d/m/Y", filemtime("index.php")); ?>
                     </td>
                 </tr>
             </table>

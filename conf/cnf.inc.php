@@ -1,4 +1,4 @@
-<?
+<?php
 /******************************************************************************/
 /* Fichier cnf.inc.php
 /* fichier contenant toutes les variables de configuration de l'application

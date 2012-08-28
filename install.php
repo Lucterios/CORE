@@ -420,7 +420,7 @@ function checkAdminPassword() {
     <tr class="corps">
 	<td class="menu"></td>
 	<td class="corps">
-<?
+<?php
 
 if (array_key_exists('ModifDB',$_POST))
 {
@@ -429,7 +429,7 @@ if (array_key_exists('ModifDB',$_POST))
 		echo "<br><br><center><font color='red'>Echec d'écriture!</font></center>";
 	else
 	{
-		fwrite($fh,"<?\n");
+		fwrite($fh,"<?php\n");
 		fwrite($fh,"/******************************************************************************/\n");
 		fwrite($fh,"/* Fichier cnf.db.php\n");
 		fwrite($fh,"/* fichier de configuration de la base de données de l'application\n");
