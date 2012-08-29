@@ -171,12 +171,23 @@ class TestManager {
 		}
 		return $connect->connected;
 	}
+
+	private function isNumInRange($currentInc) {
+		$range=explode('-',''.$this->numTest);
+		if ((count($range)==2)) {
+		      $min=(int)$range[0];
+		      $max=(int)$range[1];
+		      return ($currentInc>=$min) && ($currentInc<=$max);
+		} else {
+			return ($this->numTest==-1) || ($this->numTest==$currentInc);
+		}
+	}
 	
 	private function run(){
 		$inc=1;
 		$fileList=$this->getFileTestList();
 		foreach($fileList as $file_name) {
-			if (($this->numTest==-1) || ($this->numTest==$inc)) {
+			if ($this->isNumInRange($inc)) {
 				$item=new TestItem($this->extensionName,sprintf('%02d ',$inc).str_replace('_APAS_','::',$file_name));
 				$this->restorMysql();
 				$this->CODE_COVER->startCodeCover();
@@ -198,7 +209,7 @@ class TestManager {
 			try {
 			    $this->run();
 			} catch(Exception $e) {
-				$item=new TestItem($extensionName,"Echec");
+				$item=new TestItem($this->extensionName,"Echec");
 				$item->error($e);
 				$this->GlobalTest->addTests($item);
 			}
@@ -246,7 +257,7 @@ elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7) || (count($a
 	echo "-->\n";
 
 	$testManager=new TestManager($argv[1],(count($argv)>=6)?$argv[5]:"LucteriosTest",(count($argv)>=7)?($argv[6]!='NON'):true);
-	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?(int)$argv[7]:-1,(count($argv)>=9)?($argv[8]!='NON'):true);
+	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?$argv[7]:-1,(count($argv)>=9)?($argv[8]!='NON'):true);
 }
 else {
 	$testManager=new TestManager("","",false);

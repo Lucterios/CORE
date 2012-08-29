@@ -137,7 +137,7 @@ class TestItem {
 		$string_text="\t<testcase classname='$this->classname' name='$this->name' time='$time'>\n";
 		if (is_string($this->errorObj))
     			$string_text.="\t\t<error message='Error' type='Error'>".utf8_encode($this->errorObj)."</error>\n";
-		elseif (is_subclass_of($this->errorObj, 'Exception')) {
+		elseif ((get_class($this->errorObj)=='Exception') || is_subclass_of($this->errorObj, 'Exception')) {
 			if (get_class($this->errorObj)=='AssertException') {
 				$string_text.="\t\t<failure message='".str_replace("'","`",utf8_encode($this->errorObj->getMessage()))."' type='".get_class($this->errorObj)."'>\n";
 				$string_text.="\t\t\t".utf8_encode($this->errorObj->getTraceAsString())."\n";
