@@ -743,7 +743,7 @@ class Extension {
 	function callApplicationPostInstallation($ExtensionDescription) {
 		global $rootPath;
 		$message = "";
-		if( is_file($rootPath.'extensions/postInstallation.inc.php'))
+		if( is_file($rootPath.'extensions/applis/postInstallation.inc.php'))
 				require'extensions/applis/postInstallation.inc.php';
 		if( is_file('extensions/applis/application.inc.php'))
 				require'extensions/applis/application.inc.php';
