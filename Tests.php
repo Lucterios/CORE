@@ -20,6 +20,11 @@
 //
 header('Content-Type: text/xml; charset=UTF-8');
 
+$debugMode = '';
+$tmpPath = '';
+global $debugMode;
+global $tmpPath;
+
 class TestManager {
 
 	private $extensionObj;
@@ -115,6 +120,8 @@ class TestManager {
 	
 	public function initial($dbuser,$dbpass,$dbname,$numTest,$deleteDump){
 		$this->numTest=$numTest;
+		global $debugMode;
+		global $tmpPath;
 		include_once("CORE/extensionManager.inc.php");
 		require_once("CORE/dbcnx.inc.php");
 		require_once("CORE/rights.inc.php");

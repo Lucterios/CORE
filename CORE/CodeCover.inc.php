@@ -94,7 +94,7 @@ class CodeCover {
 				}
 				$this->mMetrics[$fileId]=$lineList;
 			}
-			if (isset($this->mMetrics[$fileId])
+			if (isset($this->mMetrics[$fileId]))
 				return $this->mMetrics[$fileId];
 			else
 				return null;

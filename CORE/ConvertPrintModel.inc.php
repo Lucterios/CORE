@@ -84,7 +84,7 @@ class ModelConverter {
 		$obj = $xslt->transformToDoc($proc_xml);
 		$obj->encoding = 'ISO-8859-1';
 		if (!method_exists($obj,'saveXML')) {
-			logAutre("xmldata='$xmldata'\nxsldata='$xsldata'");
+			logAutre(" *** Impression impossible *** \nxmldata='$xmldata'\nxsldata='$xsldata'");
 			require_once("CORE/Lucterios_Error.inc.php");
 			throw new LucteriosException(GRAVE,"Impression impossible!");
 		}
