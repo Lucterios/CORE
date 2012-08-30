@@ -94,7 +94,10 @@ class CodeCover {
 				}
 				$this->mMetrics[$fileId]=$lineList;
 			}
-			return $this->mMetrics[$fileId];
+			if (isset($this->mMetrics[$fileId])
+				return $this->mMetrics[$fileId];
+			else
+				return null;
 		}
 		else
 			return null;
@@ -131,6 +134,8 @@ class CodeCover {
 		ksort($this->mMetrics);
 		$global_linesNB=0.0;
 		$global_linesOK=0.0;
+		$total_linesNB=0.0;
+		$total_linesOK=0.0;
 
 		$string_text="<sources>\n";
 		$string_text.="<source>testing</source>\n";
@@ -155,7 +160,7 @@ class CodeCover {
 					$string_text.=$class_text;
 					$string_text.="</package>\n";
 				}
-				$global_linesNB=$global_linesNB+(int)$global_linesOK;
+				$global_linesNB=$global_linesNB+(int)$total_linesNB;
 				$global_linesOK=$global_linesOK+(int)$total_linesOK;
 				$total_linesNB=0.0;
 				$total_linesOK=0.0;
