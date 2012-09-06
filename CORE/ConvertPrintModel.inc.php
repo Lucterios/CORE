@@ -1,13 +1,13 @@
 <?php
-// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// Thanks to have payed a donation for using this module.
+// This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a retribution for using this module.
 // 
-// Lucterios is free software; you can redistribute it and/or modify
+// Diacamma is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 // 
-// Lucterios is distributed in the hope that it will be useful,
+// Diacamma is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Lucterios; if not, write to the Free Software
 // Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// 
+// Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 // library file write by Lucterios SDK tool
 
 //@BEGIN@
@@ -241,8 +243,8 @@ function getDBModel($extension,$printmodel) {
 	$print_model_obj->extensionid = $extension;
 	$print_model_obj->identify = $printmodel;
 	$print_model_obj->reference = 0;
-	if($print_model_obj->find()>0) {
-		$print_model_obj->fetch();
+	$print_model_obj->find();
+	if($print_model_obj->fetch()) {
 		$row = array($print_model_obj->id,$print_model_obj->model,$print_model_obj->modify);
 		return $row;
 	}
@@ -263,32 +265,32 @@ function checkDBModel($extension,$printmodel,$checkModify = false) {
 			$MODEL_DEFAULT = '';
 			require_once($printfile);
 			require_once("CORE/printmodel.tbl.php");
-			$model = new DBObj_CORE_printmodel;
-			$model->extensionid = $extension;
-			$model->identify = $printmodel;
-			$model->reference = 0;
-			$model->titre = $Title;
-			$model->model = str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));
-			$model->modify = 'n';
-			$model->insert();
-			list($id,$model) = getDBModel($extension,$printmodel);
+			$DBModel = new DBObj_CORE_printmodel;
+			$DBModel->extensionid = $extension;
+			$DBModel->identify = $printmodel;
+			$DBModel->reference = 0;
+			$DBModel->titre = $Title;
+			$DBModel->model = str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));
+			$DBModel->modify = 'n';
+			$DBModel->insert();
+			list($id,$model,$modify) = getDBModel($extension,$printmodel);
 			$res = 'Ajouter';
 		}
-		else if(($modify == 'n') && ($checkModify || (trim($model->model)==''))) {
+		else if(($modify == 'n') && ($checkModify || (trim($model)==''))) {
 			$MODEL_DEFAULT = '';
 			require_once($printfile);
 			require_once("CORE/printmodel.tbl.php");
-			$model = new DBObj_CORE_printmodel;
-			$model->get($id);
-			$model->titre = $Title;
-			$model->model = str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));
-			$model->modify = 'n';
-			$model->update();
-			list($id,$model) = getDBModel($extension,$printmodel);
+			$DBModel = new DBObj_CORE_printmodel;
+			$DBModel->get($id);
+			$DBModel->titre = $Title;
+			$DBModel->model = str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));
+			$DBModel->modify = 'n';
+			$DBModel->update();
+			list($id,$model,$modify) = getDBModel($extension,$printmodel);
 			$res = 'Modifier';
 		}
 		else $res = "Rien";
-		if (trim($model->model)=='') {
+		if (trim($model)=='') {
 			logAutre(" *** Model ($extension::$printmodel) non chargé ($res) *** ");
 			require_once("CORE/Lucterios_Error.inc.php");
 			throw new LucteriosException(GRAVE,"Problème de model d'impression!");
