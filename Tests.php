@@ -119,7 +119,7 @@ class TestManager {
 	}
 	
 	public function initial($dbuser,$dbpass,$dbname,$numTest,$deleteDump){
-		$this->numTest=$numTest;
+		$this->numTest=trim(''.$numTest);
 		global $debugMode;
 		global $tmpPath;
 		include_once("CORE/extensionManager.inc.php");
@@ -180,14 +180,20 @@ class TestManager {
 	}
 
 	private function isNumInRange($currentInc) {
-		$range=explode('-',''.$this->numTest);
-		if ((count($range)==2)) {
-		      $min=(int)$range[0];
-		      $max=(int)$range[1];
-		      return ($currentInc>=$min) && ($currentInc<=$max);
-		} else {
-			return ($this->numTest==-1) || ($this->numTest==$currentInc);
+		$result=false;
+		if ($this->numTest=='-1')
+		      $result=true;
+		else {
+		      $range=explode('-',$this->numTest);
+		      if (count($range)==2) {
+			    $min=(int)$range[0];
+			    $max=(int)$range[1];
+			    $result=($currentInc>=$min) && ($currentInc<=$max);
+		      } else {
+			      $result=($this->numTest==''.$currentInc);
+		      }
 		}
+		return $result;
 	}
 	
 	private function run(){
