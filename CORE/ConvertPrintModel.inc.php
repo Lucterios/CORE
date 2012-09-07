@@ -252,7 +252,17 @@ function getDBModel($extension,$printmodel) {
 	return array(0,'', false);
 }
 
+function getModelDefault($printfile) {
+	$MODEL_DEFAULT = '';
+	$content=file_get_contents($printfile);
+	$content=preg_replace("#(.*)//@MODEL_DEFAULT@(.*?)//@MODEL_DEFAULT_END@(.*)#is", '$2', $content);
+	if ($content!='')
+	    eval($content);
+	return str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));;
+}
+
 function checkDBModel($extension,$printmodel,$checkModify = false) {
+	require_once("CORE/Lucterios_Error.inc.php");
 	global $rootPath;
 	if(!isset($rootPath))$rootPath = "./";
 	$model = '';
@@ -262,7 +272,6 @@ function checkDBModel($extension,$printmodel,$checkModify = false) {
 	if( is_file($printfile)) {
 		list($id,$model,$modify) = getDBModel($extension,$printmodel);
 		if($id == 0) {
-			$MODEL_DEFAULT = '';
 			require_once($printfile);
 			require_once("CORE/printmodel.tbl.php");
 			$DBModel = new DBObj_CORE_printmodel;
@@ -270,20 +279,21 @@ function checkDBModel($extension,$printmodel,$checkModify = false) {
 			$DBModel->identify = $printmodel;
 			$DBModel->reference = 0;
 			$DBModel->titre = $Title;
-			$DBModel->model = str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));
+			$DBModel->model = getModelDefault($printfile);
+			if (trim($DBModel->model)=='') throw new LucteriosException(GRAVE,"Nouveau model vide!");
 			$DBModel->modify = 'n';
 			$DBModel->insert();
 			list($id,$model,$modify) = getDBModel($extension,$printmodel);
 			$res = 'Ajouter';
 		}
 		else if(($modify == 'n') && ($checkModify || (trim($model)==''))) {
-			$MODEL_DEFAULT = '';
 			require_once($printfile);
 			require_once("CORE/printmodel.tbl.php");
 			$DBModel = new DBObj_CORE_printmodel;
 			$DBModel->get($id);
 			$DBModel->titre = $Title;
-			$DBModel->model = str_replace(array('#&39;'),array("'"), trim($MODEL_DEFAULT));
+			$DBModel->model = getModelDefault($printfile);
+			if (trim($DBModel->model)=='') throw new LucteriosException(GRAVE,"Ancien model vide!");
 			$DBModel->modify = 'n';
 			$DBModel->update();
 			list($id,$model,$modify) = getDBModel($extension,$printmodel);
@@ -292,7 +302,6 @@ function checkDBModel($extension,$printmodel,$checkModify = false) {
 		else $res = "Rien";
 		if (trim($model)=='') {
 			logAutre(" *** Model ($extension::$printmodel) non chargé ($res) *** ");
-			require_once("CORE/Lucterios_Error.inc.php");
 			throw new LucteriosException(GRAVE,"Problème de model d'impression!");
 		}
 	}
