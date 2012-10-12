@@ -1,24 +1,21 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// 	Thanks to have payed a retribution for using this module.
+// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a donation for using this module.
 // 
-// 	Diacamma is free software; you can redistribute it and/or modify
-// 	it under the terms of the GNU General Public License as published by
-// 	the Free Software Foundation; either version 2 of the License, or
-// 	(at your option) any later version.
+// Lucterios is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
 // 
-// 	Diacamma is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU General Public License for more details.
+// Lucterios is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 // 
-// 	You should have received a copy of the GNU General Public License
-// 	along with Lucterios; if not, write to the Free Software
-// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-// Action file write by SDK tool
-// --- Last modification: Date 23 December 2011 14:42:56 By  ---
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// Action file write by Lucterios SDK tool
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -49,7 +46,7 @@ global $SECURITY_LOCK;
 $SECURITY_LOCK->open(true);
 if(isset($xfer_result->m_context['ARCHIVE'])) {
 	$img_title = new Xfer_Comp_Image('img_title');
-	$img_title->setLocation(0,0,1,2);
+	$img_title->setLocation(0,0,1,3);
 	$img_title->setValue('backup_save.png');
 	$xfer_result->addComponent($img_title);
 	$lbl = new Xfer_Comp_LabelForm("info");
@@ -58,7 +55,7 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png'));
 	//
 	$temp_path = "./tmp/";
-	if( is_file($file_path)) 
+	if( is_file($file_path))
 		@unlink($file_path);
 	$ListToArchive = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
 	require_once("CORE/ArchiveTar.inc.php");
@@ -94,11 +91,10 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	//
 	if( is_file($file_path)) {
 		$lbl->setValue("{[center]}{[bold]}Archivage Terminer.{[/bold]}{[/center]}");
-		$lbl = new Xfer_Comp_LinkLabel("archive");
-		$lbl->setLocation(0,2,2);
-		$lbl->setFileToLoad($file_path);
-		$lbl->setValue('Telecharger');
-		$xfer_result->addComponent($lbl);
+		$btn = new Xfer_Comp_Button("archive");
+		$btn->setLocation(1,2);
+		$btn->setAction( new Xfer_Action('_Télécharger','up.png','CORE','archiveDownload', FORMTYPE_MODAL, CLOSE_YES));
+		$xfer_result->addComponent($btn);
 	}
 	else
 		$lbl->setValue("{[center]}{[bold]}Sauvegarde échouer!!{[/bold]}{[/center]}");
@@ -106,11 +102,12 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 else {
 	$xfer_result->m_context['ARCHIVE'] = 1;
 	$img_title = new Xfer_Comp_Image('img_title');
-	$img_title->setLocation(0,0,1,2);
+	$img_title->setLocation(0,0,1,3);
 	$img_title->setValue('backup_save.png');
 	$xfer_result->addComponent($img_title);
 	$lbl = new Xfer_Comp_LabelForm("info");
 	$lbl->setLocation(1,0);
+	$lbl->setSize(50,200);
 	$lbl->setValue("{[center]}{[bold]}Archivage en cours.{[newline]}Merci de patienter.{[/bold]}{[/center]}");
 	$xfer_result->addComponent($lbl);
 	$btn = new Xfer_Comp_Button("Next");

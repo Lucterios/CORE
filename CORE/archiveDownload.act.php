@@ -1,24 +1,21 @@
 <?php
+// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a donation for using this module.
 // 
-//     This file is part of Lucterios.
+// Lucterios is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// Lucterios is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // Action file write by SDK tool
-// --- Last modification: Date 15 October 2009 21:54:07 By  ---
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// Action file write by Lucterios SDK tool
 
 require_once('CORE/xfer_exception.inc.php');
 require_once('CORE/rights.inc.php');
@@ -66,11 +63,14 @@ else
 
 if( is_file($file_path)) {
 	$lbl->setValue("{[center]}{[bold]}Ancienne archivage.{[/bold]}{[/center]}");
-	$lbl = new Xfer_Comp_LinkLabel("archive");
-	$lbl->setLocation(0,2,2);
-	$lbl->setFileToLoad($file_path);
-	$lbl->setValue('Telecharger');
-	$xfer_result->addComponent($lbl);
+
+	$down=new Xfer_Comp_DownLoad('archive');
+	$down->compress=false;
+	$down->HttpFile=false;
+	$down->setValue($filename);
+	$down->setFileName("CORE/loadfile.inc.php?pass=".md5_file($file_path)."&filename=".urlencode($file_path));
+	$down->setLocation(0,2,2);
+	$xfer_result->addComponent($down);
 }
 else
 	$lbl->setValue("{[center]}{[bold]}Fichier non trouvé!!{[/bold]}{[/center]}");
