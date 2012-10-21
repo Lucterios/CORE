@@ -13,3 +13,8 @@ Une fois validé, l'application vous extraire du fichier de sauvegarde l'ensemble
 Depuis ce menu, vous avez accès à un petit gestionnaire de vos archives.<br>
 Vous avez alors la possibilité de ré-injecter un archive venant d'une sauvegarde CD-Rom par exemple, d'extraire une archive ou d'en supprimer.<br>
 <center><img src='~CORE$Archives.jpg' height='300' alt='Archives.jpg' /></center><br>
+<br>
+<u>Remarque:</u> Par défaut, les sauvegardes sont sauvées dans le sous répertoire 'backup' de votre installation.<br>
+Vous pouvez le modifier en ajoutant, dans le fichier "conf/conf.db.php", la variable:<br>
+<i>$ARCHIVE_PATH = '/mon/repertoire/de/sauvegarde/';</i><br>
+Attention, alors de vous assurer que le logiciel aura les droits d'écriture.
