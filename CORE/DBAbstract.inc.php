@@ -1,24 +1,21 @@
 <?php
-// 	This file is part of Diacamma, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// 	Thanks to have payed a retribution for using this module.
+// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
+// thanks to have payed a retribution for using this module.
 // 
-// 	Diacamma is free software; you can redistribute it and/or modify
-// 	it under the terms of the GNU General Public License as published by
-// 	the Free Software Foundation; either version 2 of the License, or
-// 	(at your option) any later version.
+// Lucterios/Diacamma is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
 // 
-// 	Diacamma is distributed in the hope that it will be useful,
-// 	but WITHOUT ANY WARRANTY; without even the implied warranty of
-// 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// 	GNU General Public License for more details.
+// Lucterios/Diacamma is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 // 
-// 	You should have received a copy of the GNU General Public License
-// 	along with Lucterios; if not, write to the Free Software
-// 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 		Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-// library file write by SDK tool
-// --- Last modification: Date 22 November 2011 21:58:12 By  ---
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// library file write by Lucterios SDK tool
 
 //@BEGIN@
 /**
@@ -75,12 +72,12 @@ $field_dico[4] = array( DBOBJ_STR,"Date","date");
 $field_dico[5] = array( DBOBJ_STR,"Heure","time");
 $field_dico[6] = array( DBOBJ_STR,"Date/Heure","datetime");
 $field_dico[7] = array( DBOBJ_STR,"Text long","longtext");
-$field_dico[8] = array( DBOBJ_INT,"Enumèration","tinyint(3)");
+$field_dico[8] = array( DBOBJ_INT,"Énumération","tinyint(3)");
 $field_dico[9] = array( DBOBJ_CHILD,"Enfants","");
-$field_dico[10] = array( DBOBJ_INT,"Rèfèrent","int(10) unsigned");
+$field_dico[10] = array( DBOBJ_INT,"Référent","int(10) unsigned");
 $field_dico[11] = array( DBOBJ_STORAGE,"Fonction","");
-$field_dico[12] = array( DBOBJ_METHOD,"Methode (chaine)","");
-$field_dico[13] = array( DBOBJ_METHOD,"Methode (réel)","");
+$field_dico[12] = array( DBOBJ_METHOD,"Méthode (chaine)","");
+$field_dico[13] = array( DBOBJ_METHOD,"Méthode (réel)","");
 
 require_once("CORE/log.inc.php");
 require_once("CORE/dbcnx.inc.php");
@@ -744,7 +741,7 @@ class DBObj_Abstract {
 				}
 				else if (($type!=10) || (((int)$value)!=0))
 					$fied_eq_value="$field_name=$value";
-				else 
+				else
 					$fied_eq_value="$field_name=NULL";
 				$set[]=$fied_eq_value;
 			}

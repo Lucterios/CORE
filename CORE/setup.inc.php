@@ -1,13 +1,13 @@
 <?php
-// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// Thanks to have payed a donation for using this module.
+// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
+// thanks to have payed a retribution for using this module.
 // 
-// Lucterios is free software; you can redistribute it and/or modify
+// Lucterios/Diacamma is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 // 
-// Lucterios is distributed in the hope that it will be useful,
+// Lucterios/Diacamma is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -27,7 +27,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=4;
 $version_release=3;
-$version_build=831;
+$version_build=840;
 
 $depencies=array();
 
@@ -58,13 +58,13 @@ $menus[10] = new Param_Menu("Autorisation d`accès _réseau", "_Avancé", "access_A
 $menus[11] = new Param_Menu("_Session", "_Avancé", "sessions_APAS_list", "", "", 35 , 0, "");
 $menus[12] = new Param_Menu("_Gestion des Droits", "Ad_ministration", "", "gestionDroits.png", "", 40 , 0, "Gestion des utilisateurs et de leurs droits selon les modules.");
 $menus[13] = new Param_Menu("_Avancé", "Ad_ministration", "", "", "", 50 , 0, "");
-$menus[14] = new Param_Menu("Ra_pports sauvegardés", "_Rapport et Impression", "finalreport_APAS_list", "PrintReportSave.png", "", 20 , 0, "Ré-édition des anciennes impressions sauvegardées");
+$menus[14] = new Param_Menu("Ra_pports sauvegardés", "_Rapport et Impression", "finalreport_APAS_list", "PrintReportSave.png", "", 20 , 0, "Réédition des anciennes impressions sauvegardées");
 $menus[15] = new Param_Menu("_Extensions (conf.)", "Ad_ministration", "", "config_ext.png", "", 20 , 0, "Gestion des configurations des différentes modules.");
 $menus[16] = new Param_Menu("Configuration _générale", "Ad_ministration", "configuration", "config.png", "", 10 , 1, "Visualisation et modification des paramètres généraux.");
 $menus[17] = new Param_Menu("_Etiquettes", "_Rapport et Impression", "etiquettes_APAS_liste", "PrintReportLabel.png", "", 5 , 0, "Gestion des planches d'étiquettes");
 $menus[18] = new Param_Menu("Ar_chivage", "Ad_ministration", "", "backup.png", "", 15 , 0, "Outils de sauvegarde et de restoration des données.");
-$menus[19] = new Param_Menu("_Sauvegarder", "Ar_chivage", "selectNewArchive", "backup_save.png", "", 10 , 1, "Sauvegarde manuel des données du logiciel.");
-$menus[20] = new Param_Menu("_Restauration", "Ar_chivage", "selectRestor", "backup_restor.png", "", 20 , 1, "Restauration d'une archives.");
+$menus[19] = new Param_Menu("_Sauvegarder", "Ar_chivage", "selectNewArchive", "backup_save.png", "", 10 , 1, "Sauvegarde manuelle des données du logiciel.");
+$menus[20] = new Param_Menu("_Restauration", "Ar_chivage", "selectRestor", "backup_restor.png", "", 20 , 1, "Restauration d'une archive.");
 $menus[21] = new Param_Menu("_Gestion des archives", "Ar_chivage", "toolBackup", "backup_tool.png", "", 30 , 1, "Importer ou télécharger des archives de sauvegarde");
 $menus[22] = new Param_Menu("_Général", "", "", "general.png", "", 1 , 0, "Généralité");
 
@@ -84,7 +84,7 @@ $actions[11] = new Param_Action("Validation", "etiquettes_APAS_ajouteract", 6);
 $actions[12] = new Param_Action("Ajouter/Modifier une étiquette", "etiquettes_APAS_ajouter", 6);
 $actions[13] = new Param_Action("Liste des étiquettes", "etiquettes_APAS_liste", 6);
 $actions[14] = new Param_Action("Supprimer une étiquette", "etiquettes_APAS_supprimer", 6);
-$actions[15] = new Param_Action("Desconnection", "exitConnection", 0);
+$actions[15] = new Param_Action("Déconnexion ", "exitConnection", 0);
 $actions[16] = new Param_Action("Supprimer une extension", "extension_APAS_Delete", 4);
 $actions[17] = new Param_Action("Liste des actions d'une extension", "extension_APAS_listactions", 4);
 $actions[18] = new Param_Action("Liste des extentions", "extension_APAS_list", 4);

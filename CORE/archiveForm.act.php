@@ -1,13 +1,13 @@
 <?php
-// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// Thanks to have payed a donation for using this module.
+// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
+// thanks to have payed a retribution for using this module.
 // 
-// Lucterios is free software; you can redistribute it and/or modify
+// Lucterios/Diacamma is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 // 
-// Lucterios is distributed in the hope that it will be useful,
+// Lucterios/Diacamma is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -90,14 +90,14 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	}
 	//
 	if( is_file($file_path)) {
-		$lbl->setValue("{[center]}{[bold]}Archivage Terminer.{[/bold]}{[/center]}");
+		$lbl->setValue("{[center]}{[bold]}Archivage Terminé.{[/bold]}{[/center]}");
 		$btn = new Xfer_Comp_Button("archive");
 		$btn->setLocation(1,2);
 		$btn->setAction( new Xfer_Action('_Télécharger','up.png','CORE','archiveDownload', FORMTYPE_MODAL, CLOSE_YES));
 		$xfer_result->addComponent($btn);
 	}
 	else
-		$lbl->setValue("{[center]}{[bold]}Sauvegarde échouer!!{[/bold]}{[/center]}");
+		$lbl->setValue("{[center]}{[bold]}Sauvegarde échouée !!{[/bold]}{[/center]}");
 }
 else {
 	$xfer_result->m_context['ARCHIVE'] = 1;

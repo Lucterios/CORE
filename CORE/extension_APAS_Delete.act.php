@@ -49,7 +49,7 @@ $ext_list=array();
 if (count($deps)==0)
 	$text="";
 else {
-	$text="{[newline]}Cette extension dépent d'autres extensions:";
+	$text="{[newline]}Cette extension dépend d'autres extensions:";
 	foreach($deps as $dep)
 	{
 		$ext_dep=new Extension($dep,Extension::getFolder($dep));
