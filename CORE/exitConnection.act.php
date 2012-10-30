@@ -28,7 +28,7 @@ require_once('CORE/xfer.inc.php');
 //@XFER:acknowledge@
 
 
-//@DESC@Déconnexion 
+//@DESC@Déconnexion
 //@PARAM@ 
 
 
@@ -38,7 +38,7 @@ function exitConnection($Params)
 {
 try {
 $xfer_result=&new Xfer_Container_Acknowledge("CORE","exitConnection",$Params);
-$xfer_result->Caption="Déconnexion ";
+$xfer_result->Caption="Déconnexion";
 //@CODE_ACTION@
 logAutre("Exit BEGIN");
 

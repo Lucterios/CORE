@@ -273,6 +273,7 @@ elseif ((count($argv)==5) || (count($argv)==6) || (count($argv)==7) || (count($a
 	$testManager->initial($argv[2],$argv[3],$argv[4],(count($argv)>=8)?$argv[7]:-1,(count($argv)>=9)?($argv[8]!='NON'):true);
 }
 else {
+	echo "<!-- php Tests.php extension dbuser dbpass dbname [title] [cover] [num] [delete] -->\n";
 	$testManager=new TestManager("","",false);
 }
 

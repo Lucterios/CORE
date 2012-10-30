@@ -27,7 +27,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=4;
 $version_release=3;
-$version_build=840;
+$version_build=841;
 
 $depencies=array();
 
@@ -84,7 +84,7 @@ $actions[11] = new Param_Action("Validation", "etiquettes_APAS_ajouteract", 6);
 $actions[12] = new Param_Action("Ajouter/Modifier une étiquette", "etiquettes_APAS_ajouter", 6);
 $actions[13] = new Param_Action("Liste des étiquettes", "etiquettes_APAS_liste", 6);
 $actions[14] = new Param_Action("Supprimer une étiquette", "etiquettes_APAS_supprimer", 6);
-$actions[15] = new Param_Action("Déconnexion ", "exitConnection", 0);
+$actions[15] = new Param_Action("Déconnexion", "exitConnection", 0);
 $actions[16] = new Param_Action("Supprimer une extension", "extension_APAS_Delete", 4);
 $actions[17] = new Param_Action("Liste des actions d'une extension", "extension_APAS_listactions", 4);
 $actions[18] = new Param_Action("Liste des extentions", "extension_APAS_list", 4);
