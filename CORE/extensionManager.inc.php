@@ -740,7 +740,7 @@ class Extension {
 		return 0;
 	}
 
-	function callApplicationPostInstallation($ExtensionDescription) {
+	public static function callApplicationPostInstallation($ExtensionDescription) {
 		global $rootPath;
 		$message = "";
 		if( is_file($rootPath.'extensions/applis/postInstallation.inc.php'))
@@ -916,10 +916,10 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 	return $setupMsg;
 }
 
-function refreshDataBase($noVersionControl = false) {
+function refreshDataBase($noVersionControl = false, $rootPath = '') {
 	$install = '';
 	$set_of_ext = array();
-	$ext_list = getExtensions();
+	$ext_list = getExtensions($rootPath);
 	foreach($ext_list as $name => $dir)$set_of_ext[] = new Extension($name,$dir);
 	$set_of_ext = sortExtension($set_of_ext);
 	$ExtensionDescription = array();

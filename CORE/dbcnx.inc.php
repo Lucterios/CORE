@@ -41,7 +41,7 @@ class DBCNX {
 		$mysql->query('CREATE DATABASE '.$dbcnf['dbname'].";");
 		$last_error=$mysql->errno;
 		if ($last_error) {
-			return $mysql->connect_error;
+			return $mysql->error;
 		}
 		return true;
 	}
