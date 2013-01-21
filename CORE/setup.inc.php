@@ -27,7 +27,7 @@ $extension_libre=true;
 $version_max=1;
 $version_min=4;
 $version_release=5;
-$version_build=842;
+$version_build=845;
 
 $depencies=array();
 
@@ -134,6 +134,7 @@ $actions[61] = new Param_Action("Modifier un utilisateur", "users_APAS_modifier"
 $actions[62] = new Param_Action("Résactiver un utilisateur", "users_APAS_reactiver", 1);
 
 $params=array();
+$params["GUID"] = new Param_Parameters("GUID", "", "GUID", 0, array('Multi'=>false));
 
 $extend_tables=array();
 $extend_tables["access"] = array("CORE.access","",array());
