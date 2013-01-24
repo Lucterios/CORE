@@ -19,7 +19,7 @@
 
 //@BEGIN@
 if (isset($_GET['filename']) && isset($_GET['pass'])) {
-	$content=file_get_contents($_GET['filename']);	
+	$content=file_get_contents($_GET['filename']);
 	if (md5($content)==$_GET['pass'])
 		print $content;
 	else

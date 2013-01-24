@@ -68,7 +68,7 @@ if( is_file($file_path)) {
 	$down->compress=false;
 	$down->HttpFile=false;
 	$down->setValue($filename);
-	$down->setFileName("CORE/loadfile.inc.php?pass=".md5_file($file_path)."&filename=".urlencode($file_path));
+	$down->setFileName("CORE/loadfile.inc.php?pass=".md5_file($file_path)."&filename=".urlencode(realpath($file_path)));
 	$down->setLocation(0,2,2);
 	$xfer_result->addComponent($down);
 }
