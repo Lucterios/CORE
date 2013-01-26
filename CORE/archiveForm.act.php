@@ -53,41 +53,8 @@ if(isset($xfer_result->m_context['ARCHIVE'])) {
 	$lbl->setLocation(1,0);
 	$xfer_result->addComponent($lbl);
 	$xfer_result->addAction( new Xfer_Action('_Fermer','ok.png'));
-	//
-	$temp_path = "./tmp/";
-	if( is_file($file_path))
-		@unlink($file_path);
-	$ListToArchive = array("CORE/","extensions/","usr/","images/","index.php","coreIndex.php","install.php","Help.php");
-	require_once("CORE/ArchiveTar.inc.php");
-	$tar = new ArchiveTar($file_path,true);
-	$tar->add($ListToArchive);
-	require_once("CORE/DBSetup.inc.php");
-	require_once("CORE/extensionManager.inc.php");
-	$dir_list = getExtensions();
-	foreach($dir_list as $ext_name => $ext_path) {
-		$q = '';
-		$SQL_file_name=$temp_path."data_".$ext_name.".sql";
-		$ext = new Extension($ext_name,$ext_path);
-		foreach($ext->extend_tables as $table => $desc) {
-			require_once($ext_path.$table.'.tbl.php');
-			$class_name = 'DBObj_'.$ext_name.'_'.$table;
-			$tbl = new $class_name;
-			$setup = new DBObj_Setup($tbl);
-			$q .= "-- Structure de la classe ".$ext_name."::$table\n";
-			$q .= $setup->describeSQLTable( true)."\n";
-			$q .= "-- Contenu de la classe ".$ext_name."::$table\n";
-			$q .= $setup->extractSQLData()."\n\n";
-		}
-		$handle = @fopen($SQL_file_name, "w+");
-		if ($handle) {
-			@fwrite($handle,$q);
-			@fclose($handle);
-		}
-		else
-			throw new LucteriosException(IMPORTANT,"Fichier $SQL_file_name non créable!");
-		$tar->addModify($SQL_file_name,'',$temp_path);
-		@unlink($SQL_file_name);
-	}
+	require_once('CORE/ArchiveRestore.inc.php');
+	createArchive($file_path);
 	//
 	if( is_file($file_path)) {
 		$lbl->setValue("{[center]}{[bold]}Archivage Terminé.{[/bold]}{[/center]}");
