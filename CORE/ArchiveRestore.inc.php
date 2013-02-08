@@ -1,13 +1,13 @@
 <?php
-// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
-// Thanks to have payed a donation for using this module.
+// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
+// thanks to have payed a retribution for using this module.
 // 
-// Lucterios is free software; you can redistribute it and/or modify
+// Lucterios/Diacamma is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 // 
-// Lucterios is distributed in the hope that it will be useful,
+// Lucterios/Diacamma is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -18,7 +18,6 @@
 // library file write by Lucterios SDK tool
 
 //@BEGIN@
-
 function createArchive($file_path)
 {
 	$temp_path = "./tmp/";
@@ -64,7 +63,7 @@ function createArchive($file_path)
 	}
 	$archive_header.= "-------\n";
 	$tar->addString("info.head",$archive_header);
-	$tar->add("usr/");	
+	$tar->add("usr/");
 }
 
 function get_archive_info($temp_path) {
@@ -102,7 +101,6 @@ function diff_info($info_head,$info_current) {
 		$diff = "{[bold]}Application différente{[/bold]}{[newline]}";
 	else {
 		$diff = "";
-		$module_lost = array();
 		$module_supp = array();
 		$module_diff = array();
 		foreach($info_current as $ext_name => $ext_desc) {
@@ -110,17 +108,10 @@ function diff_info($info_head,$info_current) {
 				if (version_compare($info_head[$ext_name][1],$ext_desc[1])>0)
 					$module_diff[]=$ext_desc[2];
 			}
-			else
-				$module_lost[]=$ext_desc[2];
-		}	
+		}
 		foreach($info_head as $ext_name => $ext_desc_arc)
 			if (!array_key_exists($ext_name,$info_current))
 				$module_supp[]=$ext_desc_arc[2];
-		if (count($module_lost)>0) {
-			$diff .= "{[bold]}Extension(s) à désinstaller{[/bold]}{[newline]}";
-			foreach($module_lost as $extname)
-				$diff .= "- $extname{[newline]}";
-		}
 		if (count($module_supp)>0) {
 			$diff .= "{[bold]}Extension(s) à installer{[/bold]}{[newline]}";
 			foreach($module_supp as $extname)
@@ -210,6 +201,7 @@ function restorArchive($file_path) {
 	$temp_path = getcwd()."/tmp/restor/";
 	if( is_dir($temp_path)) rmdir($temp_path);
 	if(! is_dir($temp_path)) mkdir($temp_path,0777, true);
+	global $connect;
 	try {
 		$tar = new ArchiveTar($file_path);
 		$tar->extract($temp_path);
@@ -217,14 +209,13 @@ function restorArchive($file_path) {
 		$info_current = get_current_info();
 		$result = diff_info($info_head,$info_current);
 		if ($result=='') {
+			if (is_dir("./usr"))
+				rename("./usr",$temp_path."old_usr");
 			$res_sess=get_current_session();
-			global $connect;
 			$connect->begin();
 			clearTables();
 			restorData($temp_path);
 			refreshDataBase(true);
-			if (is_dir("./usr"))
-				rm_recursive("./usr");
 			if (is_dir($temp_path."usr"))
 				rename($temp_path."usr","./usr");
 			if ($res_sess!='')
@@ -232,14 +223,17 @@ function restorArchive($file_path) {
 			$connect->commit();
 			$status = "terminer";
 			$result = "Votre archive '$file_path' est maintenant réstaurée.";
+			if (is_dir($temp_path."old_usr"))
+				rmdir($temp_path."old_usr");
 		}
-        } catch(Exception $e) {
+        	} catch(Exception $e) {
+		if (!is_dir("./usr") && is_dir($temp_path."old_usr"))
+			rename($temp_path."old_usr","./usr");
 		$connect->rollback();
 		$result=str_replace(array("\n"),array('{[newline]}'),$e->getMessage());
 	}
 	rm_recursive($temp_path);
 	return array($status, $result);
 }
-
 //@END@
 ?>
