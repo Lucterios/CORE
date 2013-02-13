@@ -25,8 +25,8 @@ $extention_titre="Noyau Lucterios";
 $extension_libre=true;
 
 $version_max=1;
-$version_min=4;
-$version_release=5;
+$version_min=5;
+$version_release=1;
 $version_build=855;
 
 $depencies=array();
