@@ -1,13 +1,13 @@
 <?php
-// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
-// thanks to have payed a retribution for using this module.
+// This file is part of Lucterios, a software developped by "Le Sanglier du Libre" (http://www.sd-libre.fr)
+// Thanks to have payed a donation for using this module.
 // 
-// Lucterios/Diacamma is free software; you can redistribute it and/or modify
+// Lucterios is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
 // (at your option) any later version.
 // 
-// Lucterios/Diacamma is distributed in the hope that it will be useful,
+// Lucterios is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
@@ -254,6 +254,20 @@ class DBObj_Abstract {
 		if($this->Heritage != "")
 		return $this->Super->getMotherId($ClassMother);
 		return 0;
+	}
+
+	public function get_classes_herited() {
+		$ret=array();
+		$root_obj = $this;
+		while ($this->Super!=null) {
+		  $root_obj = $this->Super;
+		}
+		$ret[] = get_class($root_obj);
+		while ($root_obj->getSon()!=null) {
+		    $root_obj = $root_obj->getSon();
+		    $ret[] = get_class($root_obj);
+		}
+		return $ret;
 	}
 
 	/**
