@@ -1,27 +1,23 @@
 <?php
+// This file is part of Lucterios/Diacamma, a software developped by 'Le Sanglier du Libre' (http://www.sd-libre.fr)
+// thanks to have payed a retribution for using this module.
 // 
-//     This file is part of Lucterios.
+// Lucterios/Diacamma is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
 // 
-//     Lucterios is free software; you can redistribute it and/or modify
-//     it under the terms of the GNU General Public License as published by
-//     the Free Software Foundation; either version 2 of the License, or
-//     (at your option) any later version.
+// Lucterios/Diacamma is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 // 
-//     Lucterios is distributed in the hope that it will be useful,
-//     but WITHOUT ANY WARRANTY; without even the implied warranty of
-//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//     GNU General Public License for more details.
-// 
-//     You should have received a copy of the GNU General Public License
-//     along with Lucterios; if not, write to the Free Software
-//     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-// 
-// 	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
-//  // library file write by SDK tool
-// --- Last modification: Date 03 January 2008 22:48:46 By Laurent GAY ---
+// You should have received a copy of the GNU General Public License
+// along with Lucterios; if not, write to the Free Software
+// Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+// library file write by Lucterios SDK tool
 
 //@BEGIN@
-
 /**
  * fichier gérant les classe de menu
  *
@@ -85,16 +81,16 @@ class Xfer_Menu_Item extends Xfer_Action
 		parent::__construct($title,$icon,$extension,$action,$modal);
 		$this->m_id = $id;
 		$this->m_Shortcut = $shortcut;
-		$this->m_Help = urlencode(htmlentities($help));
+		$this->m_Help = $help;
 		if ($this->m_id=='')
 		{
-			$this->_begin_tag="<MENUS>";
-			$this->_end_tag="</MENUS>";
+			$this->_begin_tag="<MENUS>\n";
+			$this->_end_tag="</MENUS>\n";
 		}
 		else
 		{
 			$this->_begin_tag=sprintf("<MENU id='%s' shortcut='%s'",$this->m_id,$this->m_Shortcut)."%s>";
-			$this->_end_tag="</MENU>";
+			$this->_end_tag="</MENU>\n";
 		}
 	}
 	/**
@@ -177,21 +173,5 @@ class Xfer_Container_Menu extends Xfer_Container_Abstract
 		return $this->m_main_menus->getReponseXML();
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //@END@
 ?>
