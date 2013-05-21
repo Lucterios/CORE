@@ -19,9 +19,24 @@
 //	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //
 
-
 //@BEGIN@
 
+/**
+ * fichier gérant le parsing XML
+ *
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ * @version 0.10
+ * @package Lucterios
+ * @subpackage Outils
+ */
+
+/**
+ * Classe de presentation d'un element XML
+ *
+ * @package Lucterios
+ * @subpackage Outils
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ */
 class XmlElement
 {
 	protected $tagName;
@@ -31,6 +46,10 @@ class XmlElement
 	protected $father;
 	protected $num_cdata=0;
 
+	/**
+	 * Constructeur
+	 * @param string $tagName Nom du tag
+	 */
 	public function __construct($tagName) {
 		$this->tagName = $tagName;
 		$this->attribs = array();
@@ -38,6 +57,11 @@ class XmlElement
 		$this->cdatas=array("");
 	}
 
+	/**
+	 * Associe un parent
+	 * @param XmlElement $father Parent
+	 * @return bool
+	 */
 	public function father(&$father) {
 		if("xmlelement" == strtolower(get_class($father))) {
 			$this->father =& $father;
@@ -46,6 +70,11 @@ class XmlElement
 		else return false;
 	}
 
+	/**
+	 * Associe une donnee
+	 * @param string $cdata Donnee CData
+	 * @return bool
+	 */
 	public function setCData($cdata) {
 		if (!isset($this->cdatas[$this->num_cdata]))
 		    $this->cdatas[$this->num_cdata]="";
@@ -53,18 +82,33 @@ class XmlElement
 		return true;
 	}
 
+	/**
+	 * Ajoute un attribut
+	 * @param string $attrName Nom de l'attribut
+	 * @param string $attrVal Valeur de l'attribut
+	 * @return bool
+	 */
 	public function addAttribute($attrName, $attrVal) {
 		$this->attribs[strtolower($attrName)] = $attrVal;
-		//$this->attribs[$attrName] = $attrVal;
 		return true;
 	}
 
+	/**
+	 * Ajoute une liste d'attributs
+	 * @param array $attribs dictionnaire d'attributs
+	 * @return bool
+	 */
 	public function addAttributeArray($attribs) {
 		foreach($attribs as $attr_name=>$attr_value)
 			$this->addAttribute($attr_name,$attr_value);
 		return true;
 	}
 
+	/**
+	 * Ajoute un fils
+	 * @param XmlElement $child Donnee CData
+	 * @return bool
+	 */
 	public function addChild(&$child) {
 		if("xmlelement" == strtolower(get_class($child))) {
 			$nb = count($this->childs);
@@ -76,14 +120,27 @@ class XmlElement
 		else return false;
 	}
 
+	/**
+	 * Retourne le nom du tag
+	 * @return string
+	 */
 	public function getTagName() {
 		return $this->tagName;
 	}
 
+	/**
+	 * Retourne le parent
+	 * @return XmlElement
+	 */
 	public function &getParent() {
 		return $this->father;
 	}
 
+	/**
+	 * Retourne le text du premier fils
+	 * @param string $tagName tag recherche
+	 * @return string
+	 */
 	public function getCDataOfChild($tagName) {
 		$childs=$this->getChildsByTagName($tagName);
 		if (count($childs)==1) {
@@ -94,18 +151,30 @@ class XmlElement
 			return "";
 	}
 
+	/**
+	 * Retourne le text des fils
+	 * @return string
+	 */
 	public function getCData() {
 		return implode('',$this->cdatas);
 	}
 
+	/**
+	 * Retourne la valeur d'un attribut
+	 * @param string $attrName nom de l'attribut
+	 * @return string
+	 */
 	public function getAttributeValue($attrName) {
 		if(array_key_exists(strtolower($attrName), $this->attribs))
 			return $this->attribs[strtolower($attrName)];
-		//if(array_key_exists($attrName, $this->attribs))
-		//	return $this->attribs[$attrName];
 		else return false;
 	}
 
+	/**
+	 * Retourne les fils
+	 * @param string $tagName tag recherche
+	 * @return array
+	 */
 	public function getChildsByTagName($tagName) {
 		$result = array();
 		foreach($this->childs as $child) {
@@ -117,23 +186,37 @@ class XmlElement
 		return $result;
 	}
 
+	/**
+	 * Retourne tous les fils
+	 * @return array
+	 */
 	public function getChilds() {
 		return $this->childs;
 	}
 }
 
+/**
+ * Classe de parsing XML
+ *
+ * @package Lucterios
+ * @subpackage Outils
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ */
 class COREParser
 {
 	protected $content="";
 	protected $document;
 	protected $opentags;
 
+	/**
+	 * Constructeur
+	 */
 	public function __construct() {
 		$this->opentags = "empty";
 		$this->document = "empty";
 	}
 
-	public function debug($msg) {
+	private function debug($msg) {
 		//printf("%s: %s<br>\n", $this->id, $msg/*, $this->nbopentags*/);
 		/*print_r($this->document);
 		print "opentags: ";
@@ -142,15 +225,17 @@ class COREParser
 		if("xmlelement" == strtolower(get_class($this->opentags))) print "objet actuel: ".$this->opentags->getTagName()."<br>\n";*/
 	}
 
+	private function affich() {
+		print_r($this->document);
+	}
 
- /**
-  * gestion de l'élément ouvrant
-  *
-  * @access private
-  * @param  resource  ressource de l'analyseur XML
-  * @param  string    nom de l'élément
-  * @param  array     attributs
-  */
+	/**
+	  * gestion de l'element ouvrant
+	  *
+	  * @param  resource  $xp ressource de l'analyseur XML
+	  * @param  string    $name nom de l'element
+	  * @param  array     $attribs attributs
+	  */
 	public function startHandler($xp, $name, $attribs) {
 		if(!is_object($this->document) || ("xmlelement" != strtolower(get_class($this->document)))) {
 			$this->document =new XmlElement($name);
@@ -167,34 +252,48 @@ class COREParser
 		}
 	}
 
- /**
-  * gestion de l'élément fermant
-  *
-  * @access private
-  * @param  resource  ressource de l'analyseur XML
-  * @param  string    nom de l'élément
-  */
+	/**
+	  * gestion de l'element fermant
+	  *
+	  * @param  resource  $xp ressource de l'analyseur XML
+	  * @param  string    $name nom de l'element
+	  */
 	public function endHandler($xp, $name) {
 		$this->opentags =& $this->opentags->getParent();
 		$this->debug("fermeture de balise $name");
 	}
 
+	/**
+	  * gestion des donnees
+	  *
+	  * @param  resource  $xp ressource de l'analyseur XML
+	  * @param  string    $cdata donnee
+	  */
 	public function cdataHandler($xp, $cdata) {
 		$this->opentags->setCData($cdata);
 	}
 
-	public function affich() {
-		print_r($this->document);
-	}
-
+	/**
+	  * Retourne l'element racine
+	  * @return XmlElement
+	  */
 	public function getResult() {
 		return $this->document;
 	}
 
+	/**
+	  * Retourne les elements desirees
+	  * @param  string    $tagName nom de l'element
+	  * @return array
+	  */
 	public function getByTagName($tagName) {
 		return $this->document->getChildsByTagName($tagName);
 	}
 
+	/**
+	  * Retourne les commentaire
+	  * @return array()
+	  */
 	public function getComment() {
 		$comment=array();
 		$xml_input=$this->fp;
@@ -210,14 +309,25 @@ class COREParser
 		return $comment;
 	}
   
+	/**
+	  * Assigne le text XML
+	  * @param  string    $content XML
+	  */
 	public function setInputString($content) {
 		$this->setInput($content);
 	}
  
+	/**
+	  * Assigne le text XML
+	  * @param  string    $content XML
+	  */
 	public function setInput($content) {
 		$this->content=$content;
 	}
 
+	/**
+	  * Parse le XML
+	  */
 	public function parse() {
 		$parser=@xml_parser_create();
 		xml_set_object($parser, $this);

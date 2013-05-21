@@ -21,15 +21,23 @@
 // --- Last modification: Date 21 July 2010 9:10:59 By  ---
 
 //@BEGIN@
+/**
+ * Fichier la recherche
+ *
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ * @version 0.10
+ * @package Lucterios
+ * @subpackage DBObject
+ */
+
 
 /**
- * Classe gÃ©rant la recherche
+ * Classe gerant la recherche
  *
  * @package Lucterios
-
- * @subpackage Xfer
+ * @subpackage DBObject
  * @author Pierre-Oliver Vershoore/Laurent Gay
- */
+ */ 
 class DBFind {
 
 	 /**
@@ -43,17 +51,18 @@ class DBFind {
 	/**
 	 * Constructor
 	 *
-	 * @param string $extension
-	 * @param string $action
-	 * @param array $context
-	 * @return Xfer_Container_Custom
+	 * @param DBObject $DBObject Objet de recherche associe
 	 */
 	public function __construct($DBObject) {
 		$this->m_object = $DBObject;
 	}
 
-
-
+	/**
+	 * Convertis la description des champs
+	 *
+	 * @param array/string $SearchFieldDescList
+	 * @return array
+	 */
 	public function convertFieldDesc($SearchFieldDescList) {
 		$resFieldDesc=array();
 		if (is_string($SearchFieldDescList)) {
@@ -72,7 +81,6 @@ class DBFind {
 		    }
 		return $resFieldDesc;
 	}
-
 
 	private function convertFieldItem($FieldName) {
 		$resFieldItem=array();
@@ -196,7 +204,11 @@ class DBFind {
 		return $resFieldItem;
 	}
 
-
+	/**
+	 * Retourne la description des operations
+	 *
+	 * @return array
+	 */
 	public static function getOperatorListResult() {
 		$operatorList=array();
 		$operatorList[1]="égal à";
@@ -211,6 +223,13 @@ class DBFind {
 		return $operatorList;
 	}
 
+	/**
+	 * Retourne le javascript d'operation
+	 *
+	 * @param string $TypeVar nom varible du type
+	 * @param string $ResVar non variable resultat
+	 * @return string
+	 */
 	public static function getScriptForOperator($TypeVar,$ResVar) {
 		$script="
 if (($TypeVar=='str'))
@@ -244,6 +263,11 @@ if ($ResVar=='')
 		return $script;
 	}
 
+	/**
+	 * Retourne la liste des operations
+	 *
+	 * @return array
+	 */
 	public static function getOperatorListQuery() {
 		$operatorList=array();
 		$operatorList[1]="=@@";
@@ -258,6 +282,14 @@ if ($ResVar=='')
 		return $operatorList;
 	}
 
+	/**
+	 * Genere le requette SQL de recherches
+	 *
+	 * @param array $Params Ensemble des parametres
+	 * @param array $oldtables liste des tables suplementaires
+	 * @param array $oldwheres liste des conditions suplementaires
+	 * @return array ensemble des tables, des conditions et des champs ignores
+	 */
 	public function generateQuery($Params,$oldtables=array(),$oldwheres=array()) {
 		$tables=array();
 		$wheres=array();
@@ -333,7 +365,12 @@ if ($ResVar=='')
 		return array($tables,$wheres,$notManage);
 	}
 
-
+	/**
+	 * Retourne la description textuelle de la recherches
+	 *
+	 * @param array $CriteriaList Ensemble des criteres
+	 * @return array ensemble de descriptions pour chaques criteres
+	 */
 	public function getCriteriaDescription($CriteriaList) {
 		$operatorList=DBFind::getOperatorListResult();
 		$criteriaDesc=array();
@@ -381,6 +418,14 @@ if ($ResVar=='')
 		return $criteriaDesc;
 	}
 
+	/**
+	 * Retourne la description d'une recherche
+	 *
+	 * @param DBObject $DBObject Objet de recherche
+	 * @param array $Params Ensemble des parametres
+	 * @param array $extraAddon Critere supplementaire
+	 * @return string Description complete de la recherche
+	 */
 	public static function getCriteriaText($DBObject,$Params,$extraAddon='') {
 		$newFind= new DBFind($DBObject);
 		$criteriaDesc=$newFind->getCriteriaDescription($newFind->extractCriteria($Params));
@@ -394,7 +439,12 @@ if ($ResVar=='')
 		return $searchText;
 	}
 
-
+	/**
+	 * Extrait des criteres de recherche
+	 *
+	 * @param array $Params Ensemble des parametres
+	 * @return array Ensemble des criteres
+	 */
 	public function extractCriteria($Params) {
 		$CriteriaList=array();
 		if (isset($Params['CRITERIA'])) {
@@ -414,6 +464,13 @@ if ($ResVar=='')
 		return $CriteriaList;
 	}
 
+	/**
+	 * Extrait des criteres de recherche
+	 *
+	 * @param array $Params Ensemble des parametres
+	 * @param array $CriteriaList Ensemble des criteres
+	 * @param array $FieldDescList Ensemble de description des champs
+	 */
 	public function reinjectCriteria(&$Params,$CriteriaList,$FieldDescList) {
 		include_once("CORE/setup_param.inc.php");
 		foreach($FieldDescList as $FieldDescItem) {
@@ -434,6 +491,13 @@ if ($ResVar=='')
 	}
 
 	
+	/**
+	 * Verifie l'existance de champ dans un ensemble de criteres
+	 *
+	 * @param array $CriteriaList Ensemble des criteres
+	 * @param array $Fields Ensemble de champs
+	 * @return array Ensemble des criteres correspondant aux champs
+	 */
 	public function checkInCriteriaFieldExisting($CriteriaList,$Fields) {
 		$NewCriteriaList=array();
 		foreach($CriteriaList as $CriteriaItem) {
@@ -447,6 +511,16 @@ if ($ResVar=='')
 		return $NewCriteriaList;
 	}
 
+	/**
+	 * Extrait des criteres de recherche
+	 *
+	 * @param array $Params Ensemble des parametres
+	 * @param string $OrderBy Trie de recherche
+	 * @param string $searchQuery conditions suplementaires
+	 * @param array $searchTable tables supplementaire
+	 * @param array $extraFields champs specifiques
+	 * @return string Requete SQL de recherche
+	 */
 	public function Execute($Params,$OrderBy = '',$searchQuery = "",$searchTable=array(),$extraFields=array()) {
 		list($fields,$oldtables,$oldwheres)=$this->m_object->prepQuery(true,true);
 		foreach($extraFields as $extraField)

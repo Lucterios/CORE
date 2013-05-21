@@ -21,41 +21,72 @@
 // --- Last modification: Date 05 March 2008 21:59:58 By  ---
 
 //@BEGIN@
+
+/**
+ * fichier gérant le log de debugage
+ *
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ * @version 0.10
+ * @package Lucterios
+ * @subpackage Outils
+ */
+
+/**
+ * Returne la date courante
+ * @return string
+ */
 function current_date()
 {
   return date("H:i:s j/m/Y");
 }
 
+/**
+ * Ajoute une trace
+ * @param void $XMLinput structure a tracer
+ * @param string $Title titre du log
+ */
 function __log(&$XMLinput,$Title)
 {
-	//require_once 'debug_tools.php';
-  	global $tmpPath, $debugMode;
+    //require_once 'debug_tools.php';
+    global $tmpPath, $debugMode;
 
-        if($debugMode == 'o') {
-	  // debug: requette logu?fichier
-	  $msg = "---$Title------".current_date()."----------------------------\n";
-	  $msg.= print_r($XMLinput, true);//Array_To_String($XMLinput);
-	  $msg.= "\n--- ---- --- ---\n";
+    if($debugMode == 'o') {
+	// debug: requette logu?fichier
+	$msg = "---$Title------".current_date()."----------------------------\n";
+	$msg.= print_r($XMLinput, true);//Array_To_String($XMLinput);
+	$msg.= "\n--- ---- --- ---\n";
 
-	  $f = fopen($tmpPath."LuceriosCORE.log", "a");
-	  fwrite($f, $msg);
-	  fclose($f);
-        }
+	$f = fopen($tmpPath."LuceriosCORE.log", "a");
+	fwrite($f, $msg);
+	fclose($f);
+    }
 }
 
+/**
+ * Ajoute une trace requette
+ * @param void $XMLinput structure a tracer
+ */
 function logRequette($XMLinput)
 {
-	__log($XMLinput,"REQUETTE");
+    __log($XMLinput,"REQUETTE");
 }
 
+/**
+ * Ajoute une trace reponse
+ * @param void $XMLinput structure a tracer
+ */
 function logReponse($reponse)
 {
-	__log($reponse,"REPONSE");
+    __log($reponse,"REPONSE");
 }
 
+/**
+ * Ajoute une trace autre
+ * @param void $XMLinput structure a tracer
+ */
 function logAutre($message)
 {
-	__log($message,"AUTRE");
+    __log($message,"AUTRE");
 }
 //@END@
 ?>

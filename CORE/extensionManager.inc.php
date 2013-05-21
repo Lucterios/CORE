@@ -21,10 +21,36 @@
 // --- Last modification: Date 11 November 2011 10:46:28 By  ---
 
 //@BEGIN@
+
+/**
+ * fichier gérant la gestion des extensions
+ *
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ * @version 0.10
+ * @package Lucterios
+ * @subpackage Outils
+ */
+
+ /**
+  * Configuration
+  */
 require_once("conf/cnf.inc.php");
+ /**
+  * connexion DB
+  */
 require_once("CORE/dbcnx.inc.php");
+ /**
+  * Parametres
+  */
 require_once("CORE/setup_param.inc.php");
 
+/**
+ * Retourne la liste des extensions
+ * @param string $rootPath repertoire racine
+ * @param bool $WithClient Inclure les clients
+ * @param bool $WithDB recherche en base
+ * @return array liste des repertoires par extensions
+ */
 function getExtensions($rootPath = '',$WithClient = false,$WithDB = false) {
 	if (!$WithClient && $WithDB)
 		return getExtensionsByDB($rootPath);
@@ -55,6 +81,11 @@ function getExtensions($rootPath = '',$WithClient = false,$WithDB = false) {
 	return $exts;
 }
 
+/**
+ * Retourne la liste des extensions en base
+ * @param string $rootPath repertoire racine
+ * @return array liste des repertoires par extensions
+ */
 function getExtensionsByDB($rootPath = '') {
 	$exts = array();
 	require_once("CORE/extension.tbl.php");
@@ -71,6 +102,11 @@ function getExtensionsByDB($rootPath = '') {
 	return $exts;
 }
 
+/**
+ * Retourne la liste des extensions en base triees
+ * @param string $rootPath repertoire racine
+ * @return array liste des repertoires par extensions
+ */
 function getExtensionsSorted($rootPath = '') {
 	$extlist=getExtensionsByDB($rootPath);
 	$set_of_ext = array();
@@ -84,6 +120,10 @@ function getExtensionsSorted($rootPath = '') {
 	return $exts;
 }
 
+/**
+ * Supprime un repertoire recursif
+ * @param string $dirPath repertoire a supprimer
+ */
 function deleteDir($dirPath) {
 	if( is_dir($dirPath)) {
 		$dh = opendir($dirPath);
@@ -95,6 +135,13 @@ function deleteDir($dirPath) {
 	}
 }
 
+/**
+* Classe de gestion d'extension
+*
+* @package Lucterios
+* @subpackage Outils
+* @author Pierre-Oliver Vershoore/Laurent Gay
+*/
 class Extension {
 
 	private $version_max = 0;
@@ -137,6 +184,11 @@ class Extension {
 
 	public $throwExcept = false;
 
+	/**
+	 * Constructeur
+	 * @param string $Name Nom de l'extension
+	 * @param string $Dir repertoire de stockage
+	 */
 	public function __construct($Name,$Dir) {
 		$this->Name = $Name;
 		$this->Dir = $Dir;
@@ -178,15 +230,27 @@ class Extension {
 		return $text;
 	}
 
+	/**
+	 * Retourne liste des classes filles
+	 * @param string $motherClass classe a rechercher
+	 * @return array
+	 */
 	public function getDaughterClasses($motherClass) {
 		$res = array();
 		foreach($this->extend_tables as $key => $value) {
-			if( is_array($value) && ($value[1] == $motherClass))$res[$this->Name.'/'.$key] = $value[0];
-			if( is_array($value) && ($value == $motherClass))$res[$this->Name.'/'.$key] = $value;
+			if( is_array($value) && ($value[1] == $motherClass))
+			    $res[$this->Name.'/'.$key] = $value[0];
+			if( is_array($value) && ($value == $motherClass))
+			    $res[$this->Name.'/'.$key] = $value;
 		}
 		return $res;
 	}
 
+	/**
+	 * Retourne liste des tables referencees
+	 * @param string $tableName table a rechercher
+	 * @return array
+	 */
 	public function getReferenceTables($tableName) {
 		$res = array();
 		foreach($this->extend_tables as $key => $value) {
@@ -196,6 +260,13 @@ class Extension {
 		return $res;
 	}
 
+	/**
+	 * Recherche le chemin d'une extension
+	 * @param string $ext Nom d'extension a rechercher
+	 * @param string $root Repertoire racine
+	 * @param bool $isClient Est un client
+	 * @return string
+	 */
 	public static function getFolder($ext,$root = "",$isClient = false) {
 		if($isClient) {
 			if($ext == 'SDK')$pathext = $root.$ext."/";
@@ -208,25 +279,42 @@ class Extension {
 		return $pathext;
 	}
 
+	/**
+	 * Retourne la version base de l'extension
+	 * @return string
+	 */
 	public function getDBVersion() {
 		global $connect;
 		$q = "SELECT versionMaj, versionMin, versionRev, versionBuild ";
 		$q .= "FROM CORE_extension WHERE extensionId = '".$this->Name."'";
 		$res = $connect->execute($q,$this->throwExcept);
 		if(( trim($connect->errorMsg) == "") && (1 == $connect->getNumRows($res)))
-		return implode('.',$connect->getRow($res));
+		  return implode('.',$connect->getRow($res));
 		else
-		return "0.0.0.0";
+		  return "0.0.0.0";
 	}
 
+	/**
+	 * Retourne la version fichier de l'extension
+	 * @return string
+	 */
 	public function getPHPVersion() {
 		return $this->version_max.".".$this->version_min.".".$this->version_release.".".$this->version_build;
 	}
 
+	/**
+	 * compare les version fichier et DB de l'extension
+	 * @return int
+	 */
 	public function compareVersionPHP_DB() {
 		return version_compare($this->getPHPVersion(),$this->getDBVersion());
 	}
 
+	/**
+	 * Retourne les version DB+fichier de l'extension
+	 * @param bool $current True=valeur DB courante/False=valeur DB initial
+	 * @return string
+	 */
 	public function getVersions($current=true) {
 		if ($current)
 			return array($this->getDBVersion(),$this->getPHPVersion());
@@ -234,6 +322,12 @@ class Extension {
 			return array($this->init_DB_version,$this->getPHPVersion());
 	}
 
+	/**
+	 * Verifie que le version DB est compris entre 2 valeur
+	 * @param string $versMax Version maximal (type xx.yy)
+	 * @param string $versMin Version minimal (type xx.yy)
+	 * @return int
+	 */
 	public function isVersionsInRange($versMax,$versMin) {
 		$version = $this->getDBVersion();
 		$pos_p = strpos($version,'.');
@@ -244,6 +338,14 @@ class Extension {
 		return ($check_max && $check_min);
 	}
 
+	/**
+	 * Verifie les dependances
+	 * @param string $Name Nom de l'extension a comparer en dependance
+	 * @param string $rootPath Repertoire racine
+	 * @param array $except Extensions a ignorer
+	 * @param bool $ignoreOptionel Ignore les dependance optionnels
+	 * @return bool
+	 */
 	public function isDepencies($Name,$rootPath = '',$except = array(),$ignoreOptionel=false) {
 		foreach($this->depencies as $dep) {
 			if($dep->name == $Name) {
@@ -261,6 +363,13 @@ class Extension {
 		return false;
 	}
 
+	/**
+	 * Retourne liste des extensions dependantes
+	 * @param array $exclude Extensions a ignorer
+	 * @param string $rootPath Repertoire racine
+	 * @param bool $ignoreOptionel Ignore les dependance optionnels
+	 * @return array
+	 */
 	public function getDependants($exclude = array(),$rootPath = '',$ignoreOptionel=false) {
 		$excludes[] = $this->Name;
 		$ext_dep = array();
@@ -274,6 +383,12 @@ class Extension {
 		return $ext_dep;
 	}
 
+	/**
+	 * Retourne liste des extensions dont la courante est dependante
+	 * @param string $rootPath Repertoire racine
+	 * @param string $exclude_txt Ignore ces extensions
+	 * @return string
+	 */
 	public function getDepencies($rootPath = '',$exclude_txt = '') {
 		$text = "";
 		foreach($this->depencies as $dep) {
@@ -287,6 +402,11 @@ class Extension {
 		return trim($text);
 	}
 
+	/**
+	 * Verifie les dependances
+	 * @param array $extList Liste des extensions a controler
+	 * @return array
+	 */
 	public function getCheckedDependances($extList) {
 		$resDep=array();
 		foreach($this->depencies as $dep) {

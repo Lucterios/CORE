@@ -21,17 +21,77 @@
 // --- Last modification: Date 19 January 2011 8:31:05 By  ---
 
 //@BEGIN@
+
+/**
+ * Fichier gerant la connexion MySQL
+ *
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ * @version 0.10
+ * @package Lucterios
+ * @subpackage Outils
+ */
+
+
+/**
+ * Classe de connexion a MySQL
+ *
+ * @package Lucterios
+ * @subpackage Outils
+ * @author Pierre-Oliver Vershoore/Laurent Gay
+ */
 class DBCNX {
+
+	/**
+	 * Instance interne de mysqli
+	 */
 	private $mMysql;
+
+	/**
+	 * Resultat de requette 
+	 */
 	private $mRes;
+
+	/**
+	 * Indice de la derniere requette 
+	 */
 	private $mResIndex;
+
+	/**
+	 * URL d'acces a MySQL 
+	 */
 	private $mDSN;
 
+
+	/**
+	 * Dernier message d'erreur MySQL 
+	 * @var string 
+	 */
 	public $errorMsg;
+
+	/**
+	 * Dernier code d'erreur MySQL 
+	 * @var int 
+	 */
 	public $errorCode;
+
+	/**
+	 * Etat de connexion a MySQL 
+	 * @var bool 
+	 */
 	public $connected;
+
+	/**
+	 * Niveau de debug
+	 * @var int 
+	 */
 	public $debugLevel;
 
+	/**
+	 * Creation d'une base de donnee MySQL
+	 *
+	 * @param array [$dbcnf] parametres de connexion
+	 * @return bool/int True ou code d'erreur 
+	 */
 	public static function createDataBase($dbcnf) {
 		$mysql = new mysqli($dbcnf['dbhost'], $dbcnf['dbuser'], $dbcnf['dbpass']);
 		$last_error=$mysql->connect_errno;
@@ -46,6 +106,11 @@ class DBCNX {
 		return true;
 	}
 
+	/**
+	 * Constructeur
+	 *
+	 * Utilise la variable globale $debugLevel
+	 */
 	public function __construct() {
 		$this->mRes = array();
 		$this->mResIndex = 0;
@@ -57,6 +122,9 @@ class DBCNX {
 			$this->debugLevel = 0;
 	}
 
+	/**
+	 * Destructeur
+	 */
  	public function __destruct()
 	{
 		if ($this->mMysql!=null)
@@ -64,6 +132,11 @@ class DBCNX {
      		session_write_close();
  	}
 
+	/**
+	 * Ajoute dans le log un message suivant le niveau de debug
+	 *
+	 * @param string [$msg] message
+	 */
 	function printDebug($msg) {
 		if (($this->debugLevel==-1) || ($this->debugLevel>10)) {
 			require_once('CORE/log.inc.php');
@@ -71,6 +144,12 @@ class DBCNX {
 		}
 	}
 
+	/**
+	 * Connect a une base de donnée MySQL
+	 *
+	 * @param array [$dbcnf] parametres de connexion
+	 * @return bool
+	 */
 	public function connect ($dbcnf){
 		$this->mDSN = "mMysql://".
 			$dbcnf['dbuser'].":".
@@ -100,6 +179,14 @@ class DBCNX {
 		return true;
 	}
 
+	/**
+	 * Execute un requette SQL
+	 *
+	 * @param string [$query] Requette SQL
+	 * @param bool [$throw] True si une exception doit remonter en cas d'erreur
+	 * @return bool/int True/False ou ID de reference de resultat
+	 * @exception LucteriosException
+	 */
 	public function execute($query,$throw=false) {
 		$this->printDebug("DBCNX::execute : $query\n");
 
@@ -144,6 +231,11 @@ class DBCNX {
 		}
 	}
 
+	/**
+	 * Etat d'erreur: True=pas d'erreur
+	 *
+	 * @return bool
+	 */
 	public function isFailed(){
 		if ($this->mMysql->errno)
 			return true;
@@ -151,6 +243,12 @@ class DBCNX {
 			return false;
 	}
 
+	/**
+	 * Remonte une exception si une erreur MySQL
+	 *
+	 * @param string [$MsgPred] Prefix de message d'erreur
+	 * @exception LucteriosException
+	 */
 	public function throwExcept($MsgPred='') {
 		if ($this->mMysql->errno) {
 			require_once("CORE/Lucterios_Error.inc.php");
@@ -158,6 +256,10 @@ class DBCNX {
 		}
 	}
 
+	/**
+	 * Remonte une exception errorMsg non vide
+	 * @exception LucteriosException
+	 */
 	public function throwError() {
 		if ($this->errorMsg!='') {
 			require_once("CORE/Lucterios_Error.inc.php");
@@ -165,21 +267,44 @@ class DBCNX {
 		}
 	}
 
+	/**
+	 * Entre dans une transaction
+	 *
+	 * @exception LucteriosException
+	 */
 	public function begin() {
 		$this->mMysql->autocommit(FALSE);
 		$this->throwExcept('Begin:');
 	}
+
+	/**
+	 * Valide une transaction
+	 *
+	 * @exception LucteriosException
+	 */
 	public function commit() {
 		$this->mMysql->commit();
 		$this->throwExcept('Commit:');
 		$this->mMysql->autocommit(TRUE);
 	}
+
+	/**
+	 * Annule une transaction
+	 *
+	 * @exception LucteriosException
+	 */
 	public function rollback() {
 		$this->mMysql->rollback();
 		$this->throwExcept('Rollback:');
 		$this->mMysql->autocommit(TRUE);
 	}
 
+	/**
+	 * Retourne un enregistrement
+	 *
+	 * @param int [$queryId] ID de reference de resultat
+	 * @return enregistrement
+	 */
 	public function getRecord($queryId) {
 		$row = array();
 		if(is_string($queryId) || is_int($queryId)) {
@@ -190,6 +315,12 @@ class DBCNX {
 		return false;
 	}
 
+	/**
+	 * Retourne une ligne resultat
+	 *
+	 * @param int [$queryId] ID de reference de resultat
+	 * @return array resultat
+	 */
 	public function getRow($queryId) {
 		$req=$this->getRecord($queryId);
 		if ($req) {
@@ -207,6 +338,12 @@ class DBCNX {
 		return false;
 	}
 
+	/**
+	 * Retourne une ligne resultat par nom de champs
+	 *
+	 * @param int [$queryId] ID de reference de resultat
+	 * @return array resultat par nom
+	 */
 	public function getRowByName($queryId) {
 		$req=$this->getRecord($queryId);
 		if ($req) {
@@ -238,6 +375,12 @@ class DBCNX {
 		return false;
 	}
 
+	/**
+	 * Retourne le nombre de resultats
+	 *
+	 * @param int [$queryId] ID de reference de resultat
+	 * @return int
+	 */
 	public function getNumRows($queryId) {
 		if(is_string($queryId) || is_int($queryId)) {
 			if(array_key_exists($queryId, $this->mRes))
@@ -248,14 +391,25 @@ class DBCNX {
 		else return false;
 	}
 
+	/**
+	 * Retourne le nombre d'enregistrements affectes
+	 *
+	 * @param int [$queryId] ID de reference de resultat
+	 * @return int
+	 */
 	public function getAffectedRows() {
 		return $this->mMysql->affected_rows;
 	}
 
-} // fin de la class DBCNX
+}
 
+/**
+ * Instance singleton de DBCNX
+ *
+ * @global DBCNX $connect
+ */
 $connect = new DBCNX();
 $connect->connect($dbcnf);
-//if(!$connect->connected) print $connect->errorMsg;
+
 //@END@
 ?>

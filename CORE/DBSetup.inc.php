@@ -22,7 +22,7 @@
 
 //@BEGIN@
 /**
- * fichier gérant la creation et la migration des tables DB
+ * Fichier gerant la creation et la migration des tables DB
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -30,10 +30,13 @@
  * @subpackage DBObject
  */
 
-require_once("DBObject.inc.php");
+ /**
+  * Include DBObject
+  */
+require_once("CORE/DBObject.inc.php");
 
 /**
-* Classe de gestion de setup au DBObject Luctérios
+* Classe de gestion de setup au DBObject Lucterios
 *
 * Classe principale de manipulation de creation et modification dess tables utilisées par Luctérios.
 *
@@ -70,7 +73,7 @@ class DBObj_Setup {
 	const LOCK_TYPE = "varchar(100) NOT NULL";
 
 	/**
-	 * Description (console) de l'action réaliser
+	 * Description (console) de l'action realiser
 	 *
 	 * @var string
 	 */
@@ -86,6 +89,7 @@ class DBObj_Setup {
 	/**
 	 * Constructeur DBObj_Setup
 	 *
+	 * @param DBObject $aDBObj Objet associe a la creation/modification
 	 * @return DBObj_Setup
 	 */
 	public function __construct($aDBObj) {
@@ -93,7 +97,7 @@ class DBObj_Setup {
 	}
 
 	/**
-	 * rafraichi les valeurs par defaut de la classe/table
+	 * Rafraichi les valeurs par defaut de la classe/table
 	 *
 	 * @return string retour console
 	 */
@@ -113,7 +117,7 @@ class DBObj_Setup {
 	}
 
 	/**
-	 * rafraichi une valeur par defaut de la classe/table
+	 * Rafraichi une valeur par defaut de la classe/table
 	 *
 	 * @param array $fieldValues dictionnaire nom de champ/valeur
 	 * @param integer $fieldId force une clef primaire. Les valeurs inferieurs à 100 sont reservées
@@ -261,15 +265,10 @@ class DBObj_Setup {
 			$this->RetMsg .= "Table '".$this->DBObject->__table."' crée dans la base de donnée.{[newline]}";
 		}
 		else {
-			if (method_exists($connect,'getRowByName')) {
-				$row = $connect->getRowByName($rep);
-				$q = "";
-				if (!isset($row['engine']) || ($row['engine'] != 'InnoDB'))
-					$q = "ALTER TABLE ".$this->DBObject->__table." ENGINE=InnoDB;";
-			}
-			else
-				$q = $this->__old_control_table($rep);
-
+			$row = $connect->getRowByName($rep);
+			$q = "";
+			if (!isset($row['engine']) || ($row['engine'] != 'InnoDB'))
+				$q = "ALTER TABLE ".$this->DBObject->__table." ENGINE=InnoDB;";
 			if ($q != "") {
 					$rep = $connect->execute($q,$this->throwExcept);
 					if (!$rep) {
@@ -284,32 +283,6 @@ class DBObj_Setup {
 		}
 		return true;
 	}
-
-	/**
-	* __old_control_table
-	* @access private
-	*/
-	private function __old_control_table($qId){
-		global $connect;
-		if (empty($connect->dbh))
-			return "";
-
-		$rep=$connect->getRecord($qId);
-		$field_info = $connect->dbh->tableInfo($rep);
-		$engine_id = 0;
-		$idx = 0;
-		foreach($field_info as $fi) {
-			if( strtolower($fi['name']) == 'engine')$engine_id = $idx;
-			$idx++;
-		}
-		$row = $connect->getRow($qId);
-		if($row[$engine_id] != 'InnoDB') {
-			return "alter table ".$this->DBObject->__table." ENGINE=InnoDB;";
-		}
-		else
-			Return "";
-	}
-
 
 	/**
 	* ReaffectAutoinc
@@ -337,53 +310,15 @@ class DBObj_Setup {
 			$this->RetMsg .= "DB::query - creation DB : '".$connect->errorMsg."' dans '$q'{[newline]}";
 			return null;
 		}
-		if (method_exists($connect,'getRowByName')) {
-			$current_fields = array();
-			while($row = $connect->getRowByName($rep)) {
-				$col_name = $row['COLUMNS.Field'];
-				$current_fields[$col_name] = $col_name." ".$row['COLUMNS.Type'];
-				if( trim($row['COLUMNS.Null']) == "YES")
-					$current_fields[$col_name] .= " NULL";
-				else
-					$current_fields[$col_name] .= " NOT NULL";
-			}
-		}
-		else
-			$current_fields = $this->__old_field_description($rep);
-		return $current_fields;
-	}
-
-	/**
-	* __old_field_description
-	* @access private
-	*/
-	private function __old_field_description($qId){
-		global $connect;
-		if (empty($connect->dbh))
-			return array();
-
-		global $connect;
-		$rep=$connect->getRecord($qId);
-		$field_info = $connect->dbh->tableInfo($rep);
-		$name_id = 0;
-		$type_id = 1;
-		$null_id = 3;
-		$idx = 0;
-		foreach($field_info as $fi) {
-			if($fi['name'] == 'field')$name_id = $idx;
-			elseif ($fi['name'] == 'type')$type_id = $idx;
-			elseif ($fi['name'] == 'null')$null_id = $idx;
-			$idx++;
-		}
 		$current_fields = array();
-		while($row = $connect->getRow($qId)) {
-			$col_name = $row[$name_id];
-			$current_fields[$col_name] = $col_name." ".$row[$type_id];
-			if( trim($row[$null_id]) == "YES")
+		while($row = $connect->getRowByName($rep)) {
+			$col_name = $row['COLUMNS.Field'];
+			$current_fields[$col_name] = $col_name." ".$row['COLUMNS.Type'];
+			if( trim($row['COLUMNS.Null']) == "YES")
 				$current_fields[$col_name] .= " NULL";
 			else
 				$current_fields[$col_name] .= " NOT NULL";
- 		}
+		}
 		return $current_fields;
 	}
 
@@ -553,66 +488,22 @@ class DBObj_Setup {
 			$this->RetMsg .= "DB::query - creation DB : '".$connect->errorMsg."' dans '$q'{[newline]}";
 			return false;
 		}
-		if (method_exists($connect,'getRowByName')) {
-			$current_indexes = array();
-			while($row = $connect->getRowByName($rep)) {
-				$Key_name = $row['STATISTICS.Key_name'];
-				if($Key_name != "PRIMARY") {
-					if (array_key_exists($Key_name,$current_indexes))
-						$index_desc = $current_indexes[$Key_name];
-					else
-						$index_desc = "CREATE INDEX ".$Key_name." ON ".$this->DBObject->__table." (";
-					if($index_desc[strlen($index_desc)-1]!= '(')
-						$index_desc .= ", ";
-					$index_desc.= $row['STATISTICS.Column_name'];
-					$current_indexes[$Key_name] = $index_desc;
-				}
-			}
-		}
-		else
-			$current_indexes = $this->__old_current_indexes($rep);
-		foreach($current_indexes as $Key_name => $index_desc)
-			$current_indexes[$Key_name] = $index_desc.")";
-		return $current_indexes;
-	}
-
-	/**
-	* __old_current_indexes
-	* @access private
-	*/
-	private function __old_current_indexes($qId){
-		global $connect;
-		if (empty($connect->dbh))
-			return array();
-
-		global $connect;
-		$rep=$connect->getRecord($qId);
-
-		$field_info = $connect->dbh->tableInfo($rep);
-		$Key_name_id = 0;
-		$Column_name_id = 1;
-		$idx = 0;
-		foreach($field_info as $fi) {
-			if($fi['name'] == 'key_name')
-				$Key_name_id = $idx;
-			elseif ($fi['name'] == 'column_name')
-				$Column_name_id = $idx;
-			$idx++;
-		}
- 		$current_indexes = array();
-		while($row = $connect->getRow($qId)) {
-			$Key_name = $row[$Key_name_id];
- 			if($Key_name != "PRIMARY") {
-				if( array_key_exists($Key_name,$current_indexes))
+		$current_indexes = array();
+		while($row = $connect->getRowByName($rep)) {
+			$Key_name = $row['STATISTICS.Key_name'];
+			if($Key_name != "PRIMARY") {
+				if (array_key_exists($Key_name,$current_indexes))
 					$index_desc = $current_indexes[$Key_name];
 				else
 					$index_desc = "CREATE INDEX ".$Key_name." ON ".$this->DBObject->__table." (";
-				if($index_desc[ strlen($index_desc)-1] != '(')
+				if($index_desc[strlen($index_desc)-1]!= '(')
 					$index_desc .= ", ";
-				$index_desc .= $row[$Column_name_id];
- 				$current_indexes[$Key_name] = $index_desc;
- 			}
- 		}
+				$index_desc.= $row['STATISTICS.Column_name'];
+				$current_indexes[$Key_name] = $index_desc;
+			}
+		}
+		foreach($current_indexes as $Key_name => $index_desc)
+			$current_indexes[$Key_name] = $index_desc.")";
 		return $current_indexes;
 	}
 
@@ -736,9 +627,10 @@ class DBObj_Setup {
 
 
 	/**
-	* CurrentContraintes
-	* @access private
-	*/
+	 * Recherche les contraites de clefs etrangeres
+	 *
+	 * @return array liste des contraites courantes
+	 */
 	public function CurrentContraints() {
 		$current_contraints = array();
 		$lines=explode("\n",$this->__showCreateTable());
@@ -860,9 +752,10 @@ class DBObj_Setup {
 	}
 
 	/**
-	* checkIndexes
-	* @access private
-	*/
+	 * Rafraichi les contraintes de clefs etrangeres
+	 *
+	 * @return string retour console
+	 */
 	public function CheckContraints() {
 		$current_contraints = $this->CurrentContraints();
 		if(! is_array($current_contraints))

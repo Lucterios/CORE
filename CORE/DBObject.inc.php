@@ -30,6 +30,9 @@
  * @subpackage DBObject
  */
 
+ /**
+  * Include DBObject
+  */
 require_once("CORE/DBAbstract.inc.php");
 
 /**
@@ -129,7 +132,7 @@ class DBObj_Basic extends DBObj_Abstract {
 					return LOCKRECORD_NO;
 			}
 			else
-			return LOCKRECORD_OTHER;
+				return LOCKRECORD_OTHER;
 		}
 	}
 
@@ -401,9 +404,9 @@ class DBObj_Basic extends DBObj_Abstract {
 	 * Si le champ est persistant, retourne la valeur DB
 	 * Si le champ est une référence, retourne un object DB associé Ã  l'enregistrement
 	 * Si le champ est un fils, retourne un object DB commencant un liste d'enregistrements associÃ©s
-	 * @param string $fieldname
-	 * @param string $filter
-	 * @param string $order
+	 * @param string $fieldname Nom du champ
+	 * @param string $filter Filtre (condition SQL)
+	 * @param string $order Ordre de trie
 	 * @return DBObj_Basic|integer|string|boolean|real
 	 */
 	public function getField($fieldname,$filter = "",$order = "") {
@@ -476,15 +479,15 @@ class DBObj_Basic extends DBObj_Abstract {
 	}
 
 	/**
-	 * getMethodFileName
+	 * Retourne le fichier PHP et le nom de la fonction associe a une methode desirer
 	 *
-	 * @param string $method
-	 * @return string|False
+	 * @param string $method Nom de la methode
+	 * @return string
 	 */
 	public function getMethodFileName($method) {
 		global $rootPath;
 		if(!isset($rootPath)) $rootPath = "";
-		$fct_name = $this->tblname."_APAS_$method";
+			$fct_name = $this->tblname."_APAS_$method";
 		if($this->extname == "CORE")
 			$fct_file_name = $rootPath.$this->extname."/$fct_name.mth.php";
 		else
@@ -493,11 +496,11 @@ class DBObj_Basic extends DBObj_Abstract {
 	}
 
 	/**
-	 * call Method
+	 * Appel une methode
 	 *
-	 * @param string $fctFileName
-	 * @param string $fctName
-	 * @param Array $params
+	 * @param string $fct_file_name Fichier PHP de la methode
+	 * @param string $fct_name Nom de la fonction associee
+	 * @param Array $params parametres
 	 * @return unknown
 	 */
 	public function callMethod($fct_file_name,$fct_name,&$params) {
@@ -557,8 +560,8 @@ class DBObj_Basic extends DBObj_Abstract {
 	/**
 	 * Surcharge de méthodes
 	 *
-	 * @param string $method
-	 * @param Array $params
+	 * @param string $method Nom de la methode
+	 * @param Array $params parametres
 	 * @return unknown
 	 */
 	public function __call($method,$params) {
@@ -580,7 +583,7 @@ class DBObj_Basic extends DBObj_Abstract {
 	/**
 	 * Appele une methode lucterios associée a cette classe/table
 	 *
-	 * @param string $MethodName
+	 * @param string $MethodName Nom de la methode
 	 * @return unknown
 	 */
 	public function Call($MethodName) {
@@ -596,9 +599,9 @@ class DBObj_Basic extends DBObj_Abstract {
 	 * @param string $title titre du bouton
 	 * @param string $icon nom de l'icone
 	 * @param string $action nom de l'action
-	 * @param integer $modal FORMTYPE_MODAL=appel une fenêtre modal - FORMTYPE_NOMODAL=non modal - FORMTYPE_REFRESH=réutilise la fiche appelante
-	 * @param integer $close CLOSE_YES=ferme la fenêtre appelante - CLOSE_NO=fenêtre reste en fond
-	 * @param integer $select SELECT_NONE=action à l'ensemble d'une grille - SELECT_SINGLE=action associée à une sélection dans une grille - SELECT_MULTI=action associée à une ou plusieurs sélections dans une grille
+	 * @param integer $modal FORMTYPE_MODAL=appel une fenetre modal - FORMTYPE_NOMODAL=non modal - FORMTYPE_REFRESH=reutilise la fiche appelante
+	 * @param integer $close CLOSE_YES=ferme la fenetre appelante - CLOSE_NO=fenetre reste en fond
+	 * @param integer $select SELECT_NONE=action à l'ensemble d'une grille - SELECT_SINGLE=action associee a une selection dans une grille - SELECT_MULTI=action associee a une ou plusieurs selections dans une grille
 	 * @return Xfer_Action
 	 */
 	public function NewAction($title,$icon = "",$action = "",$modal = 1,$close = 1,$select = "") {
@@ -636,11 +639,14 @@ class DBObj_Basic extends DBObj_Abstract {
 	 * Lance une recherche d'enregistrement
 	 *
 	 * Permet de rechercher des enregistrements.
-	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixés par _select et _value1 doivent être référencées dans $Params
+	 * Pour chaque champs intervenant dans la requetes, 2 clefs suffixes par _select et _value1 doivent être referencees dans $Params
 	 * _select: référence l'operateur de comparaison
-	 * _value1: valeur à comparer
-	 * @param array $Params
-	 * @param string $OrderBy
+	 * _value1: valeur a comparer
+	 * @param array $Params parameters
+	 * @param string $OrderBy ordre de trie
+	 * @param string $searchQuery conditions suplementaires
+	 * @param string $searchTable tables suplementaires
+	 * @param string $extraFields champs suplementaires
 	 */
 	public function setForSearch($Params,$OrderBy = '',$searchQuery = "",$searchTable=array(),$extraFields=array()) {
 		$query="";
@@ -658,6 +664,7 @@ class DBObj_Basic extends DBObj_Abstract {
 	/**
 	 * Construit des part de requettes pour lier les tables héritées.
 	 *
+	 * @return array
 	 */
 	public function getSubSearchWithHeritage() {
 		$search_tbl=array($this->__table);

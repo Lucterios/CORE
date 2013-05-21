@@ -19,7 +19,7 @@
 
 //@BEGIN@
 /**
- * fichier gérant le DBObject
+ * fichier gerant le DBObject
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -67,7 +67,7 @@ $field_dico = array();
 $field_dico[0] = array( DBOBJ_INT,"Entier","int(%d)");
 $field_dico[1] = array( DBOBJ_INT,"Réel","decimal(%d,%d)");
 $field_dico[2] = array( DBOBJ_STR,"Chaîne","varchar(%d)");
-$field_dico[3] = array( DBOBJ_STR,"Booléen","enum('n','o')");
+$field_dico[3] = array( DBOBJ_STR,"Booleen","enum('n','o')");
 $field_dico[4] = array( DBOBJ_STR,"Date","date");
 $field_dico[5] = array( DBOBJ_STR,"Heure","time");
 $field_dico[6] = array( DBOBJ_STR,"Date/Heure","datetime");
@@ -84,15 +84,15 @@ require_once("CORE/dbcnx.inc.php");
 global $connect;
 
 /**
-* Classe abstraite au DBObject Luctèrios
+* Classe abstraite au DBObject Lucterios
 *
-* Classe principale de manipulation des tables utilisèes par Luctérios. Repose sur PEAR/DB_DataObject
+* Classe principale de manipulation des tables utilisees par Lucterios. 
 *
-* Cette classe permet diffèrentes manipulations des tables:
-* 1. Déscription, crèation et mise à jour des tables de l'application
+* Cette classe permet differentes manipulations des tables:
+* 1. Description, creation et mise a jour des tables de l'application
 * 2. Abstraction d'un enregistrement sous forme d'un objet : insertion, selection, modification, suppression.
 * 3. Recherche simple et complexe d'enregistrement.
-* 4. Association de traitements (actions, methdes) à une table.
+* 4. Association de traitements (actions, methdes) a une table.
 * @package Lucterios
 * @subpackage DBObject
 * @author Pierre-Oliver Vershoore/Laurent Gay
@@ -113,7 +113,7 @@ class DBObj_Abstract {
 	public $Title = '';
 
 	/**
-	 * Nom de l'extension qui possède cette table
+	 * Nom de l'extension qui possede cette table
 	 *
 	 * @var string
 	 */
@@ -127,7 +127,7 @@ class DBObj_Abstract {
 	public $id=null;
 
 	/**
-	 * Champ de vérou
+	 * Champ de verou
 	 *
 	 * @var string
 	 */
@@ -150,7 +150,7 @@ class DBObj_Abstract {
 	public $__DBMetaDataField = array();
 
 	/**
-	 * Liste des indexes personnalisées
+	 * Liste des indexes personnalisees
 	 *
 	 * @access public
 	 * @var array
@@ -158,21 +158,21 @@ class DBObj_Abstract {
 	public $__DBCustomIndexes = array();
 
 	/**
-	 * Liste d'enregistrement par défaut.
+	 * Liste d'enregistrement par defaut.
 	 *
 	 * @var array
 	 */
 	public $DefaultFields = array();
 
 	/**
-	 * Nombre de champs utilisés pour determiner si les enregistrements par defaut existes déjà .
+	 * Nombre de champs utilises pour determiner si les enregistrements par defaut existes deja .
 	 *
 	 * @var integer
 	 */
 	public $NbFieldsCheck = 1;
 
 	/**
-	 * Nom de la classe d'héritage
+	 * Nom de la classe d'heritage
 	 *
 	 * @access public
 	 * @var string
@@ -180,14 +180,14 @@ class DBObj_Abstract {
 	public $Heritage = "";
 
 	/**
-	 * Clef lié de l'enregistrement mère
+	 * Clef lie de l'enregistrement mere
 	 *
 	 * @var integer
 	 */
 	public $superId = null;
 
 	/**
-	 * Object mère
+	 * Object mere
 	 *
 	 * @var DBObj_Basic
 	 * @access public
@@ -195,7 +195,7 @@ class DBObj_Abstract {
 	public $__super = null;
 
 	/**
-	 * Nombre d'enregistrement de la dernière requete
+	 * Nombre d'enregistrement de la derniere requete
 	 *
 	 * @var int
 	 * @access public
@@ -208,7 +208,7 @@ class DBObj_Abstract {
 	/**
 	 * Constructeur DBObj_Basic
 	 *
-	 * @return DBObj_Basic
+	 * @param bool $is_super True si l'objet est instancie dans une logique d'heritage
 	 */
 	public function __construct($is_super = false) {
 		$this->is_super = $is_super;
@@ -220,6 +220,11 @@ class DBObj_Abstract {
 
 	protected $__son = null;
 
+	/**
+	 * Retourne l'objet fils le plus bas hierachique
+	 *
+	 * @return DBObj_Abstract objet fils
+	 */
 	public function getSon() {
 		if(($this->__son == null) && ($this->id>0)) {
 			global $rootPath;
@@ -248,6 +253,12 @@ class DBObj_Abstract {
 		return $this->__son;
 	}
 
+	/**
+	 * Retourne l'objet fils le plus bas hierachique
+	 * 
+	 * @param string nom de la classe recherchee
+	 * @return int ID de la classe mere (0 si non trouve)
+	 */
 	public function getMotherId($ClassMother) {
 		if( get_class($this) == $ClassMother)
 		return $this->id;
@@ -256,6 +267,11 @@ class DBObj_Abstract {
 		return 0;
 	}
 
+	/**
+	 * Retourne la list des classes heritantes
+	 * 
+	 * @return array list des classes
+	 */
 	public function get_classes_herited() {
 		$ret=array();
 		$root_obj = $this;
@@ -273,6 +289,8 @@ class DBObj_Abstract {
 	/**
 	 * Retourne un tableau donnant le type de chaque champs persistants.
 	 *
+	 * @param bool $withFunction avec champ 'fonction'
+	 * @param bool $withMethod avec champ 'method'
 	 * @return array
 	 */
 	public function table($withFunction=false,$withMethod=false) {
@@ -287,10 +305,9 @@ class DBObj_Abstract {
 	}
 
 	/**
-	 * keys
+	 * nom de la clef
 	 *
 	 * @return string
-	 * @access private
 	 */
 	public function keys() {
 		return array('id');
@@ -300,8 +317,8 @@ class DBObj_Abstract {
 	 * Evaluateur de chaine
 	 *
 	 * Evalue le parametre $TextEvalable en remplacant.
-	 * Chaque identifiant de champs, précédé par un dollard, est remplacé par sa valeur DB
-	 * Si le champ n'est pas persistant (reference ou fils), il est remplacé par sont toText()
+	 * Chaque identifiant de champs, precede par un dollard, est remplace par sa valeur DB
+	 * Si le champ n'est pas persistant (reference ou fils), il est remplace par sont toText()
 	 * @param string $TextEvalable
 	 * @return string
 	 */
@@ -341,7 +358,7 @@ class DBObj_Abstract {
 	/**
 	 * Description de l'enregistrement
 	 *
-	 * Correspond à $this->evalByText($this->__toText) ou à $this->id
+	 * Correspond a $this->evalByText($this->__toText) ou a $this->id
 	 * @return string
 	 */
 	public function toText() {
@@ -363,7 +380,6 @@ class DBObj_Abstract {
 	/**
 	 * List de description de chaques champs de la table
 	 *
-	 * @access public
 	 * @var array
 	 */
 	public function getDBMetaDataField() {
@@ -382,9 +398,10 @@ class DBObj_Abstract {
 	}
 
 	/**
-	 * Retourne l'ensemble des champs references ou liés à la table $RefTableName
+	 * Retourne l'ensemble des champs references ou lies a la table $RefTableName
 	 *
 	 * @param string $RefTableName
+	 * @param int $nbfield nombre de champs desires (-1=tous)
 	 * @return array
 	 */
 	public function getFieldEditable($RefTableName = "",$nbfield = -1) {
@@ -401,9 +418,11 @@ class DBObj_Abstract {
 	}
 
 	/**
-	 * retourne le nom du fichier PHP decrivant la table/classe
+	 * retourne le nom du fichier PHP decrivant la classe associee a une table
 	 *
-	 * @param string $tbl_select
+	 * @param string $tbl_select nom de table souhaitee
+	 * @param bool $ByLeft recherche par la gauche
+	 * @param string $sep separateur extension/classe
 	 * @return string
 	 */
 	public static function getTableName($tbl_select,$ByLeft = false,$sep = '_') {
@@ -445,7 +464,7 @@ class DBObj_Abstract {
 	}
 
 	/**
-	 * assigne chaque champs référencés dans le tableau $object
+	 * assigne chaque champs references dans le tableau $object
 	 *
 	 * @param array $object
 	 */
@@ -489,6 +508,13 @@ class DBObj_Abstract {
 		return false;
 	}
 
+	/**
+	 * Prepare une requete
+	 *
+	 * @param bool $withValue Avec valeurs
+	 * @param bool $withFct Avec fonctions stockees
+	 * @return array ensemble des champs, des tables et des conditions
+	 */
 	public function prepQuery($withValue=false,$withFct=true){
 		$tables=array();
 		$fields=array();
@@ -533,6 +559,8 @@ class DBObj_Abstract {
 	 * selectionne 1 enregistrement
 	 *
 	 * @param int $id
+	 * @param bool $withFct Avec fonctions stockees
+	 * @return bool
 	 */
 	public function get($id,$withFct=true) {
 		$this->__son = null;
@@ -561,6 +589,7 @@ class DBObj_Abstract {
 	 * selectionne des enregistrements
 	 *
 	 * @param string $string
+	 * @return int nombre trouve
 	 */
 	public function query($query) {
 		$this->__son = null;
@@ -575,9 +604,8 @@ class DBObj_Abstract {
 	private $whereAddList=array();
 
 	/**
-	 * whereAdd
-	 *
-	 *
+	 * Ajoute une condition
+	 * @param string $whereAdd condition
 	 */
 	public function whereAdd($whereAdd){
 		$this->whereAddList[]=$whereAdd;
@@ -586,18 +614,18 @@ class DBObj_Abstract {
 	private $order=null;
 
 	/**
-	 * orderBy
-	 *
-	 *
+	 * Defini l'ordre
+	 * @param string $order ordre
 	 */
 	public function orderBy($order) {
 		$this->order=$order;
 	}
 
 	/**
-	 * find
+	 * Lance une recheche
 	 *
-	 *
+	 * @param bool $withFct Avec fonctions stockees
+	 * @return bool
 	 */
 	public function find($withFct=true) {
 		list($fields,$tables,$wheres)=$this->prepQuery(true,$withFct);
@@ -614,14 +642,20 @@ class DBObj_Abstract {
 
 
 	private $lastRow=null;
+	
+	/**
+	 * Renvoie le dernier enregistrement trouve
+	 *
+	 * @return array
+	 */
 	public function getLastRow() {
 		return $this->lastRow;
 	}
 
 	/**
-	 * fetch
+	 * Selectionne l'enregistrement suivant
 	 *
-	 *
+	 * @return bool
 	 */
 	public function fetch() {
 		$this->__son = null;
@@ -642,6 +676,7 @@ class DBObj_Abstract {
 	/**
 	 * supprime l'enregistrement
 	 *
+	 * @return bool
 	 */
 	public function delete() {
 		if (((int)$this->id)==0) {
@@ -670,6 +705,7 @@ class DBObj_Abstract {
 	/**
 	 * ajoute 1 enregistrement
 	 *
+	 * @return int nouvel identifiant
 	 */
 	public function insert() {
 		$this->__son = null;
@@ -730,6 +766,7 @@ class DBObj_Abstract {
 	/**
 	 * modifie l'enregistrement
 	 *
+	 * @return bool
 	 */
 	public function update() {
 		if(!$this->is_super) {
@@ -779,6 +816,7 @@ class DBObj_Abstract {
 	 * Recherche le super objet d'une classe donnee.
 	 *
 	 * @param string $className
+	 * @return DBObj_Abstract
 	 */
 	public function getSuperObject($tableName) {
 		$obj=$this;
@@ -843,7 +881,6 @@ class DBObj_Abstract {
 
 	/**
 	* debug
-	* @access private
 	*/
 	public function debug($message,$level) {
 		global $connect;
