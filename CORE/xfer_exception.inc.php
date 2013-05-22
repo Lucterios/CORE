@@ -19,18 +19,22 @@
 
 //@BEGIN@
 /**
- * fichier gérant les exceptions transferées
+ * fichier gerant les exceptions transferees
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
  * @package Lucterios
  * @subpackage Xfer
  */
-require_once'xfer.inc.php';
+ 
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
 
 /**
  * Verifie l'existance d'un ensemble de parametre.
- * Remonter une erreur si non trouvé.
+ * Remonter une erreur si non trouve.
  *
  * @param string $extension
  * @param string $action
@@ -48,9 +52,9 @@ function checkParams($extension,$action,$params) {
 			if(! array_key_exists($numargs[$arg-1],$params))$error .= " ".$numargs[$arg-1];
 		}
 		$error = trim($error);
-		if($error != "")$ret = xfer_returnError($extension,$action,$param,"Paramètres '$error' inconnus!");
+		if($error != "")$ret = xfer_returnError($extension,$action,$param,"Parametres '$error' inconnus!");
 	}
-	else $ret = xfer_returnError($extension,$action,$param,"Paramètres incorrects!");
+	else $ret = xfer_returnError($extension,$action,$param,"Parametres incorrects!");
 	return $ret;
 }
 
@@ -125,9 +129,14 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		return $ret;
 	}
 
+	/**
+	 * Retourne la reference de fichier php
+	 * @param string $File fichier brute
+	 * @return string
+	 */
 	public function getLucteriosFile($File) {
 		if($File == $_SERVER['SCRIPT_FILENAME'])
-		return "[init]";
+			return "[init]";
 		else {
 			$path_info = pathinfo($File);
 			$base = $path_info['filename'];
@@ -140,6 +149,10 @@ class Xfer_Container_Exception extends Xfer_Container_Abstract {
 		}
 	}
 
+	/**
+	 * Retourne la pile de traces d'exception
+	 * @return string
+	 */
 	public function getErrorTrace() {
 		$trace = "";
 		if( is_subclass_of($this->m_error,'Exception')) {

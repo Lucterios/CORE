@@ -22,21 +22,30 @@
 
 //@BEGIN@
 /**
- * fichier gérant une fenêtre personnalisée
+ * fichier gerant une fenetre personnalisee
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
  * @package Lucterios
  * @subpackage Xfer
-
  */
 
-require_once'xfer_component.inc.php';
-require_once'xfer_grid.inc.php';
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
+/**
+ * Composants
+ */
+require_once('CORE/xfer_component.inc.php');
+/**
+ * Grille
+ */
+require_once('CORE/xfer_grid.inc.php');
 
 
 /**
- * Classe containaire d'une fenêtre personnalisée
+ * Classe containaire d'une fenetre personnalisee
  *
  * @package Lucterios
 
@@ -80,7 +89,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 	}
 
 	/**
-	 * Remplire une fenêtre avec des controles dépandant de la classe
+	 * Remplire une fenetre avec des controles depandant de la classe
 	 *
 	 * @param DBObj_Basic $DBObjs
 	 * @param null|string|array $FieldNames champ ou liste des champs
@@ -245,7 +254,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 					$comp->setValue($field_val);
 					break;
 				case 13:
-					// method réel
+					// method reel
 					$comp = new Xfer_Comp_Float($FieldName,$param_fld['Min'],$param_fld['Max'],$param_fld['Prec']);
 					$comp->setValue($field_val);
 					break;
@@ -270,7 +279,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 
 	private function convertTextToJavaScript($itialText) {
 	    $final_text=$itialText;
-	    $final_text=str_replace(array("'","é","è","ê","ë","à","â","ù","ü","ô","ö","î","ï"),array("`","e","e","e","a","a","u","u","o","o","i","i"),$final_text);
+	    $final_text=str_replace(array("'","e","e","e","ë","a","â","ù","ü","ô","ö","î","ï"),array("`","e","e","e","a","a","u","u","o","o","i","i"),$final_text);
 	    return $final_text;
 	}
 
@@ -371,7 +380,7 @@ if ((type=='list') || (type=='listmult')) {
 	}
 
 	/**
-	 * Remplire une fenêtre avec des controle de selection de recherche
+	 * Remplire une fenetre avec des controle de selection de recherche
 	 *
 	 * @param DBObj_Basic $DBObjs
 	 * @param null|string|array $SearchFieldDescList champ ou liste des champs ou liste de descriptifs de recherche
@@ -387,7 +396,7 @@ if ((type=='list') || (type=='listmult')) {
 		list($selector,$script_ref)=$this->buildSelectAndScript($FieldDescList);
 
 		$label = new Xfer_Comp_LabelForm('labelsearchSelector');
-		$label->setValue("{[bold]}Nouveau critère{[/bold]}");
+		$label->setValue("{[bold]}Nouveau critere{[/bold]}");
 		$label->setLocation($posX,$posY,1,7);
 		$this->addComponent($label);
 		$comp = new Xfer_Comp_Select("searchSelector");
@@ -450,11 +459,11 @@ if ((type=='list') || (type=='listmult')) {
 
 		$label = new Xfer_Comp_LabelForm('labelsearchDescTitle');
 		if (count($criteriaDesc)>0) {
-			$label->setValue("{[bold]}{[underline]}Vos critères de recherche:{[/underline]}{[/bold]}");
+			$label->setValue("{[bold]}{[underline]}Vos criteres de recherche:{[/underline]}{[/bold]}");
 			$label->setLocation($posX,$posY,2,4);
 		}
 		else {
-			$label->setValue("{[center]}{[bold]}{[underline]}Aucun critère de recherche défini{[/underline]}{[/bold]}{[/center]}");
+			$label->setValue("{[center]}{[bold]}{[underline]}Aucun critere de recherche defini{[/underline]}{[/bold]}{[/center]}");
 			$label->setLocation($posX,$posY,4);
 		}
 		$this->addComponent($label);
@@ -494,7 +503,7 @@ if ((type=='list') || (type=='listmult')) {
 	}
 
 	/**
-	 * Modifie la taille par defaut des composants d'une même position
+	 * Modifie la taille par defaut des composants d'une meme position
 	 *
 	 * @param int $col
 	 * @param int $hmin
@@ -562,7 +571,7 @@ if ((type=='list') || (type=='listmult')) {
 	}
 
 	/**
-	 * Retourne un composant identifier par son numéro ou son nom
+	 * Retourne un composant identifier par son numero ou son nom
 	 *
 	 * @param integer|string $cmp_idx
 	 * @return Xfer_Component
@@ -594,7 +603,7 @@ if ((type=='list') || (type=='listmult')) {
 	}
 
 	/**
-	 * Supprime un composant identifier par son numéro ou son nom
+	 * Supprime un composant identifier par son numero ou son nom
 	 *
 	 * @param integer|string $cmp_idx
 	 */
@@ -621,7 +630,7 @@ if ((type=='list') || (type=='listmult')) {
 
 	/**
 
-	 * Ajoute une action à la fenêtre personnalisée
+	 * Ajoute une action a la fenetre personnalisee
 	 *
 	 * @param Xfer_Action $action
 	 */

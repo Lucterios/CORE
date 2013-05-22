@@ -21,7 +21,7 @@
 
 //@BEGIN@
 /**
- * fichier gérant le classe de base de transfert
+ * fichier gerant le classe de base de transfert
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -79,7 +79,7 @@ define('SELECT_MULTI',2);
 
 /**
 * EXTENSION_SEP
-* Chaine de séparation entre l'extension et le suffix applicatif (action,method,...)
+* Chaine de separation entre l'extension et le suffix applicatif (action,method,...)
 */
 define('EXTENSION_SEP','_APAS_');
 
@@ -101,7 +101,7 @@ class Xfer_Object {
 	}
 
 	/**
-	 * Retourne la chaine XML à transferer
+	 * Retourne la chaine XML a transferer
 	 *
 	 * @return string
 	 */
@@ -110,7 +110,7 @@ class Xfer_Object {
 	}
 
 	/**
-	 * Vérifie les droits de l'utilisateur courant pour cette action
+	 * Verifie les droits de l'utilisateur courant pour cette action
 	 *
 	 * @param Xfer_Action $action
 	 * @return boolean
@@ -127,6 +127,19 @@ class Xfer_Object {
 		return $ret;
 	}
 
+	/**
+	 * Envoie un signal a tout les extensions abonnees
+	 * Renvoie la reponse par extension
+	 *
+	 * @param string $name Nom du signal
+	 * @param object &$obj Objet referent du signal
+	 * @param void $val1 Valeur 1
+	 * @param void $val2 Valeur 2
+	 * @param void $val3 Valeur 3
+	 * @param void $val4 Valeur 4
+	 * @param void $val5 Valeur 5
+	 * @return array
+	 */
 	public function signal($name,&$obj,$val1=null,$val2=null,$val3=null,$val4=null,$val5=null) {
 		$retList=array();
 		global $rootPath;
@@ -185,26 +198,26 @@ class Xfer_Action extends Xfer_Object {
 	public $m_action = "";
 
 	/**
-	 * CLOSE_YES=ferme la fenêtre appelante
-	 * CLOSE_NO=fenêtre reste en fond
+	 * CLOSE_YES=ferme la fenetre appelante
+	 * CLOSE_NO=fenetre reste en fond
 	 *
 	 * @var integer
 	 */
 	public $m_close = "";
 
 	/**
-	 * FORMTYPE_MODAL=appel une fenêtre modal
+	 * FORMTYPE_MODAL=appel une fenetre modal
 	 * FORMTYPE_NOMODAL=non modal
-	*  FORMTYPE_REFRESH=réutilise la fiche appelante
+	*  FORMTYPE_REFRESH=reutilise la fiche appelante
 	 *
 	 * @var integer
 	 */
 	public $m_modal = "";
 
 	/**
-	 * SELECT_NONE=action à l'ensemble d'une grille
-	 * SELECT_SINGLE=action associée à une sélection dans une grille
-	 * SELECT_MULTI=action associée à une ou plusieurs sélections dans une grille
+	 * SELECT_NONE=action a l'ensemble d'une grille
+	 * SELECT_SINGLE=action associee a une selection dans une grille
+	 * SELECT_MULTI=action associee a une ou plusieurs selections dans une grille
 	 *
 	 * @var integer
 	 */
@@ -233,9 +246,9 @@ class Xfer_Action extends Xfer_Object {
 	 * @param string $icon nom de l'icone
 	 * @param string $extension
 	 * @param string $action nom de l'action
-	 * @param integer $modal FORMTYPE_MODAL=appel une fenêtre modal - FORMTYPE_NOMODAL=non modal - FORMTYPE_REFRESH=réutilise la fiche appelante
-	 * @param integer $close CLOSE_YES=ferme la fenêtre appelante - CLOSE_NO=fenêtre reste en fond
-	 * @param integer $select SELECT_NONE=action à l'ensemble d'une grille - SELECT_SINGLE=action associée à une sélection dans une grille - SELECT_MULTI=action associée à une ou plusieurs sélections dans une grille
+	 * @param integer $modal FORMTYPE_MODAL=appel une fenetre modal - FORMTYPE_NOMODAL=non modal - FORMTYPE_REFRESH=reutilise la fiche appelante
+	 * @param integer $close CLOSE_YES=ferme la fenetre appelante - CLOSE_NO=fenetre reste en fond
+	 * @param integer $select SELECT_NONE=action a l'ensemble d'une grille - SELECT_SINGLE=action associee a une selection dans une grille - SELECT_MULTI=action associee a une ou plusieurs selections dans une grille
 	 * @return Xfer_Action
 	 */
 	public function __construct($title,$icon = "",$extension = "",$action = "",$modal = "",$close = "",$select = "") {
@@ -269,7 +282,7 @@ class Xfer_Action extends Xfer_Object {
 		return "<![CDATA[".$this->m_title."]]>";
 	}
 	/**
-	 * Retourne la chaine XML à transferer
+	 * Retourne la chaine XML a transferer
 	 *
 	 * @return string
 	 */
@@ -290,6 +303,7 @@ class Xfer_Action extends Xfer_Object {
 		return $xml_text;
 	}
 }
+
 /**
  * Classe abstraite de base au containeur de transfert
  *
@@ -317,7 +331,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	 */
 	public $m_action = "";
 	/**
-	 * Contexte d'appèle
+	 * Contexte d'appele
 	 *
 	 * @var array
 	 */
@@ -349,7 +363,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 		$this->m_context = $context;
 	}
 	/**
-	 * change l'action associée au bouton
+	 * change l'action associee au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
@@ -360,7 +374,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	}
 
 	 /**
-	 * Retourne l'observer retour à transferer
+	 * Retourne l'observer retour a transferer
 	 *
 	 * @return Xfer_Container_Abstract
 	 */
@@ -369,7 +383,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	}
 
 	 /**
-	 * Retourne la chaine XML à transferer
+	 * Retourne la chaine XML a transferer
 	 *
 	 * @return string
 	 */
@@ -402,6 +416,7 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	protected function _endXML() {
 		return "</REPONSE>";
 	}
+
 	/**
 	 * _ReponseXML
 	 *
@@ -413,12 +428,20 @@ class Xfer_Container_Abstract extends Xfer_Object {
 	}
 
 
+	/**
+	 * Renvoie une action correspondant a l'appel en rafraichissement de ce meme containeur
+	 *
+	 * @param string $title Titre de l'action
+	 * @param string $icon Icon de l'action
+	 * @return Xfer_Action
+	 */
 	public function getRefreshAction($title="",$icon="") {
 		return new Xfer_Action($title,$icon,$this->m_extension,$this->m_action, FORMTYPE_REFRESH, CLOSE_NO);
 	}
 }
+
 /**
- * Classe d'accusée de reception
+ * Classe d'accusee de reception
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -474,10 +497,10 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	}
 
 	/**
-	 * Demande une confirmation avant une action irrémédiable (ex:suppression)
+	 * Demande une confirmation avant une action irremediable (ex:suppression)
 	 *
 	 * @param string $title
-	 * @return boolean true=confirmé - false=pas confirmé
+	 * @return boolean true=confirme - false=pas confirme
 	 */
 	public function confirme($title) {
 		$this->Title = $title;
@@ -539,7 +562,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	}
 
 	 /**
-	 * Retourne l'observer retour à transferer
+	 * Retourne l'observer retour a transferer
 	 *
 	 * @return Xfer_Container_Abstract
 	 */
@@ -601,7 +624,7 @@ class Xfer_Container_Acknowledge extends Xfer_Container_Abstract {
 	}
 
 	/**
-	 * Retourne la chaine XML à transferer
+	 * Retourne la chaine XML a transferer
 	 *
 	 * @return string
 	 */
@@ -649,7 +672,7 @@ function convertDate($date,$long = false) {
 			$m = "Janvier";
 			break;
 		case 2:
-			$m = "Février";
+			$m = "Fevrier";
 			break;
 		case 3:
 			$m = "Mars";
@@ -679,7 +702,7 @@ function convertDate($date,$long = false) {
 			$m = "Novembre";
 			break;
 		case 12:
-			$m = "Décembre";
+			$m = "Decembre";
 			break;
 		default :
 			$m = "Janvier";
@@ -692,7 +715,7 @@ function convertDate($date,$long = false) {
 	return "$day/$mouth/$year";
 }
 /**
- * Converti de caractére pour l'impression
+ * Converti de caractere pour l'impression
  *
  * @param string $text
  * @param boolean $WithCdata

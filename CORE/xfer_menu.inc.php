@@ -19,7 +19,7 @@
 
 //@BEGIN@
 /**
- * fichier gérant les classe de menu
+ * fichier gerant les classe de menu
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -27,10 +27,13 @@
  * @subpackage Xfer
  */
 
-require_once 'xfer.inc.php';
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
 
 /**
- * Classe élément d'un menu
+ * Classe element d'un menu
  *
  * @package Lucterios
  * @subpackage Xfer

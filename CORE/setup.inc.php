@@ -26,8 +26,8 @@ $extension_libre=true;
 
 $version_max=1;
 $version_min=5;
-$version_release=2;
-$version_build=858;
+$version_release=3;
+$version_build=860;
 
 $depencies=array();
 

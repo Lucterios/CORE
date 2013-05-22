@@ -2,6 +2,7 @@
 
 if (!isset($_SERVER['HTTP_HOST'])) {
 
+    gc_enable();
     global $login;
     $login="admin";
 

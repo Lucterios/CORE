@@ -492,6 +492,11 @@ class Extension {
 	}
 
 	private $tbl_list=null;
+
+	/**
+	 * Retourne la liste des tables SQL (ou classe lucterios) de l'extension
+	 * @return array
+	 */
 	public function getTableList() {
 		if(! is_dir($this->Dir))
 			return array();
@@ -526,6 +531,10 @@ class Extension {
 		return $this->tbl_list;
 	}
 
+	/**
+	 * Met a jours les tables SQL de l'extension
+	 * @return bool
+	 */
 	public function updateTable() {
 		$tbl_list=$this->getTableList();
 		$success = true;
@@ -541,6 +550,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Supprime toutes les contraintes de clefs etrangeres des tables de l'extension
+	 * @return bool
+	 */
 	public function removeAllContraintsTable() {
 		$tbl_list=$this->getTableList();
 		$success = true;
@@ -557,6 +570,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Met a jours les contraintes de clefs etrangeres des tables de l'extension
+	 * @return bool
+	 */
 	public function upgradeContraintsTable() {
 		$tbl_list=$this->getTableList();
 		$success = true;
@@ -573,6 +590,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Met a jour les valeurs par defaut pour chaques tables SQL
+	 * @return bool
+	 */
 	public function upgradeDefaultValueTable() {
 		$tbl_list=$this->getTableList();
 		$success = true;
@@ -589,6 +610,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Met à jour les droits pour l'extension
+	 * @return bool
+	 */
 	public function updateRights() {
 		if(! is_dir($this->Dir))
 			return 0;
@@ -632,6 +657,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Met a jours les parametres de l'extensions
+	 * @return bool
+	 */
 	public function updateParams() {
 		if(! is_dir($this->Dir))
 			return 0;
@@ -678,6 +707,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Met a jour les menus de l'extension
+	 * @return bool
+	 */
 	public function updateMenu() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -702,6 +735,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Verifie les actions de l'extension et leur droit associe
+	 * @return bool
+	 */
 	public function checkActions() {
 		if(! is_dir($this->Dir))
 			return 0;
@@ -753,6 +790,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Rafraichi les fonctions stoquees de l'extension
+	 * @return bool
+	 */
 	public function checkStorageFunctions(){
 		$this->message .= "checkStorageFunctions ";
 		if(! is_dir($this->Dir))
@@ -792,6 +833,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * verifie les model de raport d'impression de l'extension
+	 * @return bool
+	 */
 	public function checkReportModel() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -829,6 +874,10 @@ class Extension {
 		return $success;
 	}
 
+	/**
+	 * Valide une extension
+	 * @return bool
+	 */
 	public function validation() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -860,22 +909,26 @@ class Extension {
 		return 0;
 	}
 
+	/**
+	 * Appel la fonction "post-install" de l'application
+	 * @return string
+	 */
 	public static function callApplicationPostInstallation($ExtensionDescription) {
 		global $rootPath;
 		$message = "";
 		if( is_file($rootPath.'extensions/applis/postInstallation.inc.php'))
-				require'extensions/applis/postInstallation.inc.php';
-		if( is_file('extensions/applis/application.inc.php'))
-				require'extensions/applis/application.inc.php';
+				require('extensions/applis/postInstallation.inc.php');
 		if(function_exists('postInstallation'))
 			$message .= postInstallation($ExtensionDescription);
-		else if( function_exists('application_postInstallation'))
-			$message .= application_postInstallation($ExtensionDescription);
 		else
 			$message .= 'Pas de post-installation{[newline]}';
 		return $message;
 	}
 
+	/**
+	 * Deroule la mise a jour integrale de l'extension
+	 * @return string
+	 */
 	public function installComplete() {
 		$nb = 0;
 		$nb += $this->removeAllContraintsTable();
@@ -902,6 +955,10 @@ class Extension {
 		return "$nb/10";
 	}
 
+	/**
+	 * Supprime une extension (donnees et repertoire)
+	 * @return bool
+	 */
 	public function delete() {
 		if(! is_dir($this->Dir))
 		return 0;
@@ -976,6 +1033,12 @@ class Extension {
 	}
 }
 
+/**
+  * Trie une liste d'extensions en fonction du lien de dependance (plus dependant au moins dependant)
+  * @param array $extList list d'extension a trier
+  * @param string $rootPath Repertoire racine
+  * @return array
+  */
 function sortExtension($extList,$rootPath = '') {
 	$res = $extList;
 	$Max = count($res);
@@ -993,20 +1056,31 @@ function sortExtension($extList,$rootPath = '') {
 	return $res;
 }
 
+/**
+  * Compare deux extensions en fonction du lien de dependance
+  * @param array $ext1 extension 1
+  * @param array $ext2 extension 2
+  * @param string $rootPath Repertoire racine
+  * @return int 0=pas de dependance / 1=ext1 depend de ext2 / -1=ext2 depend de ext1
+  */
 function sort_function($ext1,$ext2,$rootPath = '') {
 	$dep1 = $ext1->isDepencies($ext2->Name,$rootPath);
 	$dep2 = $ext2->isDepencies($ext1->Name,$rootPath);
-	//$dep1=(strpos($ext1->getDepencies($rootPath),$ext2->Name)!==false);
-	//$dep2=(strpos($ext2->getDepencies($rootPath),$ext1->Name)!==false);
 	if($ext1->Name == 'applis')$res = +1;
 	else if($ext2->Name == 'applis')$res = -1;
 	else if($dep1 && !$dep2)$res = +1;
 	else if($dep2 && !$dep1)$res = -1;
 	else $res = 0;
-	//substr_compare($ext2->Name,$ext1->Name,0);
 	return $res;
 }
 
+/**
+  * Creation de la base de donnees
+  * Utilise la variable globale $dbcnf decrivant les parametres de DB MySQL
+  * @param bool $DropDB supprime la base si elle existe
+  * @param bool $ThrowExcept remonte une exception si erreur
+  * @return string
+  */
 function createDataBase($DropDB = false,$ThrowExcept = false) {
 	global $dbcnf;
 	global $connect;
@@ -1036,6 +1110,12 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 	return $setupMsg;
 }
 
+/**
+  * Rafraichi la base de donnees
+  * @param bool $noVersionControl Controle la version - Rafraichi que si different de la DB
+  * @param sring $rootPath Repertoire racine
+  * @return string
+  */
 function refreshDataBase($noVersionControl = false, $rootPath = '') {
 	$install = '';
 	$set_of_ext = array();
@@ -1061,6 +1141,14 @@ function refreshDataBase($noVersionControl = false, $rootPath = '') {
 	return $install;
 }
 
+/**
+  * Retourne la liste des classes filles
+  * @param string $motherClass Classe mere initial
+  * @param sring $rootPath Repertoire racine
+  * @param bool $recursif Recherche recursif
+  * @param bool $includeMother Ajoute la mere a la liste
+  * @return array
+  */
 function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$includeMother = false) {
 	$ret = array();
 	if($includeMother) {
@@ -1092,6 +1180,12 @@ function getDaughterClassesList($motherClass,$rootPath = '',$recursif = false,$i
 	return $ret;
 }
 
+/**
+  * Retourne la liste des tables referencees
+  * @param string $tableName Table initial
+  * @param sring $rootPath Repertoire racine
+  * @return array
+  */
 function getReferenceTablesList($tableName,$rootPath="") {
 	$ret = array();
 	$ext_list = getExtensionsByDB($rootPath);
@@ -1103,6 +1197,10 @@ function getReferenceTablesList($tableName,$rootPath="") {
 	return $ret;
 }
 
+/**
+  * Verifie et rafraichi eventuellement les fonctions stockees.
+  * @param sring $rootPath Repertoire racine
+  */
 function checkExtensions($rootPath="") {
 	global $dbcnf;
 	global $connect;
@@ -1137,5 +1235,6 @@ function checkExtensions($rootPath="") {
 	else
 		logAutre("No refresh");
 }
+
 //@END@
 ?>

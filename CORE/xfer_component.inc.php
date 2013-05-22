@@ -21,8 +21,9 @@
 // --- Last modification: Date 28 April 2011 22:04:25 By  ---
 
 //@BEGIN@
+
 /**
- * fichier gérant des composants pour une fenêtre personnalisée
+ * fichier gerant des composants pour une fenetre personnalisee
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -31,7 +32,10 @@
 
  */
 
-require_once ('CORE/xfer.inc.php');
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
 
 /**
 * Configuration du lien mail
@@ -41,6 +45,7 @@ require_once ('CORE/xfer.inc.php');
 * autre=to
 **/
 $MAILTO_TYPE=0;
+
 /**
 * Gestionnaire de Link label
 *
@@ -72,14 +77,14 @@ class Xfer_Component extends Xfer_Object {
 	public $m_name;
 
 	/**
-	 * Valeur véhiculée par le composant
+	 * Valeur vehiculee par le composant
 	 *
 	 * @var unknown_type
 	 */
 	public $m_value;
 
 	/**
-	 * Identifiant de l'onglet associé. 0=Hors onglet
+	 * Identifiant de l'onglet associe. 0=Hors onglet
 	 *
 	 * @var integer
 	 */
@@ -120,7 +125,7 @@ class Xfer_Component extends Xfer_Object {
 	public $m_description;
 
 	/**
-	 * Précise si le champ est obligatoire. False par defaut.
+	 * Precise si le champ est obligatoire. False par defaut.
 	 *
 	 * @var boolean
 	 */
@@ -214,7 +219,7 @@ class Xfer_Component extends Xfer_Object {
 	}
 
 	/**
-	 * Change la valeur véhiculée par le composant
+	 * Change la valeur vehiculee par le composant
 	 *
 	 * @param unknown_type $value
 	 */
@@ -223,7 +228,7 @@ class Xfer_Component extends Xfer_Object {
 	}
 
 	/**
-	 * Change l'état obligatoire du composant
+	 * Change l'etat obligatoire du composant
 	 *
 	 * @param boolean $needed
 	 */
@@ -350,7 +355,7 @@ class Xfer_Comp_Tab extends Xfer_Component {
 	}
 }
 /**
- * Composant gérant l'affichage d'un texte brute.
+ * Composant gerant l'affichage d'un texte brute.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -388,7 +393,7 @@ class Xfer_Comp_Label extends Xfer_Component {
 	}
 }
 /**
- * Composant gérant l'affichage d'une image
+ * Composant gerant l'affichage d'une image
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -464,7 +469,7 @@ class Xfer_Comp_Image extends Xfer_Component {
 	}
 }
 /**
- * Composant gérant l'affichage d'un label avec hyper-liens
+ * Composant gerant l'affichage d'un label avec hyper-liens
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -566,7 +571,7 @@ class Xfer_Comp_LinkLabel extends Xfer_Component {
 	}
 }
 /**
- * Composant gérant l'affichage d'un texte formaté.
+ * Composant gerant l'affichage d'un texte formate.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -605,8 +610,8 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
 }
 
 /**
- * Abstration d'un composant associé à une action déclanché par un événement.
- * Utiliser concrètement, il se comporte comme un bouton.
+ * Abstration d'un composant associe a une action declanche par un evenement.
+ * Utiliser concretement, il se comporte comme un bouton.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -614,7 +619,7 @@ class Xfer_Comp_LabelForm extends Xfer_Component {
  */
 class Xfer_Comp_Button extends Xfer_Component {
 	/**
-	 * Action associé au bouton
+	 * Action associe au bouton
 	 *
 	 * @var Xfer_Action
 	 */var$m_action = null;
@@ -634,7 +639,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 		$this->_componentIdent = "BUTTON";
 	}
 	/**
-	 * change l'action associé au bouton
+	 * change l'action associe au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
@@ -661,21 +666,21 @@ class Xfer_Comp_Button extends Xfer_Component {
 
 
 	/**
-	 * Valeur retourné par un clique button
+	 * Valeur retourne par un clique button
 	 *
 	 * @var unknown_type
 	 */
 	public $m_clickvalue="";
 
 	/**
-	 * Nom retourné par un clique button
+	 * Nom retourne par un clique button
 	 *
 	 * @var unknown_type
 	 */
 	public $m_clickname="";
 
 	/**
-	 * change l'action associé au bouton
+	 * change l'action associe au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
@@ -685,14 +690,14 @@ class Xfer_Comp_Button extends Xfer_Component {
 	}
 
 	/**
-	 * Présise si le bouton doit être "mini"
+	 * Presise si le bouton doit etre "mini"
 	 *
 	 * @var unknown_type
 	 */
 	public $m_isMini=false;
 
 	/**
-	 * change l'action associé au bouton
+	 * change l'action associe au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
@@ -734,7 +739,7 @@ class Xfer_Comp_Button extends Xfer_Component {
 	}
 }
 /**
- * Composant gérant une zone d'édition mono-ligne brute.
+ * Composant gerant une zone d'edition mono-ligne brute.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -789,7 +794,7 @@ class Xfer_Comp_Edit extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant géarnt la saisie d'une date
+ * Composant gearnt la saisie d'une date
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -825,7 +830,7 @@ class Xfer_Comp_Date extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant géarnt la saisie d'une heure.
+ * Composant gearnt la saisie d'une heure.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -861,7 +866,7 @@ class Xfer_Comp_Time extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant géarnt la saisie d'une date et d'une heure.
+ * Composant gearnt la saisie d'une date et d'une heure.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -897,7 +902,7 @@ class Xfer_Comp_DateTime extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant la saisie d'un mot de passe.
+ * Composant gerant la saisie d'un mot de passe.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -915,7 +920,7 @@ class Xfer_Comp_Passwd extends Xfer_Comp_Button {
 		$this->_componentIdent = "PASSWD";
 	}
 	/**
-	 * Change la valeur par défaut.
+	 * Change la valeur par defaut.
 	 *
 	 * @param string $value
 	 */
@@ -933,7 +938,7 @@ class Xfer_Comp_Passwd extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant une zone d'édition multiligne brute.
+ * Composant gerant une zone d'edition multiligne brute.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1009,7 +1014,7 @@ class Xfer_Comp_Memo extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant une zone d'édition multiligne formaté.
+ * Composant gerant une zone d'edition multiligne formate.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1046,7 +1051,7 @@ class Xfer_Comp_MemoForm extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant un zone de saisie d'un réel.
+ * Composant gerant un zone de saisie d'un reel.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1070,7 +1075,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 		$this->m_prec = (int)$prec;
 	}
 	/**
-	 * Change la valeur réel
+	 * Change la valeur reel
 	 *
 	 * @param real $value
 	 */
@@ -1079,7 +1084,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 		$this->m_value = $value;
 	}
 	/**
-	 * Retourne le format de précision
+	 * Retourne le format de precision
 	 *
 	 * @access private
 	 * @return string
@@ -1114,7 +1119,7 @@ class Xfer_Comp_Float extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant une case à cocher.
+ * Composant gerant une case a cocher.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1150,7 +1155,7 @@ class Xfer_Comp_Check extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant une boite de selection simple.
+ * Composant gerant une boite de selection simple.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1174,7 +1179,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 		$this->_componentIdent = "SELECT";
 	}
 	/**
-	 * Change la sélection par défaut
+	 * Change la selection par defaut
 	 *
 	 * @param integer $value
 	 */
@@ -1223,7 +1228,7 @@ class Xfer_Comp_Select extends Xfer_Comp_Button {
 	}
 }
 /**
- * Composant gérant une boite de selection multiple.
+ * Composant gerant une boite de selection multiple.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1294,7 +1299,7 @@ class Xfer_Comp_CheckList extends Xfer_Comp_Button {
 }
 
 /**
- * Composant gérant le téléchargement d'un fichier
+ * Composant gerant le telechargement d'un fichier
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1309,7 +1314,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	public $m_fitre = array();
 
 	/**
-	 * Le fichier est transmis compressé
+	 * Le fichier est transmis compresse
 	 *
 	 * @var string
 	 */
@@ -1323,7 +1328,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 	public $HttpFile=false;
 
 	/**
-	 * Taille maximal à télécharger
+	 * Taille maximal a telecharger
 	 *
 	 * @var int
 	 */
@@ -1383,7 +1388,7 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 }
 
 /**
- * Composant gérant l'extraction d'un fichier
+ * Composant gerant l'extraction d'un fichier
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -1392,14 +1397,14 @@ class Xfer_Comp_UpLoad extends Xfer_Component {
 class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 
 	/**
-	 * Nom du fichier à extraire
+	 * Nom du fichier a extraire
 	 *
 	 * @var string
 	 */
 	public $m_FileName="";
 
 	/**
-	 * Le fichier est transmis compressé
+	 * Le fichier est transmis compresse
 	 *
 	 * @var boolean
 	 */
@@ -1413,7 +1418,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	public $HttpFile=false;
 
 	/**
-	 * Taille maximal à télécharger
+	 * Taille maximal a telecharger
 	 *
 	 * @var int
 	 */
@@ -1440,7 +1445,7 @@ class Xfer_Comp_DownLoad extends Xfer_Comp_Button {
 	}
 
 	/**
-	 * Change le fichier à télécharger
+	 * Change le fichier a telecharger
 	 *
 	 * @param string $filename
 	 */

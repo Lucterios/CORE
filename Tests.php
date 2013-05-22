@@ -257,6 +257,7 @@ class TestManager {
 	}
 }
 
+gc_enable();
 $testManager=null;
 if (isset($_GET['extension']) && isset($_GET['dbuser']) && isset($_GET['dbpass']) && isset($_GET['dbname'])) {
 	$testManager=new TestManager($_GET['extension'],isset($_GET['title'])?$_GET['title']:"Lucterios Test",

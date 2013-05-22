@@ -21,7 +21,7 @@
 //@BEGIN@
 
 /**
- * fichier gérant une boite de dialogue transferée
+ * fichier gerant une boite de dialogue transferee
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -29,8 +29,10 @@
  * @subpackage Xfer
  */
 
-
-require_once 'xfer.inc.php';
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
 
 /**
  * Information
@@ -94,7 +96,7 @@ class Xfer_Container_DialogBox extends Xfer_Container_Abstract
 		$this->m_observer_name="Core.DialogBox";
 	}
 	/**
-	 * Assigne le type et le message à la boite de dialogue
+	 * Assigne le type et le message a la boite de dialogue
 	 *
 	 * @param string $text
 	 * @param integer $type
@@ -105,7 +107,7 @@ class Xfer_Container_DialogBox extends Xfer_Container_Abstract
 		$this->m_text=$text;
 	}
 	/**
-	 * Ajoute une action à la boite de dialogue
+	 * Ajoute une action a la boite de dialogue
 	 *
 	 * @param Xfer_Action $action
 	 */

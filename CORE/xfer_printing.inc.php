@@ -22,7 +22,7 @@
 
 //@BEGIN@
 /**
- * fichier g�rant le classe de d'impression de transfert
+ * fichier gerant le classe de d'impression de transfert
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -30,8 +30,14 @@
  * @subpackage Xfer
  */
 
-require_once 'xfer.inc.php';
-require_once 'ConvertPrintModel.inc.php';
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
+/**
+ * Convertion de model d'impression
+ */
+require_once 'CORE/ConvertPrintModel.inc.php';
 
 /**
  * Classe de transfert d'impression
@@ -118,7 +124,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	/**
 	 * Affiche un choix d'impression.
 	 *
-	 * @param array $SpecialSelector : Etiquette si non sp�cifi�
+	 * @param array $SpecialSelector : Etiquette si non specifie
 	 * @param array $SelectorDesc : Description du selctionneur
 	 * @return boolean
 	 */
@@ -222,11 +228,11 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	}
 
 	/**
-	 * Construit un rapport depuis des données
+	 * Construit un rapport depuis des donnees
 	 *
 	 * @param String $aTitle Titre du rapport
-	 * @param String $aData XML à imprimer
-	 * @param Int $aType Type de donnée
+	 * @param String $aData XML a imprimer
+	 * @param Int $aType Type de donnee
 	 * @return boolean reussite
 	 */
 	public function printData($aTitle,$aData,$aType=0)
@@ -269,7 +275,7 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 	/**
 	 * Construit un rapport depuis un listing
 	 *
-	 * @param PrintListing $aPrintListing listing à imprimer
+	 * @param PrintListing $aPrintListing listing a imprimer
 	 * @return boolean reussite
 	 */
 	public function printListing($aPrintListing)

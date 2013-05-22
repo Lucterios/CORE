@@ -22,7 +22,7 @@
 
 //@BEGIN@
 /**
- * fichier gérant des composants pour une fenêtre personnalisée
+ * fichier gerant des composants pour une fenetre personnalisee
  *
  * @author Pierre-Oliver Vershoore/Laurent Gay
  * @version 0.10
@@ -31,12 +31,28 @@
 
  */
 
-require_once'xfer.inc.php';
-require_once'xfer_component.inc.php';
+/**
+ * Objets Xfer
+ */
+require_once('CORE/xfer.inc.php');
+/**
+ * Composants Xfer
+ */
+require_once('CORE/xfer_component.inc.php');
 
+/**
+ * Maximum d'enregistrement par grille
+ */
 define('MAX_GRID_RECORD',50);
+/**
+ * Parametre contenant le numero de page de la grille
+ */
 define('GRID_PAGE','GRID_PAGE%');
 
+/**
+ * Conversion de champs
+ * @access private
+ */
 function convertFieldCase($fieldname) {
 	$split_point=explode('.',$fieldname);
 	if (count($split_point)==2) {
@@ -47,7 +63,7 @@ function convertFieldCase($fieldname) {
 }
 
 /**
- * Classe gérant un entête d'un composant Xfer_Comp_Grid
+ * Classe gerant un entete d'un composant Xfer_Comp_Grid
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -76,7 +92,7 @@ class Xfer_Comp_Header extends Xfer_Object {
 	public $m_type = "";
 
 	/**
-	 * chaine à évaluer pour l'enregistrement
+	 * chaine a evaluer pour l'enregistrement
 	 *
 	 * @var string
 	 */
@@ -99,7 +115,7 @@ class Xfer_Comp_Header extends Xfer_Object {
 	 * @param string $functionName nom de la fonction
 	 * @return Xfer_Comp_Header
 	 */
-	function __construct($name,$descript,$type = "",$formula="",$functionName="") {
+	public function __construct($name,$descript,$type = "",$formula="",$functionName="") {
 		parent::__construct();
 		$this->m_name = $name;
 		$this->m_descript = $descript;
@@ -109,11 +125,11 @@ class Xfer_Comp_Header extends Xfer_Object {
 	}
 
 	/**
-	 * Retourne le contenu XML de l'entête
+	 * Retourne le contenu XML de l'entete
 	 *
 	 * @return string
 	 */
-	function getReponseXML() {
+	public function getReponseXML() {
 		$xml_text = sprintf("<HEADER name='%s'",$this->m_name);
 		if($this->m_type != "")
 			$xml_text = $xml_text.sprintf(" type='%s'",$this->m_type);
@@ -122,7 +138,7 @@ class Xfer_Comp_Header extends Xfer_Object {
 	}
 }
 /**
- * Composant gérant une grille/un tableau.
+ * Composant gerant une grille/un tableau.
  *
  * @package Lucterios
  * @subpackage Xfer
@@ -130,7 +146,7 @@ class Xfer_Comp_Header extends Xfer_Object {
  */
 class Xfer_Comp_Grid extends Xfer_Component {
 	/**
-	 * Liste d'entêtes
+	 * Liste d'entetes
 	 *
 	 * @var array
 	 */
@@ -158,7 +174,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	public $mPageMax = 0;
 
 	/**
-	 * Numéro page courant
+	 * Numero page courant
 	 *
 	 * @var int
 	 */
@@ -185,13 +201,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $name
 	 * @return Xfer_Comp_Grid
 	 */
-	function __construct($name) {
+	public function __construct($name) {
 		parent::__construct($name);
 		$this->_componentIdent = "GRID";
 	}
 
 	/**
-	 * Ajoute un entête de colonne dans une grille
+	 * Ajoute un entete de colonne dans une grille
 	 *
 	 * @param string $name
 	 * @param array $descript
@@ -199,17 +215,17 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $formula formula
 	 * @param string $functionName nom de la fonction
 	 */
-	function addHeader($name,$descript,$type = "",$formula = "",$functionName="") {
+	public function addHeader($name,$descript,$type = "",$formula = "",$functionName="") {
 		$new_obs = & new Xfer_Comp_Header($name,$descript,$type,$formula,$functionName);
 		$this->m_headers[$name] = $new_obs;
 	}
 
 	/**
-	 * Ajoute l'action associé au bouton
+	 * Ajoute l'action associe au bouton
 	 *
 	 * @param Xfer_Action $action
 	 */
-	function addAction($action,$posAct=-1) {
+	public function addAction($action,$posAct=-1) {
 		if($this->checkActionRigth($action)) {
 			if ($posAct!=-1) {
 				$old_actions=$this->m_actions;
@@ -233,15 +249,15 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	}
 
 	/**
-	 * Ajoute un entête de colonne dans une grille
+	 * Ajoute un entete de colonne dans une grille
 	 *
 	 * @param string $FieldName
 	 * @param array $desc_fld
-	 * @param integer $type_fld 0:entier - 1:réel - 3:booléen - autre:chaine
+	 * @param integer $type_fld 0:entier - 1:reel - 3:booleen - autre:chaine
 	 * @param string $formula formula
 	 * @param string $functionName nom de la fonction
 	 */
-	function newHeader($FieldName,$desc_fld,$type_fld,$formula="",$functionName="") {
+	public function newHeader($FieldName,$desc_fld,$type_fld,$formula="",$functionName="") {
 		switch($type_fld) {
 		case 0:
 			$type_col = "int";
@@ -263,13 +279,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	}
 
 	/**
-	 * Rempli l'entête d'une grille avec la déscription de l'objet $DBObjs et les champs décrits.
+	 * Rempli l'entete d'une grille avec la description de l'objet $DBObjs et les champs decrits.
 	 *
 	 * @param DBObj_Basic $DBObjs
 	 * @param null|string|array $FieldNames
 	 * @param string $RefTableName
 	 */
-	function setDBObjectHeader($DBObjs,$FieldNames = null,$RefTableName = "") {
+	public function setDBObjectHeader($DBObjs,$FieldNames = null,$RefTableName = "") {
 		$field_desc = $DBObjs->getDBMetaDataField();
 		foreach($FieldNames as $FieldName) {
 			if( array_key_exists($FieldName,$field_desc)) {
@@ -315,14 +331,14 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	}
 
 	/**
-	 * Rempli une cellule dans une grille avec la déscription de l'objet $DBObjs et le champ décrit.
+	 * Rempli une cellule dans une grille avec la description de l'objet $DBObjs et le champ decrit.
 	 *
 	 * @param integer $NewId
 	 * @param DBObj_Basic $DBObjs
 	 * @param string $FieldName
 	 * @param array $field_desc
 	 */
-	function setDBObjectData($NewId,$DBObjs,$FieldName,$field_desc) {
+	public function setDBObjectData($NewId,$DBObjs,$FieldName,$field_desc) {
 		if( array_key_exists($FieldName,$field_desc)) {
 			$type_fld = $field_desc[$FieldName]['type'];
 			$data = $DBObjs->getField($FieldName);
@@ -381,7 +397,12 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$this->setValue($NewId,$FieldName,$val);
 	}
 
-	function definePage($ContextParams) {
+	/**
+	 * Defini la page courante
+	 * @param array $ContextParams Parametres de context
+	 * @return array
+	 */
+	private function definePage($ContextParams) {
 		if (is_array($ContextParams)) {
 			$this->mPageMax = (int)ceil($this->mNbLines/$this->mMaxGridRecord);
 			$page_num=$ContextParams[GRID_PAGE.$this->m_name];
@@ -401,14 +422,14 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	}
 
 	/**
-	 * Remplis une grille avec la déscription de l'objet $DBObjs et les champs décrits.
+	 * Remplis une grille avec la description de l'objet $DBObjs et les champs decrits.
 	 *
 	 * @param DBObj_Basic $DBObjs
 	 * @param null|string|array $FieldNames
 	 * @param string $RefTableName
 	 * @param array $ContextParams Context des parametres => Numero de la page [0,N-1]
 	 */
-	function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
+	public function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
 		$this->mNbLines=$DBObjs->N;
 		list($record_min,$record_max)=$this->definePage($ContextParams);
 
@@ -448,7 +469,7 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 * @param string $FieldKey
 	 * @param array $ContextParams Context des parametres => Numero de la page [0,N-1]
 	 */
-	function setDBRows($queryId,$FieldKey,$ContextParams=null) {
+	public function setDBRows($queryId,$FieldKey,$ContextParams=null) {
 		global $connect;
 		$this->mNbLines=$connect->getNumRows($queryId);
 		list($record_min,$record_max)=$this->definePage($ContextParams);
@@ -478,12 +499,11 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	}
 
 	/**
-	 * Crée une nouvelle ligne dans la grille
+	 * Cree une nouvelle ligne dans la grille
 	 *
-	 * @access private
 	 * @param integer $id
 	 */
-	function _newRecord($id) {
+	private function _newRecord($id) {
 		if(! array_key_exists($id,$this->m_records)) {
 			$new_record = array();
 			foreach($this->m_headers as $header) {
@@ -506,13 +526,13 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		}
 	}
 	/**
-	 * Change la valeur de la colonne $name de ma ligne identifiée par $id
+	 * Change la valeur de la colonne $name de ma ligne identifiee par $id
 	 *
 	 * @param integer $id
 	 * @param string $name
 	 * @param string $value
 	 */
-	function setValue($id,$name,$value) {
+	public function setValue($id,$name,$value) {
 		$this->_newRecord($id);
 		$this->m_records[$id][$name] = $value;
 	}
@@ -520,10 +540,9 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	/**
 	 * Retourne l'ensemble des attributs du composant
 	 *
-	 * @access public
 	 * @return string
 	 */
-	function _attributs() {
+	protected function _attributs() {
 		$xml_attr = parent:: _attributs();
 		if( is_int($this->mPageMax) && ($this->mPageMax > 1))
 			$xml_attr .= " PageMax='".$this->mPageMax."' PageNum='".$this->mPageMum."'";
@@ -533,10 +552,9 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	/**
 	 * Contenu du composant
 	 *
-	 * @access private
 	 * @return string
 	 */
-	function _getContent() {
+	public function _getContent() {
 		$xml_text = "";
 		foreach($this->m_headers as $header)$xml_text = $xml_text.$header->getReponseXML();
 		foreach($this->m_records as $key => $record) {

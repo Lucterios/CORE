@@ -19,6 +19,7 @@
 //	Contributeurs: Fanny ALLEAUME, Pierre-Olivier VERSCHOORE, Laurent GAY
 //
 
+gc_enable();
 require_once("CORE/Lucterios_Error.inc.php");
 
 list($usec, $sec) = explode(" ", microtime());
