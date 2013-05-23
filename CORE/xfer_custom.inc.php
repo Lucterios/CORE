@@ -279,7 +279,7 @@ class Xfer_Container_Custom extends Xfer_Container_Abstract {
 
 	private function convertTextToJavaScript($itialText) {
 	    $final_text=$itialText;
-	    $final_text=str_replace(array("'","e","e","e","ë","a","â","ù","ü","ô","ö","î","ï"),array("`","e","e","e","a","a","u","u","o","o","i","i"),$final_text);
+	    $final_text=str_replace(array("'","é","è","ê","ë","à","â","ù","ü","ô","ö","î","ï"),array("`","e","e","e","a","a","u","u","o","o","i","i"),$final_text);
 	    return $final_text;
 	}
 
@@ -459,11 +459,11 @@ if ((type=='list') || (type=='listmult')) {
 
 		$label = new Xfer_Comp_LabelForm('labelsearchDescTitle');
 		if (count($criteriaDesc)>0) {
-			$label->setValue("{[bold]}{[underline]}Vos criteres de recherche:{[/underline]}{[/bold]}");
+			$label->setValue("{[bold]}{[underline]}Vos critère de recherche:{[/underline]}{[/bold]}");
 			$label->setLocation($posX,$posY,2,4);
 		}
 		else {
-			$label->setValue("{[center]}{[bold]}{[underline]}Aucun critere de recherche defini{[/underline]}{[/bold]}{[/center]}");
+			$label->setValue("{[center]}{[bold]}{[underline]}Aucun critère de recherche défini{[/underline]}{[/bold]}{[/center]}");
 			$label->setLocation($posX,$posY,4);
 		}
 		$this->addComponent($label);

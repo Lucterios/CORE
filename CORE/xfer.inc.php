@@ -672,7 +672,7 @@ function convertDate($date,$long = false) {
 			$m = "Janvier";
 			break;
 		case 2:
-			$m = "Fevrier";
+			$m = "Février";
 			break;
 		case 3:
 			$m = "Mars";
@@ -702,7 +702,7 @@ function convertDate($date,$long = false) {
 			$m = "Novembre";
 			break;
 		case 12:
-			$m = "Decembre";
+			$m = "Décembre";
 			break;
 		default :
 			$m = "Janvier";
