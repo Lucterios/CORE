@@ -431,6 +431,8 @@ class Xfer_Comp_Grid extends Xfer_Component {
 	 */
 	public function setDBObject($DBObjs,$FieldNames = null,$RefTableName = "",$ContextParams=null) {
 		$this->mNbLines=$DBObjs->N;
+        if ($DBObjs->rowCount!=0)
+            $this->mMaxGridRecord=$DBObjs->rowCount;
 		list($record_min,$record_max)=$this->definePage($ContextParams);
 
 		if( is_int($FieldNames))
@@ -441,8 +443,8 @@ class Xfer_Comp_Grid extends Xfer_Component {
 		$field_desc = $DBObjs->getDBMetaDataField();
 
 		$record_current=0;
-		while($DBObjs->fetch() && ($record_current<$record_max)) {
-			if ($record_current>=$record_min)
+		while($DBObjs->fetch() && (($DBObjs->rowCount!=0) || ($record_current<$record_max))) {
+			if (($DBObjs->rowCount!=0) || ($record_current>=$record_min))
 				foreach($FieldNames as $FieldName) {
 					$pos = strpos($FieldName,"[");
 					if($pos === false)

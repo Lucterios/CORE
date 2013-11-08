@@ -56,7 +56,7 @@ $xfer_result->addComponent($img);
 // Les actifs
 $self->actif='o';
 $self->orderBy("groupId, realName, login");
-$self->find();
+$self->find(true,(int)$Params[GRID_PAGE.'user_actif']*MAX_GRID_RECORD,MAX_GRID_RECORD);
 
 $lbl_actifs= &new Xfer_Comp_LabelForm('lbl_actifs');
 $lbl_actifs->setValue('{[bold]}Liste des utilisateurs actifs:{[/bold]}{[newline]}{[newline]}');
@@ -81,7 +81,7 @@ $xfer_result->addComponent($sep);
 $self=new DBObj_CORE_users;
 $self->actif='n';
 $self->orderBy("groupId, realName, login");
-$self->find();
+$self->find(true,(int)$Params[GRID_PAGE.'user_desactif']*MAX_GRID_RECORD,MAX_GRID_RECORD);
 
 $lbl_inactif= &new Xfer_Comp_LabelForm('lbl_inactif');
 $lbl_inactif->setValue('{[bold]}Liste des utilisateurs inactifs:{[/bold]}{[newline]}{[newline]}');
