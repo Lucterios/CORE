@@ -202,6 +202,22 @@ class DBObj_Abstract {
 	 */
 	public $N=0;
 
+	/**
+	 * Offset de selection
+	 *
+	 * @var int
+	 * @access public
+	 */
+	public $offset=0;
+
+	/**
+	 * Nombre d'enregistrement de selection
+	 *
+	 * @var int
+	 * @access public
+	 */
+	public $rowCount=0;
+
 
 	protected $is_super = false;
 
@@ -589,15 +605,33 @@ class DBObj_Abstract {
 	 * selectionne des enregistrements
 	 *
 	 * @param string $string
+     * @param int $offset offset de selection (limit)
+     * @param int $row_count nb d'enregistrement de selection (limit)
 	 * @return int nombre trouve
 	 */
-	public function query($query) {
+	public function query($query, $offset=null, $row_count=null) {
 		$this->__son = null;
+        if (($row_count!=null) && (strtoupper(substr($query,0,6))=='SELECT')) {
+            $this->offset=(int)$offset;
+            $this->rowCount=(int)$row_count;
+            $query='SELECT SQL_CALC_FOUND_ROWS '.substr($query,7)." LIMIT ".$this->offset.",".$this->rowCount;
+        }
+        else {
+            $this->offset=0;
+            $this->rowCount=0;
+        }
 		global $connect;
 		$this->lastQuery= $connect->execute($query,true);
 		$result = $connect->getNumRows($this->lastQuery);
-		$this->N=$result;
-		$this->debug("Query:Q=$query - nb=$result",2);
+        $row_datas=array(0);
+        if ($this->rowCount==0)
+    		$this->N=$result;
+        else {
+            $query_id_found_rows= $connect->execute("SELECT FOUND_ROWS()",true);
+            $row_datas=$connect->getRow($query_id_found_rows);
+    		$this->N=(int)$row_datas[0];
+        }
+		$this->debug("Query:Q=$query - offset=".$this->offset.",row_count=".$this->rowCount." - nb=$result",2);
 		return $result;
 	}
 
@@ -625,9 +659,11 @@ class DBObj_Abstract {
 	 * Lance une recheche
 	 *
 	 * @param bool $withFct Avec fonctions stockees
+     * @param int $offset offset de selection (limit)
+     * @param int $row_count nb d'enregistrement de selection (limit)
 	 * @return bool
 	 */
-	public function find($withFct=true) {
+	public function find($withFct=true, $offset=NULL, $row_count=NULL) {
 		list($fields,$tables,$wheres)=$this->prepQuery(true,$withFct);
 		$query="SELECT ".implode(',',$fields)." FROM ".implode(',',$tables);
 		foreach($this->whereAddList as $other_where)
@@ -636,7 +672,7 @@ class DBObj_Abstract {
 			$query.=" WHERE ".implode(' AND ',$wheres);
 		if (is_string($this->order))
 			$query.=" ORDER BY ".$this->order;
-		$result = $this->query($query);
+		$result = $this->query($query, $offset, $row_count);
 		return $result;
 	}
 
