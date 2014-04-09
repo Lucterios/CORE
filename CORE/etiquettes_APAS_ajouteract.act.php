@@ -48,7 +48,7 @@ if ($etiquette>=0) $self->get($etiquette);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","etiquettes_APAS_ajouteract",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","etiquettes_APAS_ajouteract",$Params);
 $xfer_result->Caption='Validation';
 //@CODE_ACTION@
 $self->setFrom($Params);

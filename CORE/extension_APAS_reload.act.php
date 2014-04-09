@@ -23,7 +23,7 @@ function extension_APAS_reload($Params)
 {
 $self=new DBObj_CORE_extension();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","extension_APAS_reload",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","extension_APAS_reload",$Params);
 $xfer_result->Caption="Recharger les configurations";
 //@CODE_ACTION@
 global $SECURITY_LOCK;

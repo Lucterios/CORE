@@ -43,7 +43,7 @@ function extension_params_APAS_list($Params)
 {
 $self=new DBObj_CORE_extension_params();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","extension_params_APAS_list",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","extension_params_APAS_list",$Params);
 $xfer_result->Caption="Liste des paramètres généraux de l`application";
 //@CODE_ACTION@
 $posY = 0;

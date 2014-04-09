@@ -44,7 +44,7 @@ if (($ret=checkParams("CORE", "archiveDelete",$Params ,"path","filename"))!=null
 $path=getParams($Params,"path",0);
 $filename=getParams($Params,"filename",0);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","archiveDelete",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","archiveDelete",$Params);
 $xfer_result->Caption="Suppression d'un archive";
 //@CODE_ACTION@
 $file_path = $path.$filename;

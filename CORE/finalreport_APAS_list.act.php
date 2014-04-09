@@ -41,7 +41,7 @@ function finalreport_APAS_list($Params)
 {
 $self=new DBObj_CORE_finalreport();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","finalreport_APAS_list",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","finalreport_APAS_list",$Params);
 $xfer_result->Caption="Liste des impression";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');

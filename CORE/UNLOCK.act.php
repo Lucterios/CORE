@@ -46,7 +46,7 @@ $ORIGINE=getParams($Params,"ORIGINE",0);
 $TABLE_NAME=getParams($Params,"TABLE_NAME",0);
 $RECORD_ID=getParams($Params,"RECORD_ID",0);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","UNLOCK",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","UNLOCK",$Params);
 $xfer_result->Caption='Déverouillage';
 //@CODE_ACTION@
 if (($RECORD_ID>0) && ($TABLE_NAME!='')) {

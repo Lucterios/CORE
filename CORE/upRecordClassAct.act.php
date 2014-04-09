@@ -49,7 +49,7 @@ $upclass=getParams($Params,"upclass",0);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","upRecordClassAct",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","upRecordClassAct",$Params);
 $xfer_result->Caption="Promouvoir un enregistrement";
 //@CODE_ACTION@
 $table_name=str_replace('/','_',$upclass);

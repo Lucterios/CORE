@@ -44,7 +44,7 @@ if (($ret=checkParams("CORE", "archive",$Params ,"path","filename"))!=null)
 $path=getParams($Params,"path",0);
 $filename=getParams($Params,"filename",0);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","archive",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","archive",$Params);
 $xfer_result->Caption="Sauvegarder les données";
 //@CODE_ACTION@
 global $SECURITY_LOCK;

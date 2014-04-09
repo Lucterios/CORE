@@ -39,7 +39,7 @@ function extension_params_APAS_miseajour($Params)
 $self=new DBObj_CORE_extension_params();
 $paramid=getParams($Params,"paramid",-1);
 if ($paramid>=0) $self->get($paramid);
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","extension_params_APAS_miseajour",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","extension_params_APAS_miseajour",$Params);
 //@CODE_ACTION@
 $self->setFrom($Params);
 $self->update();

@@ -41,7 +41,7 @@ if (($ret=checkParams("CORE", "archiveDownload",$Params ,"path","filename"))!=nu
 $path=getParams($Params,"path",0);
 $filename=getParams($Params,"filename",0);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","archiveDownload",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","archiveDownload",$Params);
 $xfer_result->Caption="Sauvegarder les données";
 //@CODE_ACTION@
 $img_title = new Xfer_Comp_Image('img_title');

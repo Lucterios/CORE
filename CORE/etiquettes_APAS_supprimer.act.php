@@ -46,7 +46,7 @@ if ($etiquette>=0) $self->get($etiquette);
 
 $self->lockRecord("etiquettes_APAS_supprimer");
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","etiquettes_APAS_supprimer",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","etiquettes_APAS_supprimer",$Params);
 $xfer_result->Caption='Supprimer une étiquette';
 $xfer_result->m_context['ORIGINE']="etiquettes_APAS_supprimer";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

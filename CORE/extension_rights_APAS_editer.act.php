@@ -45,7 +45,7 @@ $self=new DBObj_CORE_extension_rights();
 $right=getParams($Params,"right",-1);
 if ($right>=0) $self->get($right);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","extension_rights_APAS_editer",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","extension_rights_APAS_editer",$Params);
 $xfer_result->Caption="Liste des droits de groupes";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
@@ -53,14 +53,14 @@ $img->setValue('group.png');
 $img->setLocation(0,0);
 $xfer_result->addComponent($img);
 
-$comp2= &new Xfer_Comp_LabelForm('Comp2');
+$comp2=new Xfer_Comp_LabelForm('Comp2');
 $ext=$self->getField('extension');
 $comp2->setValue("{[center]}{[underline]}{[bold]}Droits {[italc]}".$self->description."{[/italc]} de l'extension {[italc]}".$ext->toText()."{[/italc]}{[/bold]}{[/underline]}{[/center]}");
 $comp2->setLocation(1, 0);
 $xfer_result->addComponent($comp2);
 
 $grouprights=$self->getField("groupright");
-$group_right= &new Xfer_Comp_Grid('groupright');
+$group_right=new Xfer_Comp_Grid('groupright');
 $group_right->setDBObject($grouprights,array('groupref','value'));
 $group_right->setValue(0,'groupref',"{[italc]}Tous les groupes{[/italc]}");
 $group_right->setValue(0,'value','Non');

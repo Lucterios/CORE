@@ -36,7 +36,7 @@ require_once('CORE/xfer_custom.inc.php');
 function selectRestor($Params)
 {
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","selectRestor",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","selectRestor",$Params);
 $xfer_result->Caption="Restaurer les données";
 //@CODE_ACTION@
 $img_title = new Xfer_Comp_Image('img_title');

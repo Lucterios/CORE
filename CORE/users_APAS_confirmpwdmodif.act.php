@@ -49,7 +49,7 @@ $newpass1=getParams($Params,"newpass1",0);
 $newpass2=getParams($Params,"newpass2",0);
 $self=new DBObj_CORE_users();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_confirmpwdmodif",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","users_APAS_confirmpwdmodif",$Params);
 $xfer_result->Caption="Changer mot de passe";
 //@CODE_ACTION@
 global $login;

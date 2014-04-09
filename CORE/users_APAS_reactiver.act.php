@@ -48,7 +48,7 @@ if ($user_desactif>=0) $self->get($user_desactif);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_reactiver",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","users_APAS_reactiver",$Params);
 $xfer_result->Caption='Résactiver un utilisateur';
 //@CODE_ACTION@
 $self->actif='o';

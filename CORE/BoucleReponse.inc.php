@@ -26,7 +26,7 @@ function studyReponse($current_reponse)
 	$Params=array();
 	if (is_string($current_reponse))
 	{
-		$p = &new COREParser();
+		$p =new COREParser();
 		$p->setInputString($current_reponse);
 		$p->parse();
 		$Reponse_trans = $p->getResult();

@@ -46,7 +46,7 @@ if ($user_actif>=0) $self->get($user_actif);
 
 $self->lockRecord("users_APAS_modifier");
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_modifier",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","users_APAS_modifier",$Params);
 $xfer_result->Caption="Modifier un utilisateur";
 $xfer_result->m_context['ORIGINE']="users_APAS_modifier";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

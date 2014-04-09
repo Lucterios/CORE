@@ -39,7 +39,7 @@ require_once('CORE/xfer_printing.inc.php');
 function printConf($Params)
 {
 try {
-$xfer_result=&new Xfer_Container_Print("CORE","printConf",$Params);
+$xfer_result=new Xfer_Container_Print("CORE","printConf",$Params);
 $xfer_result->Caption="Impression de la configuration";
 //@CODE_ACTION@
 require_once 'CORE/PrintAction.inc.php';

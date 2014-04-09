@@ -22,7 +22,7 @@ require_once('CORE/xfer_custom.inc.php');
 function status($Params)
 {
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","status",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","status",$Params);
 $xfer_result->Caption="Résumé";
 //@CODE_ACTION@
 global $SECURITY_LOCK;

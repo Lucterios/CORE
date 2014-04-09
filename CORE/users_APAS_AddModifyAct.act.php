@@ -44,7 +44,7 @@ $self=new DBObj_CORE_users();
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_AddModifyAct",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","users_APAS_AddModifyAct",$Params);
 $xfer_result->Caption="Modifier mon compte";
 //@CODE_ACTION@
 global $LOGIN_ID;

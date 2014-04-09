@@ -21,7 +21,7 @@ require_once('CORE/xfer_menu.inc.php');
 function menu($Params)
 {
 try {
-$xfer_result=&new Xfer_Container_Menu("CORE","menu",$Params);
+$xfer_result=new Xfer_Container_Menu("CORE","menu",$Params);
 $xfer_result->Caption="Menu de l application";
 //@CODE_ACTION@
 global $rootPath;

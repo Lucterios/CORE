@@ -41,7 +41,7 @@ function printmodel_APAS_list($Params)
 {
 $self=new DBObj_CORE_printmodel();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","printmodel_APAS_list",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","printmodel_APAS_list",$Params);
 $xfer_result->Caption="Liste des modèles d`impression";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');

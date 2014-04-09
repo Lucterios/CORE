@@ -45,7 +45,7 @@ $origininal_action=getParams($Params,"origininal_action",0);
 $current_table=getParams($Params,"current_table",0);
 $current_id=getParams($Params,"current_id",0);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","upRecordClass",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","upRecordClass",$Params);
 $xfer_result->Caption="Promouvoir un enregistrement";
 //@CODE_ACTION@
 require_once("CORE/DBAbstract.inc.php");

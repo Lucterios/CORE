@@ -52,7 +52,7 @@ if ($group>=0) $self->get($group);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_cloner",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","groups_APAS_cloner",$Params);
 $xfer_result->Caption="Cloner un groupe";
 //@CODE_ACTION@
 $new_group=new DBObj_CORE_groups;

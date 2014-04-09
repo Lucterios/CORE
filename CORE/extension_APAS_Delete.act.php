@@ -28,7 +28,7 @@ if ($extension>=0) $self->get($extension);
 
 $self->lockRecord("extension_APAS_Delete");
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","extension_APAS_Delete",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","extension_APAS_Delete",$Params);
 $xfer_result->Caption="Supprimer une extension";
 $xfer_result->m_context['ORIGINE']="extension_APAS_Delete";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

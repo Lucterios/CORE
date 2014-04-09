@@ -44,7 +44,7 @@ if (($ret=checkParams("CORE", "archiveUpload",$Params ,"path","filename"))!=null
 $path=getParams($Params,"path",0);
 $filename=getParams($Params,"filename",0);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","archiveUpload",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","archiveUpload",$Params);
 $xfer_result->Caption="Gestion des sauvegardes";
 //@CODE_ACTION@
 $file_path = $path.$filename;

@@ -50,7 +50,7 @@ $self=new DBObj_CORE_group_rights();
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","group_rights_APAS_modify",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","group_rights_APAS_modify",$Params);
 $xfer_result->Caption='Modifier un droit';
 //@CODE_ACTION@
 if ($groupright!=0)
