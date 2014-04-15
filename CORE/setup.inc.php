@@ -27,12 +27,12 @@ $extension_libre=true;
 $version_max=1;
 $version_min=5;
 $version_release=5;
-$version_build=870;
+$version_build=873;
 
 $depencies=array();
 
 $rights=array();
-$rights[0] = new Param_Rigth("Acceder au menu de l`application",0);
+$rights[0] = new Param_Rigth("Acceder à l`application",0);
 $rights[1] = new Param_Rigth("Ajouter/modifier un utilisateur",70);
 $rights[2] = new Param_Rigth("Ajouter/Modifier un groupe",90);
 $rights[3] = new Param_Rigth("Modifier les paramètres généraux",90);
@@ -44,6 +44,7 @@ $rights[8] = new Param_Rigth("Consultation de session de connexion",70);
 $rights[9] = new Param_Rigth("Consulter les paramètres généreaux",30);
 $rights[10] = new Param_Rigth("Paramètres généraux (avancé)",101);
 $rights[11] = new Param_Rigth("Archivage",90);
+$rights[12] = new Param_Rigth("Status de l`application",5);
 
 $menus=array();
 $menus[1] = new Param_Menu("Ad_ministration", "", "", "admin.png", "", 100 , 0, "Adminitration des configurations et des réglages.");
@@ -117,7 +118,7 @@ $actions[44] = new Param_Action("Sauvegarde d'archive", "selectNewArchive", 11);
 $actions[45] = new Param_Action("Restaurer les données", "selectRestor", 11);
 $actions[46] = new Param_Action("Tuer une session", "sessions_APAS_killsession", 8);
 $actions[47] = new Param_Action("Consultation des session", "sessions_APAS_list", 8);
-$actions[48] = new Param_Action("Résumé", "status", 0);
+$actions[48] = new Param_Action("Résumé", "status", 12);
 $actions[49] = new Param_Action("Gestion des sauvegardes", "toolBackup", 11);
 $actions[50] = new Param_Action("Promouvoir un enregistrement", "upRecordClassAct", 1);
 $actions[51] = new Param_Action("Promouvoir un enregistrement", "upRecordClass", 1);
