@@ -41,35 +41,35 @@ function users_APAS_changerpassword($Params)
 {
 $self=new DBObj_CORE_users();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_changerpassword",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","users_APAS_changerpassword",$Params);
 $xfer_result->Caption='Changer de mot de passe';
 //@CODE_ACTION@
-$img= &new Xfer_Comp_Image('img');
+$img=new Xfer_Comp_Image('img');
 $img->setValue('passwd.png');
 $img->setLocation(0, 0, 1, 3);
 $xfer_result->addComponent($img);
 
-$lab= &new Xfer_Comp_Label('lab1');
+$lab=new Xfer_Comp_Label('lab1');
 $lab->setValue('Ancien mot de passe');
 $lab->setLocation(1, 0);
 $xfer_result->addComponent($lab);
-$comp1= &new Xfer_Comp_Passwd('oldpass');
+$comp1=new Xfer_Comp_Passwd('oldpass');
 $comp1->setLocation(2, 0);
 $xfer_result->addComponent($comp1);
 
-$lab= &new Xfer_Comp_Label('lab2');
+$lab=new Xfer_Comp_Label('lab2');
 $lab->setValue('Nouveau mot de passe');
 $lab->setLocation(1, 1);
 $xfer_result->addComponent($lab);
-$comp1= &new Xfer_Comp_Passwd('newpass1');
+$comp1=new Xfer_Comp_Passwd('newpass1');
 $comp1->setLocation(2, 1);
 $xfer_result->addComponent($comp1);
 
-$lab= &new Xfer_Comp_Label('lab3');
+$lab=new Xfer_Comp_Label('lab3');
 $lab->setValue('Re-nouveau mot de passe');
 $lab->setLocation(1, 2);
 $xfer_result->addComponent($lab);
-$comp1= &new Xfer_Comp_Passwd('newpass2');
+$comp1=new Xfer_Comp_Passwd('newpass2');
 $comp1->setLocation(2, 2);
 $xfer_result->addComponent($comp1);
 

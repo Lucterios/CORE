@@ -47,7 +47,7 @@ if ($print_model>=0) $self->get($print_model);
 
 $self->lockRecord("printmodel_APAS_edit");
 try {
-$xfer_result=&new Xfer_Container_Template("CORE","printmodel_APAS_edit",$Params);
+$xfer_result=new Xfer_Container_Template("CORE","printmodel_APAS_edit",$Params);
 $xfer_result->Caption='Editer un modèle';
 $xfer_result->m_context['ORIGINE']="printmodel_APAS_edit";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;
@@ -59,7 +59,7 @@ if (is_string($model))
   $self->modify='o';
   $self->update();
   require_once('CORE/xfer_dialogBox.inc.php');
-  $xfer_result=&new Xfer_Container_Acknowledge("CORE","printmodel_APAS_edit",$Params);
+  $xfer_result=new Xfer_Container_Acknowledge("CORE","printmodel_APAS_edit",$Params);
 }
 else
 {

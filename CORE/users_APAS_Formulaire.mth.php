@@ -44,19 +44,19 @@ else
   $xfer_result->setDBObject($self,array("login","realName","groupId"),($self->id==99) || ($self->id==100),1,1);
 
 if ($self->id!=99) {
-	$lab= &new Xfer_Comp_LabelForm('lab1');
+	$lab=new Xfer_Comp_LabelForm('lab1');
 	$lab->setValue('{[bold]}mot de passe{[/bold]}');
 	$lab->setLocation(1, 4, 1, 1);
 	$xfer_result->addComponent($lab);
-	$comp1= &new Xfer_Comp_Passwd('newpass1');
+	$comp1=new Xfer_Comp_Passwd('newpass1');
 	$comp1->setLocation(2, 4, 1, 1);
 	$xfer_result->addComponent($comp1);
 
-	$lab= &new Xfer_Comp_LabelForm('lab2');
+	$lab=new Xfer_Comp_LabelForm('lab2');
 	$lab->setValue('{[bold]}re-mot de passe{[/bold]}');
 	$lab->setLocation(1, 5, 1, 1);
 	$xfer_result->addComponent($lab);
-	$comp1= &new Xfer_Comp_Passwd('newpass2');
+	$comp1=new Xfer_Comp_Passwd('newpass2');
 	$comp1->setLocation(2, 5, 1, 1);
 	$xfer_result->addComponent($comp1);
 }

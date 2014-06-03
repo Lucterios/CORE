@@ -40,7 +40,7 @@ function access_APAS_list($Params)
 {
 $self=new DBObj_CORE_access();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","access_APAS_list",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","access_APAS_list",$Params);
 $xfer_result->Caption='Liste des acces';
 //@CODE_ACTION@
 $self->find();

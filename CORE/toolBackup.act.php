@@ -36,7 +36,7 @@ require_once('CORE/xfer_custom.inc.php');
 function toolBackup($Params)
 {
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","toolBackup",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","toolBackup",$Params);
 $xfer_result->Caption="Gestion des sauvegardes";
 //@CODE_ACTION@
 $img_title = new Xfer_Comp_Image('img_title');

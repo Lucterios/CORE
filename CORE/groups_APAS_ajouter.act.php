@@ -49,7 +49,7 @@ if ($group>=0) $self->get($group);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_ajouter",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","groups_APAS_ajouter",$Params);
 $xfer_result->Caption="Ajouter un groupe";
 //@CODE_ACTION@
 $self->setFrom($Params);

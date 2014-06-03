@@ -46,7 +46,7 @@ if ($etiquette>=0) $self->get($etiquette);
 
 $self->lockRecord("etiquettes_APAS_ajouter");
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","etiquettes_APAS_ajouter",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","etiquettes_APAS_ajouter",$Params);
 $xfer_result->Caption="Ajouter/Modifier une étiquette";
 $xfer_result->m_context['ORIGINE']="etiquettes_APAS_ajouter";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

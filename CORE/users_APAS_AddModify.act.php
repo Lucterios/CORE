@@ -41,7 +41,7 @@ function users_APAS_AddModify($Params)
 {
 $self=new DBObj_CORE_users();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_AddModify",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","users_APAS_AddModify",$Params);
 $xfer_result->Caption="Modifier mon compte";
 //@CODE_ACTION@
 global $LOGIN_ID;

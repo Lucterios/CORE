@@ -44,7 +44,7 @@ $self=new DBObj_CORE_finalreport();
 $print_report=getParams($Params,"print_report",-1);
 if ($print_report>=0) $self->get($print_report);
 try {
-$xfer_result=&new Xfer_Container_Print("CORE","finalreport_APAS_reprint",$Params);
+$xfer_result=new Xfer_Container_Print("CORE","finalreport_APAS_reprint",$Params);
 $xfer_result->Caption='reimprimer';
 //@CODE_ACTION@
 $xfer_result->ReportTitle=$self->titre;

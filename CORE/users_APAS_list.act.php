@@ -41,7 +41,7 @@ function users_APAS_list($Params)
 {
 $self=new DBObj_CORE_users();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_list",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","users_APAS_list",$Params);
 $xfer_result->Caption="Liste des utilisateurs";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
@@ -58,12 +58,12 @@ $self->actif='o';
 $self->orderBy("groupId, realName, login");
 $self->find(true,(int)$Params[GRID_PAGE.'user_actif']*MAX_GRID_RECORD,MAX_GRID_RECORD);
 
-$lbl_actifs= &new Xfer_Comp_LabelForm('lbl_actifs');
+$lbl_actifs=new Xfer_Comp_LabelForm('lbl_actifs');
 $lbl_actifs->setValue('{[bold]}Liste des utilisateurs actifs:{[/bold]}{[newline]}{[newline]}');
 $lbl_actifs->setLocation(0, 1, 2, 1);
 $xfer_result->addComponent($lbl_actifs);
 
-$user_actif= &new Xfer_Comp_Grid('user_actif','Grille des utilisateurs');
+$user_actif=new Xfer_Comp_Grid('user_actif','Grille des utilisateurs');
 $user_actif->setDBObject($self,array("login","realName","groupId","lastDate"));
 $user_actif->addAction($self->NewAction("_Modifier",'edit.png','modifier',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $user_actif->addAction($self->NewAction("_Désactiver",'suppr.png','desactiver',FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
@@ -72,7 +72,7 @@ $user_actif->addAction($self->NewAction("_Ajouter",'add.png','ajouter',FORMTYPE_
 $user_actif->setLocation(0, 2,2);
 $xfer_result->addComponent($user_actif);
 
-$sep= &new Xfer_Comp_LabelForm('separator');
+$sep=new Xfer_Comp_LabelForm('separator');
 $sep->setValue('');
 $sep->setLocation(0, 3);
 $xfer_result->addComponent($sep);
@@ -83,12 +83,12 @@ $self->actif='n';
 $self->orderBy("groupId, realName, login");
 $self->find(true,(int)$Params[GRID_PAGE.'user_desactif']*MAX_GRID_RECORD,MAX_GRID_RECORD);
 
-$lbl_inactif= &new Xfer_Comp_LabelForm('lbl_inactif');
+$lbl_inactif=new Xfer_Comp_LabelForm('lbl_inactif');
 $lbl_inactif->setValue('{[bold]}Liste des utilisateurs inactifs:{[/bold]}{[newline]}{[newline]}');
 $lbl_inactif->setLocation(0, 4,2);
 $xfer_result->addComponent($lbl_inactif);
 
-$user_desactif= &new Xfer_Comp_Grid('user_desactif','Grille des utilisateurs');
+$user_desactif=new Xfer_Comp_Grid('user_desactif','Grille des utilisateurs');
 $user_desactif->setDBObject($self,array("login","realName","groupId"));
 $user_desactif->addAction($self->NewAction("_Réactiver",'ok.png','reactiver', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $user_desactif->addAction($self->NewAction("S_upprimer",'suppr.png','Del',FORMTYPE_MODAL,CLOSE_NO,SELECT_MULTI));

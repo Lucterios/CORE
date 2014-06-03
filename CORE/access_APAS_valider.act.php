@@ -47,7 +47,7 @@ if ($access>=0) $self->get($access);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","access_APAS_valider",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","access_APAS_valider",$Params);
 $xfer_result->Caption="Ajouter/modifier un accès";
 //@CODE_ACTION@
 $self->setFrom($Params);

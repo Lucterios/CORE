@@ -48,7 +48,7 @@ $self=new DBObj_CORE_users();
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","users_APAS_Del",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","users_APAS_Del",$Params);
 $xfer_result->Caption="Supprimer un utilisateur";
 //@CODE_ACTION@
 $user_list=explode(';',$user_actif.$user_desactif);

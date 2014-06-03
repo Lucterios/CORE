@@ -46,7 +46,7 @@ if ($print_model>=0) $self->get($print_model);
 
 $self->lockRecord("printmodel_APAS_reinit");
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","printmodel_APAS_reinit",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","printmodel_APAS_reinit",$Params);
 $xfer_result->Caption='Réinitialiser un modèle';
 $xfer_result->m_context['ORIGINE']="printmodel_APAS_reinit";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

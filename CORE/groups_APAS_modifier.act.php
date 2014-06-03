@@ -44,7 +44,7 @@ $self=new DBObj_CORE_groups();
 $group=getParams($Params,"group",-1);
 if ($group>=0) $self->get($group);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","groups_APAS_modifier",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","groups_APAS_modifier",$Params);
 $xfer_result->Caption="Ajouter/Modifier un groupe";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');

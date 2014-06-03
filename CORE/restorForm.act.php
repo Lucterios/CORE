@@ -40,7 +40,7 @@ if (($ret=checkParams("CORE", "restorForm",$Params ,"file_path"))!=null)
 	return $ret;
 $file_path=getParams($Params,"file_path",0);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","restorForm",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","restorForm",$Params);
 $xfer_result->Caption="Restauration de données";
 //@CODE_ACTION@
 global $SECURITY_LOCK;

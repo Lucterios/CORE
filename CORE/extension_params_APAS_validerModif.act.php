@@ -47,7 +47,7 @@ $self=new DBObj_CORE_extension_params();
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","extension_params_APAS_validerModif",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","extension_params_APAS_validerModif",$Params);
 $xfer_result->Caption="Modifier un paramètre";
 //@CODE_ACTION@
 foreach($Params as $name=>$value) {

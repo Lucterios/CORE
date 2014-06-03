@@ -153,7 +153,7 @@ class Xfer_Container_Menu extends Xfer_Container_Abstract
 	{
 		parent::__construct($extension,$action,$context);
 		$this->m_observer_name="CORE.Menu";
-		$this->m_main_menus = &new Xfer_Menu_Item("","","");
+		$this->m_main_menus =new Xfer_Menu_Item("","","");
 	}
 	/**
 	 * Ajoute un menu principale

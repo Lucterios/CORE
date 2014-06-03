@@ -34,7 +34,7 @@ require_once('CORE/xfer.inc.php');
 /**
  * Convertion de model d'impression
  */
-require_once 'CORE/ConvertPrintModel.inc.php';
+require_once('CORE/ConvertPrintModel.inc.php');
 
 /**
  * Classe de transfert d'impression
@@ -329,46 +329,19 @@ class Xfer_Container_Print extends Xfer_Container_Abstract
 				return $this->ReportContent;
 		}
 		else {
-			$fop_java_dir=realpath($rootPath."CORE/fop/");
-			$fop_java_file=realpath($rootPath."CORE/fop/fop.jar");
-			$xsl_file=realpath($rootPath."CORE/LucteriosPrintStyleForFo.xsl");
-			if (is_file($fop_java_file) && is_file($xsl_file)) {
-				global $tmpPath;
-				$xml_file=realpath(tempnam($tmpPath,'xml'));
-				$pdf_file=realpath(tempnam($tmpPath,'pdf'));
-
-				$handle = fopen($xml_file, "w");
-				fwrite($handle, $this->ReportContent);
-				fclose($handle);
-
-				$output=array();
-				$return_var=0;
-				$print_cmd='java -Djava.awt.headless=true -classpath "'.$fop_java_dir.'" -jar "'.$fop_java_file.'" -xml "'.$xml_file.'" -xsl "'.$xsl_file.'" -pdf "'.$pdf_file.'"';
-				$last_line=exec($print_cmd,$output,$return_var);
-				if (is_file($pdf_file) && ($return_var==0)) {
-					$content=file_get_contents($pdf_file);
-				}
-				else {
-					$content="";
-					foreach($output as $line) {
-						$content.=$line."{[newline]}";
-					}
-					$content.=$last_line;
-					require_once("CORE/Lucterios_Error.inc.php");
-					logAutre("ReportContent:\nXML:$xml_file\nPDF:$pdf_file\n$this->ReportContent");
-					throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}$content");
-				}
-				unlink($xml_file);
-				unlink($pdf_file);
-
-				$this->ReportType=2;
-				if ($InBase64)
-					return base64_encode($content);
-				else
-					return $content;
+			require_once("CORE/xlp2pdf.inc.php");
+			try {
+				$content=transforme_xml2pdf($this->ReportContent);
+			} catch(Exception $e) {
+				require_once("CORE/Lucterios_Error.inc.php");
+				logAutre("ReportContent:\n$this->ReportContent");
+				throw new LucteriosException( IMPORTANT,"Echec de l'impression!!{[newline]}".$e->getMessage());
 			}
+			$this->ReportType=2;
+			if ($InBase64)
+				return base64_encode($content);
 			else
-				return $this->ReportContent;
+				return $content;
 		}
 	}
 

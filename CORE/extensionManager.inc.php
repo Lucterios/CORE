@@ -897,7 +897,7 @@ class Extension {
 
 	public function postInstall() {
 		if( is_file($this->Dir."postInstall.inc.php")) {
-			require_once$this->Dir."postInstall.inc.php";
+			require_once($this->Dir."postInstall.inc.php");
 			$func = "install_".$this->Name;
 			if( function_exists($func)) {
 				$this->message .= "appel de la propre fonction d'install de l'extension{[newline]}";
@@ -1119,7 +1119,7 @@ function createDataBase($DropDB = false,$ThrowExcept = false) {
 function refreshDataBase($noVersionControl = false, $rootPath = '') {
 	$install = '';
 	$set_of_ext = array();
-	$ext_list = getExtensions($rootPath);
+	$ext_list = getExtensions($rootPath,true);
 	foreach($ext_list as $name => $dir)$set_of_ext[] = new Extension($name,$dir);
 	$set_of_ext = sortExtension($set_of_ext);
 	$ExtensionDescription = array();

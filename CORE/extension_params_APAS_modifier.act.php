@@ -41,7 +41,7 @@ function extension_params_APAS_modifier($Params)
 {
 $self=new DBObj_CORE_extension_params();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","extension_params_APAS_modifier",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","extension_params_APAS_modifier",$Params);
 $xfer_result->Caption="Modifier un paramètre";
 //@CODE_ACTION@
 $paramid=0;

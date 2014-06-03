@@ -49,7 +49,7 @@ $self->lockRecord("access_APAS_supprimer");
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","access_APAS_supprimer",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","access_APAS_supprimer",$Params);
 $xfer_result->Caption='Supprimer un acces';
 $xfer_result->m_context['ORIGINE']="access_APAS_supprimer";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

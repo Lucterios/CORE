@@ -39,7 +39,7 @@ if (($ret=checkParams("CORE", "archiveForm",$Params ,"file_path"))!=null)
 	return $ret;
 $file_path=getParams($Params,"file_path",0);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","archiveForm",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","archiveForm",$Params);
 $xfer_result->Caption="Sauvegarder les données";
 //@CODE_ACTION@
 global $SECURITY_LOCK;

@@ -53,20 +53,21 @@ $headers=array_keys($comp->m_headers);
 $test->assertEquals("description",$headers[0]);
 $test->assertEquals("actions",$headers[1]);
 
-$test->assertEquals(12,count($comp->m_records));
+$test->assertEquals(13,count($comp->m_records));
 $keys=array_keys($comp->m_records);
-$test->assertEquals("Acceder au menu de l`application",$comp->m_records[$keys[0]]["description"]);
-$test->assertEquals("Changer de mot de passe",$comp->m_records[$keys[1]]["description"]);
-$test->assertEquals("Consulter les paramètres généreaux",$comp->m_records[$keys[2]]["description"]);
-$test->assertEquals("Impression",$comp->m_records[$keys[3]]["description"]);
-$test->assertEquals("Activer/Desactiver une extension",$comp->m_records[$keys[4]]["description"]);
-$test->assertEquals("Consultation de session de connexion",$comp->m_records[$keys[5]]["description"]);
+$test->assertEquals("Acceder à l`application",$comp->m_records[$keys[0]]["description"]);
+$test->assertEquals("Status de l`application",$comp->m_records[$keys[1]]["description"]);
+$test->assertEquals("Changer de mot de passe",$comp->m_records[$keys[2]]["description"]);
+$test->assertEquals("Consulter les paramètres généreaux",$comp->m_records[$keys[3]]["description"]);
+$test->assertEquals("Impression",$comp->m_records[$keys[4]]["description"]);
+$test->assertEquals("Activer/Desactiver une extension",$comp->m_records[$keys[5]]["description"]);
 $test->assertEquals("Ajouter/modifier un utilisateur",$comp->m_records[$keys[6]]["description"]);
-$test->assertEquals("Modifier les paramètres généraux",$comp->m_records[$keys[7]]["description"]);
-$test->assertEquals("Ajouter/Modifier un groupe",$comp->m_records[$keys[8]]["description"]);
+$test->assertEquals("Consultation de session de connexion",$comp->m_records[$keys[7]]["description"]);
+$test->assertEquals("Archivage",$comp->m_records[$keys[8]]["description"]);
 $test->assertEquals("Gestion des autorisation d`acces réseau",$comp->m_records[$keys[9]]["description"]);
-$test->assertEquals("Archivage",$comp->m_records[$keys[10]]["description"]);
-$test->assertEquals("Paramètres généraux (avancé)",$comp->m_records[$keys[11]]["description"]);
+$test->assertEquals("Modifier les paramètres généraux",$comp->m_records[$keys[10]]["description"]);
+$test->assertEquals("Ajouter/Modifier un groupe",$comp->m_records[$keys[11]]["description"]);
+$test->assertEquals("Paramètres généraux (avancé)",$comp->m_records[$keys[12]]["description"]);
 
 $test->assertEquals(new Xfer_Action("Editer les droits", "lister.gif", "CORE", "extension_rights_APAS_editer","1","0","0"),$comp->m_actions[0]);
 //@CODE_ACTION@

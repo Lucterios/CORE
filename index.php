@@ -26,6 +26,11 @@ if (is_dir("./joomla")) {
 	header('Location: ./joomla');
 	exit;
 }
+if (is_dir("./web")) {
+	header('Location: ./web');
+	exit;
+}
+
 
 header('Content-Type: text/html; charset=ISO-8859-1');
 

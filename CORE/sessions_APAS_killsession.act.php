@@ -44,7 +44,7 @@ $self=new DBObj_CORE_sessions();
 $access_actuel=getParams($Params,"access_actuel",-1);
 if ($access_actuel>=0) $self->get($access_actuel);
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","sessions_APAS_killsession",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","sessions_APAS_killsession",$Params);
 $xfer_result->Caption="Tuer une session";
 //@CODE_ACTION@
 if ($xfer_result->confirme("Etes-vous sure de vouloir tuer cette session?"))

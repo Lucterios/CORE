@@ -51,7 +51,7 @@ if ($group>=0) $self->get($group);
 
 $self->lockRecord("groups_APAS_editer");
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","groups_APAS_editer",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","groups_APAS_editer",$Params);
 $xfer_result->Caption="Editer les droits d'un groupe";
 $xfer_result->m_context['ORIGINE']="groups_APAS_editer";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

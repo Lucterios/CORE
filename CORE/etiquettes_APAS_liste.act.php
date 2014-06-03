@@ -41,7 +41,7 @@ function etiquettes_APAS_liste($Params)
 {
 $self=new DBObj_CORE_etiquettes();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","etiquettes_APAS_liste",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","etiquettes_APAS_liste",$Params);
 $xfer_result->Caption='Liste des étiquettes';
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');

@@ -41,7 +41,7 @@ function groups_APAS_liste($Params)
 {
 $self=new DBObj_CORE_groups();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","groups_APAS_liste",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","groups_APAS_liste",$Params);
 $xfer_result->Caption="Liste des groupes";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
@@ -57,7 +57,7 @@ $self->whereAdd('(id!=1) AND (id!=99)');
 $self->orderBy('weigth DESC');
 $self->find();
 
-$comp8= &new Xfer_Comp_Grid('group','Grille des paramètres');
+$comp8=new Xfer_Comp_Grid('group','Grille des paramètres');
 $comp8->setDBObject($self,array('groupName','weigth'));
 $comp8->addAction($self->NewAction("_Editer",'extensions.png','editer', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $comp8->addAction($self->NewAction("_Modifier",'edit.png','modifier', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
@@ -67,7 +67,7 @@ $comp8->addAction($self->NewAction("_Ajouter",'add.png','modifier',FORMTYPE_MODA
 $comp8->setLocation(0, 1, 2, 1);
 $xfer_result->addComponent($comp8);
 
-$comp2= &new Xfer_Comp_LabelForm('Comp2');
+$comp2=new Xfer_Comp_LabelForm('Comp2');
 $comp2->setValue('{[newline]}');
 $comp2->setLocation(0, 2, 1, 1);
 $xfer_result->addComponent($comp2);

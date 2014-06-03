@@ -40,7 +40,7 @@ function sessions_APAS_list($Params)
 {
 $self=new DBObj_CORE_sessions();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","sessions_APAS_list",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","sessions_APAS_list",$Params);
 $xfer_result->Caption="Consultation des session";
 //@CODE_ACTION@
 $titre_actuel=new Xfer_Comp_LabelForm("titre_actuel");

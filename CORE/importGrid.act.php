@@ -46,7 +46,7 @@ $extension=getParams($Params,"extension",0);
 $action=getParams($Params,"action",0);
 $textCVS=getParams($Params,"textCVS",0);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","importGrid",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","importGrid",$Params);
 $xfer_result->Caption="Import grille";
 //@CODE_ACTION@
 require_once("CORE/import.inc.php");

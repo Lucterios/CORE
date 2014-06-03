@@ -52,7 +52,7 @@ $self->lockRecord("groups_APAS_supprimer");
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","groups_APAS_supprimer",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","groups_APAS_supprimer",$Params);
 $xfer_result->Caption="Supprimer un groupe";
 $xfer_result->m_context['ORIGINE']="groups_APAS_supprimer";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

@@ -45,7 +45,7 @@ if ($access>=0) $self->get($access);
 
 $self->lockRecord("access_APAS_ajouter");
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","access_APAS_ajouter",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","access_APAS_ajouter",$Params);
 $xfer_result->Caption='Ajouter/modifier un acces';
 $xfer_result->m_context['ORIGINE']="access_APAS_ajouter";
 $xfer_result->m_context['TABLE_NAME']=$self->__table;

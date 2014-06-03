@@ -48,7 +48,7 @@ if ($print_report>=0) $self->get($print_report);
 global $connect;
 $connect->begin();
 try {
-$xfer_result=&new Xfer_Container_Acknowledge("CORE","finalreport_APAS_delete",$Params);
+$xfer_result=new Xfer_Container_Acknowledge("CORE","finalreport_APAS_delete",$Params);
 $xfer_result->Caption="Suppression d'impression";
 //@CODE_ACTION@
 if (($res=$self->canBeDelete())!=0) {

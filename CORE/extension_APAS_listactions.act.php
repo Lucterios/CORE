@@ -45,7 +45,7 @@ $self=new DBObj_CORE_extension();
 $extension=getParams($Params,"extension",-1);
 if ($extension>=0) $self->get($extension);
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","extension_APAS_listactions",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","extension_APAS_listactions",$Params);
 $xfer_result->Caption="Liste des actions d'une extension";
 //@CODE_ACTION@
 $img=new  Xfer_Comp_Image('img');
@@ -53,13 +53,13 @@ $img->setValue('extensions.png');
 $img->setLocation(0,0);
 $xfer_result->addComponent($img);
 
-$comp2= &new Xfer_Comp_LabelForm('Comp2');
+$comp2=new Xfer_Comp_LabelForm('Comp2');
 $comp2->setValue("{[center]}{[underline]}{[bold]}Droits et Actions de l'extension {[italc]}".$self->titre."{[/italc]}{[/bold]}{[/underline]}{[/center]}");
 $comp2->setLocation(1, 0);
 $xfer_result->addComponent($comp2);
 
 $rights=$self->getField("rights",'','weigth');
-$comp8= &new Xfer_Comp_Grid('right');
+$comp8=new Xfer_Comp_Grid('right');
 $comp8->setDBObject($rights,array("description","actions"));
 $comp8->addAction($rights->NewAction("_Editer les droits",'edit.png','editer', FORMTYPE_MODAL,CLOSE_NO,SELECT_SINGLE));
 $comp8->setLocation(0, 1,2);

@@ -41,7 +41,7 @@ function users_APAS_ajouter($Params)
 {
 $self=new DBObj_CORE_users();
 try {
-$xfer_result=&new Xfer_Container_Custom("CORE","users_APAS_ajouter",$Params);
+$xfer_result=new Xfer_Container_Custom("CORE","users_APAS_ajouter",$Params);
 $xfer_result->Caption='Ajouter un utilisateur';
 //@CODE_ACTION@
 $xfer_result=$self->Formulaire($xfer_result);
