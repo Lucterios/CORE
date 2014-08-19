@@ -59,7 +59,7 @@ $test->assertEquals("description",$headers[2]);
 $test->assertEquals("validite",$headers[3]);
 
 $test->assertEquals("Noyau Lucterios",$comp->m_records["100"]["titre"]);
-$test->assertEquals("1.5.",substr($comp->m_records["100"]['Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild'],0,4));
+$test->assertEquals("1.6.",substr($comp->m_records["100"]['Version#|#$versionMaj.$versionMin.$versionRev.$versionBuild'],0,4));
 $test->assertEquals("Coeur du serveur Lucterios.{[newline]}Gère la connexion au logiciel, les droits d`accès ainsi que l`integration des autres modules.",$comp->m_records["100"]["description"]);
 $test->assertEquals("Oui",$comp->m_records["100"]["validite"]);
 //@CODE_ACTION@
