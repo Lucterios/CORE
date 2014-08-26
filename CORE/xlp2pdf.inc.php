@@ -226,6 +226,8 @@ class LucteriosPDF extends FPDF
 {
 	private $_xml;
 
+	private $current_page;
+
 	private $y_offset;
 
 	private function _init() {
@@ -410,14 +412,12 @@ class LucteriosPDF extends FPDF
 	}
 
 	public function Header() {
-		$page=$this->xml->getResult()->getChildsByTagName('page');
-		$header=$page[0]->getChildsByTagName('header');
+		$header=$this->current_page->getChildsByTagName('header');
 		$this->_parse_comp($header[0],$this->tMargin);
 	}
 
 	public function Footer() {
-		$page=$this->xml->getResult()->getChildsByTagName('page');
-		$bottom=$page[0]->getChildsByTagName('bottom');
+		$bottom=$this->current_page->getChildsByTagName('bottom');
 		$this->_parse_comp($bottom[0],-1*$this->bMargin);
 	}
 
@@ -426,11 +426,14 @@ class LucteriosPDF extends FPDF
 		$this->xml->setInputString($xml_content);
 		$this->xml->parse();
 		$this->_init();
-		$page=$this->xml->getResult()->getChildsByTagName('page');
-		$bodies=$page[0]->getChildsByTagName('body');
-		foreach($bodies as $body) {
-			$this->AddPage();
-			$this->_parse_comp($body,$this->header_h+$this->tMargin);
+		$pages=$this->xml->getResult()->getChildsByTagName('page');
+		foreach($pages as $page) {
+			$this->current_page=$page;
+			$bodies=$this->current_page->getChildsByTagName('body');
+			foreach($bodies as $body) {
+				$this->AddPage();
+				$this->_parse_comp($body,$this->header_h+$this->tMargin);
+			}
 		}
 	}
 }
