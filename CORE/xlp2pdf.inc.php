@@ -315,15 +315,17 @@ class LucteriosPDF extends FPDF
 		else {
 			$img_file=$img_content;
 		}
-		$type=image_type_to_extension(exif_imagetype($img_file));
-		$type=str_replace('.','',$type);
-		$this->setY($currentY);
-		$this->Image($img_file,$currentX,null,$currentW,$currentH,$type);
+		if (is_file($img_file)) {
+			$type=image_type_to_extension(exif_imagetype($img_file));
+			$type=str_replace('.','',$type);
+			$this->setY($currentY);
+			$this->Image($img_file,$currentX,null,$currentW,$currentH,$type);
+			if ($is_base64)
+				unlink($img_file);
+		}
 		$max_y=$this->y;
 		$min_y=$currentY;
 		$interspace=($max_y-$min_y);
-		if ($is_base64)
-			unlink($img_file);
 		return array($min_y,$max_y,$interspace);
 	}
 
