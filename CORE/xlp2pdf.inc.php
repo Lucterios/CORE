@@ -252,7 +252,7 @@ class LucteriosPDF extends FPDF
 		$this->hPt = $this->h*$this->k;
 		$this->lMargin = (float)$model->getAttributeValue('margin_left');
 		$this->tMargin = (float)$model->getAttributeValue('margin_top');
-		$this->rMargin = (float)$model->getAttributeValue('margin_right');
+		$this->rMargin = 0; 
 
 		$page=$model->getChildsByTagName('page');
 		$header=$page[0]->getChildsByTagName('header');
