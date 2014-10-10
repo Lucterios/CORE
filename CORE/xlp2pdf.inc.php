@@ -21,18 +21,6 @@
 require_once('CORE/fpdf.php');
 require_once('CORE/XMLparse.inc.php');
 
-$LIST_COLOR=array(
-	'black'=>array(0,0,0),
-	'red'=>array(255,0,0),
-	'green'=>array(0,255,0),
-	'blue'=>array(0,0,255),
-	'yellow'=>array(255,255,0),
-	'cyan'=>array(0,255,255),
-	'purple'=>array(255,0,255),
-	'grey'=>array(192,192,192),
-	'white'=>array(255,255,255)
-);
-
 class TextFormated
 {
 	private $nb_line=0;
@@ -48,10 +36,23 @@ class TextFormated
 
 	public $sesure_chars=array(' ','-','/');
 
+	public $LIST_COLOR=array(
+		'black'=>array(0,0,0),
+		'red'=>array(255,0,0),
+		'green'=>array(0,255,0),
+		'blue'=>array(0,0,255),
+		'yellow'=>array(255,255,0),
+		'cyan'=>array(0,255,255),
+		'purple'=>array(255,0,255),
+		'grey'=>array(192,192,192),
+		'white'=>array(255,255,255)
+	);
+
 	private function _addtext($text) {
 		$text = str_replace("\n"," ",$text);
 		$text = preg_replace('/\s\s+/', ' ',$text);
 		$text = trim($text);
+		$text = str_replace(array('&eacute;','&egrave;'),array('e','e'),$text);
 		$text = iconv('utf-8', 'cp1252', $text);
 		$style = '';
 		foreach(array('B', 'I', 'U') as $s)
@@ -176,7 +177,6 @@ class TextFormated
 	}
 
 	function fillPDF($fpdf,$posX,$width,$align,$simpleText=True) {
-		global $LIST_COLOR;
 		list($new_content,$width_lines) = $this->_getNewTextlines($fpdf,$width);
 		$interspace=0;
 		$last_itersize=4;
@@ -196,8 +196,8 @@ class TextFormated
 			foreach($line as $item) {
 				$current_text=$item[0];
 				$item_color=$item[5];
-				if (array_key_exists($item_color,$LIST_COLOR)) {
-					$fpdf->SetTextColor($LIST_COLOR[$item_color][0],$LIST_COLOR[$item_color][1],$LIST_COLOR[$item_color][2]);
+				if (array_key_exists($item_color,$this->LIST_COLOR)) {
+					$fpdf->SetTextColor($this->LIST_COLOR[$item_color][0],$this->LIST_COLOR[$item_color][1],$this->LIST_COLOR[$item_color][2]);
 				}
 				$fpdf->SetFont($item[2],$item[1],$item[3]);
 				$fpdf->SetX($currentX);
@@ -252,7 +252,7 @@ class LucteriosPDF extends FPDF
 		$this->hPt = $this->h*$this->k;
 		$this->lMargin = (float)$model->getAttributeValue('margin_left');
 		$this->tMargin = (float)$model->getAttributeValue('margin_top');
-		$this->rMargin = 0; 
+		$this->rMargin = 0;
 
 		$page=$model->getChildsByTagName('page');
 		$header=$page[0]->getChildsByTagName('header');
